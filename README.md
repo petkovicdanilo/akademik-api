@@ -1,4 +1,4 @@
-# UniversityPortal API
+# Akademik API
 
 ## Installation
 

@@ -1,14 +1,5 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from "@nestjs/common";
+import { Controller, Get, Body, Patch, Param, Delete } from "@nestjs/common";
 import { ProfessorsService } from "./professors.service";
-import { CreateProfessorDto } from "./dto/create-professor.dto";
 import { UpdateProfessorDto } from "./dto/update-professor.dto";
 import { ApiTags } from "@nestjs/swagger";
 
@@ -16,11 +7,6 @@ import { ApiTags } from "@nestjs/swagger";
 @ApiTags("professors")
 export class ProfessorsController {
   constructor(private readonly professorsService: ProfessorsService) {}
-
-  @Post()
-  async create(@Body() createProfessorDto: CreateProfessorDto) {
-    return this.professorsService.create(createProfessorDto);
-  }
 
   @Get()
   findAll() {

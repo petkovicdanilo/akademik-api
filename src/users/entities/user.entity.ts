@@ -18,5 +18,8 @@ export abstract class User {
   password: string;
 
   @Column()
+  salt: string;
+
+  @Column()
   dateOfBirth: Date;
 }

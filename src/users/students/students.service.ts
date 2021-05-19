@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { RegisterDto } from "src/auth/dto/register.dto";
 import { Repository } from "typeorm";
-import { CreateStudentDto } from "./dto/create-student.dto";
 import { UpdateStudentDto } from "./dto/update-student.dto";
 import { Student } from "./entities/student.entity";
 
@@ -12,8 +12,8 @@ export class StudentsService {
     private readonly studentsRepository: Repository<Student>,
   ) {}
 
-  async create(createStudentDto: CreateStudentDto): Promise<Student> {
-    return this.studentsRepository.save(createStudentDto);
+  async create(student: RegisterDto): Promise<Student> {
+    return this.studentsRepository.save(student);
   }
 
   findAll() {

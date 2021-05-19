@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-export abstract class CreateUserDto {
+export class RegisterDto {
   @ApiProperty()
   firstName: string;
 
@@ -13,6 +13,11 @@ export abstract class CreateUserDto {
   @ApiProperty()
   password: string;
 
+  salt: string;
+
   @ApiProperty()
   dateOfBirth: Date;
+
+  @ApiProperty({ enum: ["student", "professor"] })
+  type: "student" | "professor";
 }

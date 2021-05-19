@@ -5,6 +5,7 @@ import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { Student } from "./users/students/entities/student.entity";
 import { UsersModule } from "./users/users.module";
+import { AuthModule } from "./auth/auth.module";
 import { ProfessorsModule } from "./users/professors/professors.module";
 import { Professor } from "./users/professors/entities/professor.entity";
 
@@ -22,6 +23,7 @@ import { Professor } from "./users/professors/entities/professor.entity";
       synchronize: true,
     }),
     UsersModule,
+    AuthModule,
     ProfessorsModule,
   ],
   controllers: [AppController],

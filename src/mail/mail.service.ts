@@ -7,7 +7,7 @@ export class MailService {
 
   async sendResetPasswordEmail(email: string) {
     await this.mailerService.sendMail({
-      to: email,
+      to: `Pera Peric <${email}>`,
       subject: "Reset password",
       template: "./reset-password",
       context: {

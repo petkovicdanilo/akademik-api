@@ -9,6 +9,7 @@ import { StudentsService } from "src/users/students/students.service";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
 import * as bcrypt from "bcrypt";
+import { MailService } from "src/mail/mail.service";
 
 @Injectable()
 export class AuthService {
@@ -16,6 +17,7 @@ export class AuthService {
     private readonly studentsService: StudentsService,
     private readonly professorsService: ProfessorsService,
     private readonly jwtService: JwtService,
+    private readonly mailService: MailService,
   ) {}
 
   async login(loginDto: LoginDto) {
@@ -63,6 +65,10 @@ export class AuthService {
       default:
         throw new InternalServerErrorException("Internal server error");
     }
+  }
+
+  async forgotPassword(email: string) {
+    return this.mailService.sendResetPasswordEmail(email);
   }
 
   hashPassword(password: string, salt: string) {

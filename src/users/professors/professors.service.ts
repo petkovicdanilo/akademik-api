@@ -24,6 +24,16 @@ export class ProfessorsService {
     return `This action returns a #${id} professor`;
   }
 
+  async findByEmail(email: string) {
+    const students = await this.professorsRepository.find({
+      where: {
+        email: email,
+      },
+    });
+
+    return students[0];
+  }
+
   update(id: number, updateProfessorDto: UpdateProfessorDto) {
     return `This action updates a #${id} professor`;
   }

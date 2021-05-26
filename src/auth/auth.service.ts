@@ -20,34 +20,38 @@ export class AuthService {
     private readonly mailService: MailService,
   ) {}
 
-  async login(loginDto: LoginDto) {
-    const student = await this.studentsService.findByEmail(loginDto.email);
-    if (student != undefined) {
-      const hashedPassword = await this.hashPassword(
-        loginDto.password,
-        student.salt,
-      );
-      if (student.password != hashedPassword) {
-        throw new BadRequestException("Wrong username or password");
-      }
-
-      return this.jwtService.sign({ id: student.id, type: "student" });
+  private async findUserByEmail(email: string) {
+    const student = await this.studentsService.findByEmail(email);
+    if (student) {
+      return {
+        type: "student",
+        ...student,
+      };
     }
 
-    const professor = await this.professorsService.findByEmail(loginDto.email);
-    if (professor == undefined) {
+    const professor = await this.professorsService.findByEmail(email);
+    return {
+      type: "professor",
+      ...professor,
+    };
+  }
+
+  async login(loginDto: LoginDto) {
+    const user = await this.findUserByEmail(loginDto.email);
+
+    if (!user) {
       throw new BadRequestException("Wrong username or password");
     }
 
     const hashedPassword = await this.hashPassword(
       loginDto.password,
-      professor.salt,
+      user.salt,
     );
-    if (professor.password != hashedPassword) {
+    if (user.password != hashedPassword) {
       throw new BadRequestException("Wrong username or password");
     }
 
-    return this.jwtService.sign({ id: professor.id, type: "professor" });
+    return this.jwtService.sign({ id: user.id, type: user.type });
   }
 
   async register(registerDto: RegisterDto) {

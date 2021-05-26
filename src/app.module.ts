@@ -9,11 +9,13 @@ import { AuthModule } from "./auth/auth.module";
 import { ProfessorsModule } from "./users/professors/professors.module";
 import { Professor } from "./users/professors/entities/professor.entity";
 import { MailModule } from "./mail/mail.module";
+import { UtilModule } from "./util/util.module";
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      expandVariables: true,
     }),
     TypeOrmModule.forRoot({
       type: "postgres",
@@ -29,6 +31,7 @@ import { MailModule } from "./mail/mail.module";
     AuthModule,
     ProfessorsModule,
     MailModule,
+    UtilModule,
   ],
   controllers: [AppController],
   providers: [AppService],

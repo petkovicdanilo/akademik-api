@@ -1,5 +1,10 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import {
+  IPaginationOptions,
+  paginate,
+  Pagination,
+} from "nestjs-typeorm-paginate";
 import { RegisterDto } from "src/auth/dto/register.dto";
 import { Repository } from "typeorm";
 import { UpdateStudentDto } from "./dto/update-student.dto";
@@ -16,15 +21,22 @@ export class StudentsService {
     return this.studentsRepository.save(student);
   }
 
-  findAll() {
-    return `This action returns all students`;
+  findAll(options: IPaginationOptions): Promise<Pagination<Student>> {
+    const queryBuilder = this.studentsRepository.createQueryBuilder();
+    return paginate<Student>(queryBuilder, options);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} student`;
+  async findOne(id: number): Promise<Student> {
+    const student = await this.studentsRepository.findOne(id);
+
+    if (!student) {
+      throw new NotFoundException("Student not found");
+    }
+
+    return student;
   }
 
-  async findByEmail(email: string) {
+  async findByEmail(email: string): Promise<Student> {
     const students = await this.studentsRepository.find({
       where: {
         email: email,
@@ -34,11 +46,26 @@ export class StudentsService {
     return students[0];
   }
 
-  update(id: number, updateStudentDto: UpdateStudentDto) {
-    return `This action updates a #${id} student`;
+  async update(
+    id: number,
+    updateStudentDto: UpdateStudentDto,
+  ): Promise<Student> {
+    const updateResult = await this.studentsRepository.update(
+      id,
+      updateStudentDto,
+    );
+
+    if (updateResult.affected == 0) {
+      throw new NotFoundException("Student not found");
+    }
+
+    return this.findOne(id);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} student`;
+  async remove(id: number): Promise<Student> {
+    const student = await this.findOne(id);
+    await this.studentsRepository.delete(id);
+
+    return student;
   }
 }

@@ -1,9 +1,14 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { UpdateProfessorDto } from "./dto/update-professor.dto";
 import { Professor } from "./entities/professor.entity";
 import { RegisterDto } from "src/auth/dto/register.dto";
+import {
+  IPaginationOptions,
+  paginate,
+  Pagination,
+} from "nestjs-typeorm-paginate";
 
 @Injectable()
 export class ProfessorsService {
@@ -16,12 +21,19 @@ export class ProfessorsService {
     return this.professorsRepository.save(professor);
   }
 
-  findAll() {
-    return `This action returns all professors`;
+  findAll(options: IPaginationOptions): Promise<Pagination<Professor>> {
+    const queryBuilder = this.professorsRepository.createQueryBuilder();
+    return paginate<Professor>(queryBuilder, options);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} professor`;
+  async findOne(id: number): Promise<Professor> {
+    const professor = await this.professorsRepository.findOne(id);
+
+    if (!professor) {
+      throw new NotFoundException("Professor not found");
+    }
+
+    return professor;
   }
 
   async findByEmail(email: string) {
@@ -34,11 +46,26 @@ export class ProfessorsService {
     return students[0];
   }
 
-  update(id: number, updateProfessorDto: UpdateProfessorDto) {
-    return `This action updates a #${id} professor`;
+  async update(
+    id: number,
+    updateProfessorDto: UpdateProfessorDto,
+  ): Promise<Professor> {
+    const updateResult = await this.professorsRepository.update(
+      id,
+      updateProfessorDto,
+    );
+
+    if (updateResult.affected == 0) {
+      throw new NotFoundException("Professor not found");
+    }
+
+    return this.findOne(id);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} professor`;
+  async remove(id: number): Promise<Professor> {
+    const professor = await this.findOne(id);
+    await this.professorsRepository.delete(id);
+
+    return professor;
   }
 }

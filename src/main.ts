@@ -12,6 +12,7 @@ async function bootstrap() {
       "API for application used by university students and professors",
     )
     .setVersion("1.0")
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup("api", app, document);

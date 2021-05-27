@@ -7,7 +7,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const config = new DocumentBuilder()
-    .setTitle("Akademik API")
+    .setTitle("akademik API")
     .setDescription(
       "API for application used by university students and professors",
     )

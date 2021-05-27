@@ -1,4 +1,4 @@
-# Akademik API
+# akademik API
 
 ## Installation
 

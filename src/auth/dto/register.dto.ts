@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
 import { UserType } from "src/users/types";
 
 export class RegisterDto {
@@ -14,6 +14,7 @@ export class RegisterDto {
   @ApiProperty()
   password: string;
 
+  @ApiHideProperty()
   salt: string;
 
   @ApiProperty()

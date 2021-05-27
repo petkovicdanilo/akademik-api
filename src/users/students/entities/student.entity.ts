@@ -6,6 +6,7 @@ import { StudentDto } from "../dto/student.dto";
 export class Student extends User {
   toDto(): StudentDto {
     return {
+      id: this.id,
       dateOfBirth: this.dateOfBirth,
       email: this.email,
       firstName: this.firstName,

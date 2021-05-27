@@ -6,6 +6,7 @@ import { ProfessorDto } from "../dto/professor.dto";
 export class Professor extends User {
   toDto(): ProfessorDto {
     return {
+      id: this.id,
       dateOfBirth: this.dateOfBirth,
       email: this.email,
       firstName: this.firstName,

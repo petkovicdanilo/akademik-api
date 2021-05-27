@@ -22,6 +22,7 @@ export class UserWithType extends User {
 
   toDto(): UserWithTypeDto {
     return {
+      id: this.id,
       type: this.type,
       firstName: this.firstName,
       lastName: this.lastName,

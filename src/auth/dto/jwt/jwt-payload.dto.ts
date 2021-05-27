@@ -1,10 +1,12 @@
+import { UserType } from "src/users/types";
+
 export abstract class JwtPayload {
   user: {
     id: number;
-    type: "student" | "professor";
+    type: UserType;
   };
 
-  constructor(id: number, type: "student" | "professor") {
+  constructor(id: number, type: UserType) {
     this.user = {
       id,
       type,

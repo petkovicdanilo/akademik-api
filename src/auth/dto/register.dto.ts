@@ -1,4 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { UserType } from "src/users/types";
 
 export class RegisterDto {
   @ApiProperty()
@@ -19,5 +20,5 @@ export class RegisterDto {
   dateOfBirth: Date;
 
   @ApiProperty({ enum: ["student", "professor"] })
-  type: "student" | "professor";
+  type: UserType;
 }

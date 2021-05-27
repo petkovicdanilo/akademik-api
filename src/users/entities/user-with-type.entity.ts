@@ -1,10 +1,11 @@
 import { UserWithTypeDto } from "../dto/user-with-type.dto";
+import { UserType } from "../types";
 import { User } from "./user.entity";
 
 export class UserWithType extends User {
-  type: "student" | "professor";
+  type: UserType;
 
-  constructor(type: "student" | "professor", user: User) {
+  constructor(type: UserType, user: User) {
     super(
       user.id,
       user.firstName,

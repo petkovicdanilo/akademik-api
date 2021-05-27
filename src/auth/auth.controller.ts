@@ -5,7 +5,7 @@ import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
 import { ForgotPasswordDto } from "./dto/forgot-password.dto";
 import { LoginResponseDto } from "./dto/login-response.dto";
-import { UserDto } from "src/users/dto/user.dto";
+import { UserWithTypeDto } from "src/users/dto/user-with-type.dto";
 
 @Controller()
 @ApiTags("auth")
@@ -26,7 +26,7 @@ export class AuthController {
   @Post("register")
   @ApiResponse({
     status: 201,
-    type: UserDto,
+    type: UserWithTypeDto,
   })
   async register(@Body() registerDto: RegisterDto) {
     const user = await this.authService.register(registerDto);

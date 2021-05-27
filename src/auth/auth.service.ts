@@ -10,34 +10,22 @@ import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
 import * as bcrypt from "bcrypt";
 import { MailService } from "src/mail/mail.service";
+import { ResetPasswordDto } from "./dto/reset-password.dto";
+import { UsersService } from "src/users/users.service";
+import { UserWithType } from "src/users/entities/user-with-type.entity";
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly studentsService: StudentsService,
     private readonly professorsService: ProfessorsService,
+    private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
     private readonly mailService: MailService,
   ) {}
 
-  private async findUserByEmail(email: string) {
-    const student = await this.studentsService.findByEmail(email);
-    if (student) {
-      return {
-        type: "student",
-        ...student,
-      };
-    }
-
-    const professor = await this.professorsService.findByEmail(email);
-    return {
-      type: "professor",
-      ...professor,
-    };
-  }
-
   async login(loginDto: LoginDto) {
-    const user = await this.findUserByEmail(loginDto.email);
+    const user = await this.usersService.findUserByEmail(loginDto.email);
 
     if (!user) {
       throw new BadRequestException("Wrong username or password");
@@ -54,7 +42,7 @@ export class AuthService {
     return this.jwtService.sign({ id: user.id, type: user.type });
   }
 
-  async register(registerDto: RegisterDto) {
+  async register(registerDto: RegisterDto): Promise<UserWithType> {
     registerDto.salt = await bcrypt.genSalt();
     registerDto.password = await this.hashPassword(
       registerDto.password,

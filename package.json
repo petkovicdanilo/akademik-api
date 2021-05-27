@@ -31,6 +31,8 @@
     "@nestjs/swagger": "^4.8.0",
     "@nestjs/typeorm": "^7.1.5",
     "bcrypt": "^5.0.1",
+    "class-transformer": "^0.4.0",
+    "class-validator": "^0.13.1",
     "handlebars": "^4.7.7",
     "helmet": "^4.5.0",
     "nestjs-typeorm-paginate": "^2.5.1",

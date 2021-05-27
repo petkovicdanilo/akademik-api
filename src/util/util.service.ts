@@ -9,4 +9,12 @@ export class UtilService {
     const url = new URL(path, this.configService.get<string>("APP_URL"));
     return url.toString();
   }
+
+  getFrontendUrl() {
+    return this.configService.get<string>("FRONTEND_URL");
+  }
+
+  getFrontendResetPassewordUrl() {
+    return new URL("/reset-password", this.getFrontendUrl()).toString();
+  }
 }

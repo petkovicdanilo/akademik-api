@@ -51,19 +51,60 @@ export class AuthService {
 
     switch (registerDto.type) {
       case "student":
-        return this.studentsService.create(registerDto);
+        const student = await this.studentsService.create(registerDto);
+        return new UserWithType("student", student);
       case "professor":
-        return this.professorsService.create(registerDto);
+        const professor = await this.professorsService.create(registerDto);
+        return new UserWithType("professor", professor);
       default:
         throw new InternalServerErrorException("Internal server error");
     }
   }
 
   async forgotPassword(email: string) {
-    return this.mailService.sendResetPasswordEmail(email);
+    const user = await this.usersService.findUserByEmail(email);
+
+    const token = await this.jwtService.signAsync({
+      user: {
+        id: user.id,
+        email: user.email,
+      },
+      tokenType: "resetPassword",
+    });
+
+    switch (user.type) {
+      case "student":
+        this.studentsService.setPasswordResetToken(user.id, token);
+        break;
+      case "professor":
+        this.professorsService.setPasswordResetToken(user.id, token);
+        break;
+      default:
+        throw new InternalServerErrorException("Internal server error");
+    }
+
+    return this.mailService.sendResetPasswordEmail(user, token);
   }
 
   hashPassword(password: string, salt: string) {
     return bcrypt.hash(password, salt);
+  }
+
+  async resetPassword(resetPasswordDto: ResetPasswordDto, user: UserWithType) {
+    const password = await this.hashPassword(
+      resetPasswordDto.password,
+      user.salt,
+    );
+
+    switch (user.type) {
+      case "student":
+        await this.studentsService.resetPassword(user.id, password);
+        break;
+      case "professor":
+        await this.professorsService.resetPassword(user.id, password);
+        break;
+      default:
+        throw new BadRequestException();
+    }
   }
 }

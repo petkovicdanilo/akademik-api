@@ -9,6 +9,7 @@ import { Student } from "src/users/students/entities/student.entity";
 import { UsersModule } from "src/users/users.module";
 import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
+import { JwtResetPasswordStrategy } from "./strategies/jwt-reset-password.strategy";
 import { JwtStrategy } from "./strategies/jwt.strategy";
 
 @Module({
@@ -26,6 +27,6 @@ import { JwtStrategy } from "./strategies/jwt.strategy";
   ],
   exports: [AuthService],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, JwtResetPasswordStrategy],
 })
 export class AuthModule {}

@@ -68,4 +68,17 @@ export class StudentsService {
 
     return student;
   }
+
+  setPasswordResetToken(id: number, token: string) {
+    return this.studentsRepository.update(id, {
+      passwordResetToken: token,
+    });
+  }
+
+  resetPassword(id: number, password: string) {
+    return this.studentsRepository.update(id, {
+      password,
+      passwordResetToken: null,
+    });
+  }
 }

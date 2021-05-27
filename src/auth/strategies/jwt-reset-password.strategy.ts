@@ -18,8 +18,9 @@ export class JwtResetPasswordStrategy extends PassportStrategy(
   }
 
   async validate(req, payload: any) {
-    const email = payload.user.email;
-    const user = await this.usersService.findUserByEmail(email);
+    const id = payload.user.id;
+    const type = payload.user.type;
+    const user = await this.usersService.findUser(id, type);
 
     const token = req.body.token;
 

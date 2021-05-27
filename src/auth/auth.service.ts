@@ -13,6 +13,8 @@ import { MailService } from "src/mail/mail.service";
 import { ResetPasswordDto } from "./dto/reset-password.dto";
 import { UsersService } from "src/users/users.service";
 import { UserWithType } from "src/users/entities/user-with-type.entity";
+import { ResetPasswordTokenPayload } from "./dto/jwt/reset-password-token-payload.dto";
+import { AccessTokenPayload } from "./dto/jwt/access-token-payload.dto";
 
 @Injectable()
 export class AuthService {
@@ -39,7 +41,8 @@ export class AuthService {
       throw new BadRequestException("Wrong username or password");
     }
 
-    return this.jwtService.sign({ id: user.id, type: user.type });
+    const payload = new AccessTokenPayload(user.id, user.type);
+    return this.jwtService.sign({ ...payload });
   }
 
   async register(registerDto: RegisterDto): Promise<UserWithType> {
@@ -64,13 +67,8 @@ export class AuthService {
   async forgotPassword(email: string) {
     const user = await this.usersService.findUserByEmail(email);
 
-    const token = await this.jwtService.signAsync({
-      user: {
-        id: user.id,
-        email: user.email,
-      },
-      tokenType: "resetPassword",
-    });
+    const payload = new ResetPasswordTokenPayload(user.id, user.type);
+    const token = await this.jwtService.signAsync({ ...payload });
 
     switch (user.type) {
       case "student":

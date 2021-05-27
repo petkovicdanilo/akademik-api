@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { UserWithType } from "./entities/user-with-type.entity";
 import { ProfessorsService } from "./professors/professors.service";
 import { StudentsService } from "./students/students.service";
+import { UserType } from "./types";
 
 @Injectable()
 export class UsersService {
@@ -22,5 +23,19 @@ export class UsersService {
     }
 
     return new UserWithType("professor", professor);
+  }
+
+  async findUser(id: number, type: UserType) {
+    let user;
+    switch (type) {
+      case "student":
+        user = await this.studentsService.findOne(id);
+        break;
+      case "professor":
+        user = await this.professorsService.findOne(id);
+        break;
+    }
+
+    return new UserWithType(type, user);
   }
 }

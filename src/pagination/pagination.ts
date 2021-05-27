@@ -38,7 +38,7 @@ export class Links {
   public last: string;
 }
 
-export function PaginatedRequestDto<T extends ClassType>(ResourceCls: T) {
+export function PaginatedDto<T extends ClassType>(ResourceCls: T) {
   class Paginated extends ResourceCls implements IPaginated {
     @ApiProperty()
     public meta: Meta;

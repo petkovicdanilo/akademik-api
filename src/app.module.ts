@@ -8,6 +8,7 @@ import { AuthModule } from "./auth/auth.module";
 import { ProfessorsModule } from "./users/professors/professors.module";
 import { MailModule } from "./mail/mail.module";
 import { UtilModule } from "./util/util.module";
+import { AdminModule } from "./users/admin/admin.module";
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { UtilModule } from "./util/util.module";
     ProfessorsModule,
     MailModule,
     UtilModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],

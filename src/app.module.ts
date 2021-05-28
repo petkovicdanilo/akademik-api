@@ -3,11 +3,9 @@ import { ConfigModule } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
-import { Student } from "./users/students/entities/student.entity";
 import { UsersModule } from "./users/users.module";
 import { AuthModule } from "./auth/auth.module";
 import { ProfessorsModule } from "./users/professors/professors.module";
-import { Professor } from "./users/professors/entities/professor.entity";
 import { MailModule } from "./mail/mail.module";
 import { UtilModule } from "./util/util.module";
 
@@ -24,7 +22,7 @@ import { UtilModule } from "./util/util.module";
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE,
-      entities: [Student, Professor],
+      autoLoadEntities: true,
       synchronize: true,
     }),
     UsersModule,

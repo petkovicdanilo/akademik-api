@@ -22,8 +22,7 @@ export class ProfessorsService {
   }
 
   findAll(options: IPaginationOptions): Promise<Pagination<Professor>> {
-    const queryBuilder = this.professorsRepository.createQueryBuilder();
-    return paginate<Professor>(queryBuilder, options);
+    return paginate<Professor>(this.professorsRepository, options);
   }
 
   async findOne(id: number): Promise<Professor> {

@@ -1,3 +1,3 @@
-import { UserDto } from "src/users/dto/user.dto";
+import { AbstractUserDto } from "src/users/dto/abstract-user.dto";
 
-export class ProfessorDto extends UserDto {}
+export class ProfessorDto extends AbstractUserDto {}

@@ -1,16 +1,17 @@
-import { User } from "src/users/entities/user.entity";
-import { Entity } from "typeorm";
-import { ProfessorDto } from "../dto/professor.dto";
+import { Profile } from "src/users/profiles/entities/profile.entity";
+import { Entity, JoinColumn, OneToOne, PrimaryColumn } from "typeorm";
 
 @Entity()
-export class Professor extends User {
-  toDto(): ProfessorDto {
-    return {
-      id: this.id,
-      dateOfBirth: this.dateOfBirth,
-      email: this.email,
-      firstName: this.firstName,
-      lastName: this.lastName,
-    };
-  }
+export class Professor {
+  @PrimaryColumn()
+  id: number;
+
+  @OneToOne(() => Profile, {
+    eager: true,
+    cascade: true,
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  })
+  @JoinColumn({ name: "id" })
+  profile: Profile;
 }

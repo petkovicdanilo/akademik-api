@@ -1,4 +1,4 @@
-export abstract class UserDto {
+export abstract class AbstractUserDto {
   id: number;
 
   firstName: string;

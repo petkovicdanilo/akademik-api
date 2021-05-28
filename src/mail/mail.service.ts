@@ -1,6 +1,6 @@
 import { MailerService } from "@nestjs-modules/mailer";
 import { Injectable } from "@nestjs/common";
-import { User } from "src/users/entities/user.entity";
+import { Profile } from "src/users/profiles/entities/profile.entity";
 import { UtilService } from "src/util/util.service";
 
 @Injectable()
@@ -10,13 +10,13 @@ export class MailService {
     private readonly utilService: UtilService,
   ) {}
 
-  async sendResetPasswordEmail(user: User, token: string) {
+  async sendResetPasswordEmail(profile: Profile, token: string) {
     await this.mailerService.sendMail({
-      to: `${user.firstName} ${user.lastName} <${user.email}>`,
+      to: `${profile.firstName} ${profile.lastName} <${profile.email}>`,
       subject: "Reset password",
       template: "./reset-password",
       context: {
-        user,
+        profile,
         token,
         url: this.utilService.getFrontendResetPassewordUrl(),
       },

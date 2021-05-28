@@ -1,8 +1,9 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
-import { UserWithType } from "./entities/user-with-type.entity";
+import { Injectable, InternalServerErrorException } from "@nestjs/common";
+import { RegisterDto } from "src/auth/dto/register.dto";
 import { ProfessorsService } from "./professors/professors.service";
 import { StudentsService } from "./students/students.service";
-import { UserType } from "./types";
+import { ProfileType } from "./profiles/types";
+import { Profile } from "./profiles/entities/profile.entity";
 
 @Injectable()
 export class UsersService {
@@ -11,31 +12,16 @@ export class UsersService {
     private readonly professorsService: ProfessorsService,
   ) {}
 
-  async findUserByEmail(email: string): Promise<UserWithType> {
-    const student = await this.studentsService.findByEmail(email);
-    if (student) {
-      return new UserWithType("student", student);
+  async create(userDto: RegisterDto): Promise<Profile> {
+    switch (userDto.type) {
+      case ProfileType.Student:
+        const student = await this.studentsService.create(userDto);
+        return student.profile;
+      case ProfileType.Professor:
+        const professor = await this.professorsService.create(userDto);
+        return professor.profile;
+      default:
+        throw new InternalServerErrorException("Internal server error");
     }
-
-    const professor = await this.professorsService.findByEmail(email);
-    if (!professor) {
-      throw new NotFoundException("User not found");
-    }
-
-    return new UserWithType("professor", professor);
-  }
-
-  async findUser(id: number, type: UserType) {
-    let user;
-    switch (type) {
-      case "student":
-        user = await this.studentsService.findOne(id);
-        break;
-      case "professor":
-        user = await this.professorsService.findOne(id);
-        break;
-    }
-
-    return new UserWithType(type, user);
   }
 }

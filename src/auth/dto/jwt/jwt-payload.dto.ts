@@ -1,12 +1,12 @@
-import { UserType } from "src/users/types";
+import { ProfileType } from "src/users/profiles/types";
 
 export abstract class JwtPayload {
   user: {
     id: number;
-    type: UserType;
+    type: ProfileType;
   };
 
-  constructor(id: number, type: UserType) {
+  constructor(id: number, type: ProfileType) {
     this.user = {
       id,
       type,

@@ -7,12 +7,17 @@ import { ForgotPasswordDto } from "./dto/forgot-password.dto";
 import { LoginResponseDto } from "./dto/login-response.dto";
 import { ResetPasswordDto } from "./dto/reset-password.dto";
 import { JwtResetPasswordGuard } from "./guards/jwt-reset-password.guard";
-import { UserWithTypeDto } from "src/users/dto/user-with-type.dto";
+import { ProfileDto } from "src/users/profiles/dto/profile.dto";
+import { Profile } from "src/users/profiles/entities/profile.entity";
+import { ProfilesService } from "src/users/profiles/profiles.service";
 
 @Controller()
 @ApiTags("auth")
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly profilesService: ProfilesService,
+  ) {}
 
   @Post("login")
   @ApiResponse({
@@ -28,11 +33,11 @@ export class AuthController {
   @Post("register")
   @ApiResponse({
     status: 201,
-    type: UserWithTypeDto,
+    type: ProfileDto,
   })
-  async register(@Body() registerDto: RegisterDto) {
-    const user = await this.authService.register(registerDto);
-    return user.toDto();
+  async register(@Body() registerDto: RegisterDto): Promise<ProfileDto> {
+    const profile: Profile = await this.authService.register(registerDto);
+    return this.profilesService.mapProfileToProfileDto(profile);
   }
 
   @Post("forgot-password")

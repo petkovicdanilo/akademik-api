@@ -9,16 +9,21 @@ import {
   paginate,
   Pagination,
 } from "nestjs-typeorm-paginate";
+import { ProfessorDto } from "./dto/professor.dto";
+import { ProfilesService } from "../profiles/profiles.service";
 
 @Injectable()
 export class ProfessorsService {
   constructor(
     @InjectRepository(Professor)
     private readonly professorsRepository: Repository<Professor>,
+    private readonly profilesService: ProfilesService,
   ) {}
 
-  async create(professor: RegisterDto): Promise<Professor> {
-    return this.professorsRepository.save(professor);
+  create(professorDto: RegisterDto): Promise<Professor> {
+    return this.professorsRepository.save({
+      profile: professorDto,
+    });
   }
 
   findAll(options: IPaginationOptions): Promise<Pagination<Professor>> {
@@ -35,49 +40,30 @@ export class ProfessorsService {
     return professor;
   }
 
-  async findByEmail(email: string) {
-    const students = await this.professorsRepository.find({
-      where: {
-        email: email,
-      },
-    });
-
-    return students[0];
-  }
-
   async update(
     id: number,
     updateProfessorDto: UpdateProfessorDto,
   ): Promise<Professor> {
-    const updateResult = await this.professorsRepository.update(
-      id,
-      updateProfessorDto,
-    );
-
-    if (updateResult.affected == 0) {
-      throw new NotFoundException("Professor not found");
-    }
+    await this.profilesService.update(id, updateProfessorDto);
 
     return this.findOne(id);
   }
 
   async remove(id: number): Promise<Professor> {
     const professor = await this.findOne(id);
-    await this.professorsRepository.delete(id);
+
+    await this.profilesService.remove(id);
 
     return professor;
   }
 
-  setPasswordResetToken(id: number, token: string) {
-    return this.professorsRepository.update(id, {
-      passwordResetToken: token,
-    });
-  }
-
-  resetPassword(id: number, password: string) {
-    return this.professorsRepository.update(id, {
-      password,
-      passwordResetToken: null,
-    });
+  mapProfessorToProfessorDto(professor: Professor): ProfessorDto {
+    return {
+      id: professor.profile.id,
+      dateOfBirth: professor.profile.dateOfBirth,
+      email: professor.profile.email,
+      firstName: professor.profile.firstName,
+      lastName: professor.profile.lastName,
+    };
   }
 }

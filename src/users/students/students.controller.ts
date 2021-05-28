@@ -57,7 +57,9 @@ export class StudentsController {
     });
 
     return {
-      items: studentsPaginated.items.map((student) => student.toDto()),
+      items: studentsPaginated.items.map((student) =>
+        this.studentsService.mapStudentToStudentDto(student),
+      ),
       meta: studentsPaginated.meta,
       links: studentsPaginated.links,
     };
@@ -70,7 +72,7 @@ export class StudentsController {
   })
   async findOne(@Param("id") id: string): Promise<StudentDto> {
     const student = await this.studentsService.findOne(+id);
-    return student.toDto();
+    return this.studentsService.mapStudentToStudentDto(student);
   }
 
   @Patch(":id")
@@ -83,7 +85,7 @@ export class StudentsController {
     @Body() updateStudentDto: UpdateStudentDto,
   ): Promise<StudentDto> {
     const student = await this.studentsService.update(+id, updateStudentDto);
-    return student.toDto();
+    return this.studentsService.mapStudentToStudentDto(student);
   }
 
   @Delete(":id")
@@ -93,6 +95,6 @@ export class StudentsController {
   })
   async remove(@Param("id") id: string): Promise<StudentDto> {
     const student = await this.studentsService.remove(+id);
-    return student.toDto();
+    return this.studentsService.mapStudentToStudentDto(student);
   }
 }

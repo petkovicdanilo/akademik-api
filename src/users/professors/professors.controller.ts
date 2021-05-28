@@ -57,7 +57,9 @@ export class ProfessorsController {
     });
 
     return {
-      items: professorsPaginated.items.map((professor) => professor.toDto()),
+      items: professorsPaginated.items.map((professor) =>
+        this.professorsService.mapProfessorToProfessorDto(professor),
+      ),
       meta: professorsPaginated.meta,
       links: professorsPaginated.links,
     };
@@ -70,7 +72,7 @@ export class ProfessorsController {
   })
   async findOne(@Param("id") id: string): Promise<ProfessorDto> {
     const professor = await this.professorsService.findOne(+id);
-    return professor.toDto();
+    return this.professorsService.mapProfessorToProfessorDto(professor);
   }
 
   @Patch(":id")
@@ -86,7 +88,7 @@ export class ProfessorsController {
       +id,
       updateProfessorDto,
     );
-    return professor.toDto();
+    return this.professorsService.mapProfessorToProfessorDto(professor);
   }
 
   @Delete(":id")
@@ -96,6 +98,6 @@ export class ProfessorsController {
   })
   async remove(@Param("id") id: string): Promise<ProfessorDto> {
     const professor = await this.professorsService.remove(+id);
-    return professor.toDto();
+    return this.professorsService.mapProfessorToProfessorDto(professor);
   }
 }

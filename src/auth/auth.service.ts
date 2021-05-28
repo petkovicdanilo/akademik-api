@@ -1,108 +1,75 @@
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-} from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { ProfessorsService } from "src/users/professors/professors.service";
-import { StudentsService } from "src/users/students/students.service";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
 import * as bcrypt from "bcrypt";
 import { MailService } from "src/mail/mail.service";
 import { ResetPasswordDto } from "./dto/reset-password.dto";
-import { UsersService } from "src/users/users.service";
-import { UserWithType } from "src/users/entities/user-with-type.entity";
 import { ResetPasswordTokenPayload } from "./dto/jwt/reset-password-token-payload.dto";
 import { AccessTokenPayload } from "./dto/jwt/access-token-payload.dto";
+import { ProfilesService } from "src/users/profiles/profiles.service";
+import { Profile } from "src/users/profiles/entities/profile.entity";
+import { UsersService } from "src/users/users.service";
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly studentsService: StudentsService,
-    private readonly professorsService: ProfessorsService,
+    private readonly profilesService: ProfilesService,
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
     private readonly mailService: MailService,
   ) {}
 
   async login(loginDto: LoginDto) {
-    const user = await this.usersService.findUserByEmail(loginDto.email);
+    const profile = await this.profilesService.findByEmail(loginDto.email);
 
-    if (!user) {
+    if (!profile) {
       throw new BadRequestException("Wrong username or password");
     }
 
     const hashedPassword = await this.hashPassword(
       loginDto.password,
-      user.salt,
+      profile.salt,
     );
-    if (user.password != hashedPassword) {
+    if (profile.password != hashedPassword) {
       throw new BadRequestException("Wrong username or password");
     }
 
-    const payload = new AccessTokenPayload(user.id, user.type);
+    const payload = new AccessTokenPayload(profile.id, profile.type);
     return this.jwtService.sign({ ...payload });
   }
 
-  async register(registerDto: RegisterDto): Promise<UserWithType> {
+  async register(registerDto: RegisterDto): Promise<Profile> {
     registerDto.salt = await bcrypt.genSalt();
     registerDto.password = await this.hashPassword(
       registerDto.password,
       registerDto.salt,
     );
 
-    switch (registerDto.type) {
-      case "student":
-        const student = await this.studentsService.create(registerDto);
-        return new UserWithType("student", student);
-      case "professor":
-        const professor = await this.professorsService.create(registerDto);
-        return new UserWithType("professor", professor);
-      default:
-        throw new InternalServerErrorException("Internal server error");
-    }
+    return this.usersService.create(registerDto);
   }
 
   async forgotPassword(email: string) {
-    const user = await this.usersService.findUserByEmail(email);
+    const profile = await this.profilesService.findByEmail(email);
 
-    const payload = new ResetPasswordTokenPayload(user.id, user.type);
+    const payload = new ResetPasswordTokenPayload(profile.id, profile.type);
     const token = await this.jwtService.signAsync({ ...payload });
 
-    switch (user.type) {
-      case "student":
-        this.studentsService.setPasswordResetToken(user.id, token);
-        break;
-      case "professor":
-        this.professorsService.setPasswordResetToken(user.id, token);
-        break;
-      default:
-        throw new InternalServerErrorException("Internal server error");
-    }
+    await this.profilesService.setPasswordResetToken(profile.id, token);
 
-    return this.mailService.sendResetPasswordEmail(user, token);
+    return this.mailService.sendResetPasswordEmail(profile, token);
   }
 
   hashPassword(password: string, salt: string) {
     return bcrypt.hash(password, salt);
   }
 
-  async resetPassword(resetPasswordDto: ResetPasswordDto, user: UserWithType) {
+  async resetPassword(resetPasswordDto: ResetPasswordDto, profile: Profile) {
     const password = await this.hashPassword(
       resetPasswordDto.password,
-      user.salt,
+      profile.salt,
     );
 
-    switch (user.type) {
-      case "student":
-        await this.studentsService.resetPassword(user.id, password);
-        break;
-      case "professor":
-        await this.professorsService.resetPassword(user.id, password);
-        break;
-      default:
-        throw new BadRequestException();
-    }
+    await this.profilesService.resetPassword(profile.id, password);
   }
 }

@@ -7,6 +7,8 @@ import {
 } from "nestjs-typeorm-paginate";
 import { RegisterDto } from "src/auth/dto/register.dto";
 import { Repository } from "typeorm";
+import { ProfilesService } from "../profiles/profiles.service";
+import { StudentDto } from "./dto/student.dto";
 import { UpdateStudentDto } from "./dto/update-student.dto";
 import { Student } from "./entities/student.entity";
 
@@ -15,10 +17,13 @@ export class StudentsService {
   constructor(
     @InjectRepository(Student)
     private readonly studentsRepository: Repository<Student>,
+    private readonly profilesService: ProfilesService,
   ) {}
 
-  async create(student: RegisterDto): Promise<Student> {
-    return this.studentsRepository.save(student);
+  create(studentDto: RegisterDto): Promise<Student> {
+    return this.studentsRepository.save({
+      profile: studentDto,
+    });
   }
 
   findAll(options: IPaginationOptions): Promise<Pagination<Student>> {
@@ -35,49 +40,30 @@ export class StudentsService {
     return student;
   }
 
-  async findByEmail(email: string): Promise<Student> {
-    const students = await this.studentsRepository.find({
-      where: {
-        email: email,
-      },
-    });
-
-    return students[0];
-  }
-
   async update(
     id: number,
     updateStudentDto: UpdateStudentDto,
   ): Promise<Student> {
-    const updateResult = await this.studentsRepository.update(
-      id,
-      updateStudentDto,
-    );
-
-    if (updateResult.affected == 0) {
-      throw new NotFoundException("Student not found");
-    }
+    await this.profilesService.update(id, updateStudentDto);
 
     return this.findOne(id);
   }
 
   async remove(id: number): Promise<Student> {
     const student = await this.findOne(id);
-    await this.studentsRepository.delete(id);
+
+    await this.profilesService.remove(id);
 
     return student;
   }
 
-  setPasswordResetToken(id: number, token: string) {
-    return this.studentsRepository.update(id, {
-      passwordResetToken: token,
-    });
-  }
-
-  resetPassword(id: number, password: string) {
-    return this.studentsRepository.update(id, {
-      password,
-      passwordResetToken: null,
-    });
+  mapStudentToStudentDto(student: Student): StudentDto {
+    return {
+      id: student.profile.id,
+      dateOfBirth: student.profile.dateOfBirth,
+      email: student.profile.email,
+      firstName: student.profile.firstName,
+      lastName: student.profile.lastName,
+    };
   }
 }

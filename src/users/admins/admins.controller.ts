@@ -16,15 +16,15 @@ import { AdminsPaginatedDto } from "src/pagination/admin.dto";
 import { PaginationParams } from "src/pagination/pagination-params.dto";
 import { UtilService } from "src/util/util.service";
 import { CreateUserDto } from "../dto/create-user.dto";
-import { AdminService } from "./admin.service";
+import { AdminsService } from "./admins.service";
 import { AdminDto } from "./dto/admin.dto";
 import { UpdateAdminDto } from "./dto/update-admin.dto";
 
-@Controller("admin")
-@ApiTags("admin")
-export class AdminController {
+@Controller("admins")
+@ApiTags("admins")
+export class AdminsController {
   constructor(
-    private readonly adminService: AdminService,
+    private readonly adminsService: AdminsService,
     private readonly utilService: UtilService,
   ) {}
 
@@ -52,7 +52,7 @@ export class AdminController {
 
     const route = this.utilService.getAppRoute(request.path);
 
-    const adminsPaginated = await this.adminService.findAll({
+    const adminsPaginated = await this.adminsService.findAll({
       page,
       limit,
       route,
@@ -60,7 +60,7 @@ export class AdminController {
 
     return {
       items: adminsPaginated.items.map((student) =>
-        this.adminService.mapAdminToAdminDto(student),
+        this.adminsService.mapAdminToAdminDto(student),
       ),
       meta: adminsPaginated.meta,
       links: adminsPaginated.links,
@@ -73,14 +73,14 @@ export class AdminController {
     type: AdminDto,
   })
   async findOne(@Param("id") id: string): Promise<AdminDto> {
-    const admin = await this.adminService.findOne(+id);
-    return this.adminService.mapAdminToAdminDto(admin);
+    const admin = await this.adminsService.findOne(+id);
+    return this.adminsService.mapAdminToAdminDto(admin);
   }
 
   @Post()
   async create(@Body() createAdminDto: CreateUserDto) {
-    const admin = await this.adminService.create(createAdminDto);
-    return this.adminService.mapAdminToAdminDto(admin);
+    const admin = await this.adminsService.create(createAdminDto);
+    return this.adminsService.mapAdminToAdminDto(admin);
   }
 
   @Patch(":id")
@@ -92,8 +92,8 @@ export class AdminController {
     @Param("id") id: string,
     @Body() updateAdminDto: UpdateAdminDto,
   ): Promise<AdminDto> {
-    const admin = await this.adminService.update(+id, updateAdminDto);
-    return this.adminService.mapAdminToAdminDto(admin);
+    const admin = await this.adminsService.update(+id, updateAdminDto);
+    return this.adminsService.mapAdminToAdminDto(admin);
   }
 
   @Delete(":id")
@@ -102,7 +102,7 @@ export class AdminController {
     type: AdminDto,
   })
   async remove(@Param("id") id: string): Promise<AdminDto> {
-    const admin = await this.adminService.remove(+id);
-    return this.adminService.mapAdminToAdminDto(admin);
+    const admin = await this.adminsService.remove(+id);
+    return this.adminsService.mapAdminToAdminDto(admin);
   }
 }

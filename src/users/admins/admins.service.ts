@@ -11,14 +11,14 @@ import { ProfilesService } from "../profiles/profiles.service";
 import { ProfileType } from "../profiles/types";
 import { UpdateStudentDto } from "../students/dto/update-student.dto";
 import { AdminDto } from "./dto/admin.dto";
-import { Admin } from "./entity/admin.entity";
+import { Admin } from "./entities/admin.entity";
 import * as bcrypt from "bcrypt";
 
 @Injectable()
-export class AdminService {
+export class AdminsService {
   constructor(
     @InjectRepository(Admin)
-    private readonly adminRepostiory: Repository<Admin>,
+    private readonly adminsRepostiory: Repository<Admin>,
     private readonly profilesService: ProfilesService,
   ) {}
 
@@ -26,7 +26,7 @@ export class AdminService {
     const salt = await bcrypt.genSalt();
     adminDto.password = await bcrypt.hash(adminDto.password, salt);
 
-    return this.adminRepostiory.save({
+    return this.adminsRepostiory.save({
       profile: {
         type: ProfileType.Admin,
         salt,
@@ -36,11 +36,11 @@ export class AdminService {
   }
 
   findAll(options: IPaginationOptions): Promise<Pagination<Admin>> {
-    return paginate<Admin>(this.adminRepostiory, options);
+    return paginate<Admin>(this.adminsRepostiory, options);
   }
 
   async findOne(id: number): Promise<Admin> {
-    const admin = await this.adminRepostiory.findOne(id);
+    const admin = await this.adminsRepostiory.findOne(id);
 
     if (!admin) {
       throw new NotFoundException("Admin not found");

@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { AdminDto } from "src/users/admin/dto/admin.dto";
+import { AdminDto } from "src/users/admins/dto/admin.dto";
 import { PaginatedDto } from "./pagination";
 
 export class AdminDtoList {

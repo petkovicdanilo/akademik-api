@@ -18,7 +18,7 @@ export class MailService {
       context: {
         profile,
         token,
-        url: this.utilService.getFrontendResetPassewordUrl(),
+        url: this.utilService.getFrontendResetPasswordUrl(),
       },
     });
   }

@@ -14,7 +14,7 @@ export class UtilService {
     return this.configService.get<string>("FRONTEND_URL");
   }
 
-  getFrontendResetPassewordUrl() {
-    return new URL("/reset-password", this.getFrontendUrl()).toString();
+  getFrontendResetPasswordUrl() {
+    return new URL("/auth/reset-password", this.getFrontendUrl()).toString();
   }
 }

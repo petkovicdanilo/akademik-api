@@ -5,12 +5,14 @@ import {
   paginate,
   Pagination,
 } from "nestjs-typeorm-paginate";
-import { RegisterDto } from "src/auth/dto/register.dto";
 import { Repository } from "typeorm";
+import { CreateUserDto } from "../dto/create-user.dto";
 import { ProfilesService } from "../profiles/profiles.service";
+import { ProfileType } from "../profiles/types";
 import { StudentDto } from "./dto/student.dto";
 import { UpdateStudentDto } from "./dto/update-student.dto";
 import { Student } from "./entities/student.entity";
+import * as bcrypt from "bcrypt";
 
 @Injectable()
 export class StudentsService {
@@ -20,9 +22,16 @@ export class StudentsService {
     private readonly profilesService: ProfilesService,
   ) {}
 
-  create(studentDto: RegisterDto): Promise<Student> {
+  async create(studentDto: CreateUserDto): Promise<Student> {
+    const salt = await bcrypt.genSalt();
+    studentDto.password = await bcrypt.hash(studentDto.password, salt);
+
     return this.studentsRepository.save({
-      profile: studentDto,
+      profile: {
+        type: ProfileType.Student,
+        salt,
+        ...studentDto,
+      },
     });
   }
 

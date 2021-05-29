@@ -1,28 +1,8 @@
-import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from "@nestjs/swagger";
+import { CreateUserDto } from "src/users/dto/create-user.dto";
 import { ProfileType } from "src/users/profiles/types";
 
-export class RegisterDto {
-  @ApiProperty()
-  firstName: string;
-
-  @ApiProperty()
-  lastName: string;
-
-  @ApiProperty()
-  email: string;
-
-  @ApiProperty()
-  password: string;
-
-  @ApiHideProperty()
-  salt: string;
-
-  @ApiProperty({
-    type: () => String,
-    format: "date",
-  })
-  dateOfBirth: Date;
-
+export class RegisterDto extends CreateUserDto {
   @ApiProperty({ enum: ["student", "professor"] })
   type: ProfileType;
 }

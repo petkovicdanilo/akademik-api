@@ -4,6 +4,7 @@ import { Repository } from "typeorm";
 import { UpdateUserDto } from "../dto/update-user.dto";
 import { ProfileDto } from "./dto/profile.dto";
 import { Profile } from "./entities/profile.entity";
+import * as bcrypt from "bcrypt";
 
 @Injectable()
 export class ProfilesService {
@@ -56,8 +57,10 @@ export class ProfilesService {
     });
   }
 
-  resetPassword(id: number, password: string) {
-    return this.profilesRepository.update(id, {
+  async resetPassword(profile: Profile, password: string) {
+    password = await bcrypt.hash(password, profile.salt);
+
+    return this.profilesRepository.update(profile.id, {
       password,
       passwordResetToken: null,
     });

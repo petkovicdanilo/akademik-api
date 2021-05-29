@@ -3,7 +3,6 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { UpdateProfessorDto } from "./dto/update-professor.dto";
 import { Professor } from "./entities/professor.entity";
-import { RegisterDto } from "src/auth/dto/register.dto";
 import {
   IPaginationOptions,
   paginate,
@@ -11,6 +10,9 @@ import {
 } from "nestjs-typeorm-paginate";
 import { ProfessorDto } from "./dto/professor.dto";
 import { ProfilesService } from "../profiles/profiles.service";
+import { CreateUserDto } from "../dto/create-user.dto";
+import { ProfileType } from "../profiles/types";
+import * as bcrypt from "bcrypt";
 
 @Injectable()
 export class ProfessorsService {
@@ -20,9 +22,16 @@ export class ProfessorsService {
     private readonly profilesService: ProfilesService,
   ) {}
 
-  create(professorDto: RegisterDto): Promise<Professor> {
+  async create(professorDto: CreateUserDto): Promise<Professor> {
+    const salt = await bcrypt.genSalt();
+    professorDto.password = await bcrypt.hash(professorDto.password, salt);
+
     return this.professorsRepository.save({
-      profile: professorDto,
+      profile: {
+        type: ProfileType.Professor,
+        salt,
+        ...professorDto,
+      },
     });
   }
 

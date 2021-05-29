@@ -40,12 +40,6 @@ export class AuthService {
   }
 
   async register(registerDto: RegisterDto): Promise<Profile> {
-    registerDto.salt = await bcrypt.genSalt();
-    registerDto.password = await this.hashPassword(
-      registerDto.password,
-      registerDto.salt,
-    );
-
     return this.usersService.create(registerDto);
   }
 
@@ -64,12 +58,10 @@ export class AuthService {
     return bcrypt.hash(password, salt);
   }
 
-  async resetPassword(resetPasswordDto: ResetPasswordDto, profile: Profile) {
-    const password = await this.hashPassword(
-      resetPasswordDto.password,
-      profile.salt,
-    );
-
-    await this.profilesService.resetPassword(profile.id, password);
+  async resetPassword(
+    resetPasswordDto: ResetPasswordDto,
+    profile: Profile,
+  ): Promise<void> {
+    this.profilesService.resetPassword(profile, resetPasswordDto.password);
   }
 }

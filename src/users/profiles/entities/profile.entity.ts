@@ -28,7 +28,9 @@ export class Profile {
   @Column()
   salt: string;
 
-  @Column()
+  @Column({
+    type: "date",
+  })
   dateOfBirth: Date;
 
   @Column({

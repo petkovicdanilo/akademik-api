@@ -17,7 +17,10 @@ export class RegisterDto {
   @ApiHideProperty()
   salt: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    type: () => String,
+    format: "date",
+  })
   dateOfBirth: Date;
 
   @ApiProperty({ enum: ["student", "professor"] })

@@ -1,3 +1,5 @@
+import { ApiProperty } from "@nestjs/swagger";
+
 export abstract class AbstractUserDto {
   id: number;
 
@@ -7,5 +9,9 @@ export abstract class AbstractUserDto {
 
   email: string;
 
+  @ApiProperty({
+    type: () => String,
+    format: "date",
+  })
   dateOfBirth: Date;
 }

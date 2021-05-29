@@ -10,6 +10,10 @@ export abstract class UpdateUserDto {
   @ApiProperty({ required: false })
   email: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({
+    required: false,
+    type: () => String,
+    format: "date",
+  })
   dateOfBirth: Date;
 }

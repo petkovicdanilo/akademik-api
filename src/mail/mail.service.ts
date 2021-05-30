@@ -11,6 +11,11 @@ export class MailService {
   ) {}
 
   async sendResetPasswordEmail(profile: Profile, token: string) {
+    const url = encodeURI(
+      this.utilService.getFrontendResetPasswordUrl() +
+        `?token=${token}&name=${profile.firstName} ${profile.lastName}`,
+    );
+
     await this.mailerService.sendMail({
       to: `${profile.firstName} ${profile.lastName} <${profile.email}>`,
       subject: "Reset password",
@@ -18,7 +23,7 @@ export class MailService {
       context: {
         profile,
         token,
-        url: this.utilService.getFrontendResetPasswordUrl(),
+        url,
       },
     });
   }

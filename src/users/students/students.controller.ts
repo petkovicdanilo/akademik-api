@@ -7,6 +7,7 @@ import {
   Delete,
   Query,
   Req,
+  Post,
 } from "@nestjs/common";
 import { StudentsService } from "./students.service";
 import { UpdateStudentDto } from "./dto/update-student.dto";
@@ -17,6 +18,7 @@ import { StudentDto } from "./dto/student.dto";
 import { Pagination } from "nestjs-typeorm-paginate";
 import { PaginationParams } from "src/pagination/pagination-params.dto";
 import { UtilService } from "src/util/util.service";
+import { StudentSpecificDto } from "./dto/student-specific.dto";
 
 @Controller("students")
 @ApiTags("students")
@@ -72,6 +74,23 @@ export class StudentsController {
   })
   async findOne(@Param("id") id: number): Promise<StudentDto> {
     const student = await this.studentsService.findOne(+id);
+    return this.studentsService.mapStudentToStudentDto(student);
+  }
+
+  @Post(":id")
+  @ApiResponse({
+    status: 200,
+    type: StudentDto,
+  })
+  async addStudentSpecificInfo(
+    @Param("id") id: number,
+    @Body() studentSpecificDto: StudentSpecificDto,
+  ) {
+    const student = await this.studentsService.addStudentSpecificInfo(
+      id,
+      studentSpecificDto,
+    );
+
     return this.studentsService.mapStudentToStudentDto(student);
   }
 

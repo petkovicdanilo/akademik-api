@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import {
   IPaginationOptions,
@@ -13,12 +17,16 @@ import { StudentDto } from "./dto/student.dto";
 import { UpdateStudentDto } from "./dto/update-student.dto";
 import { Student } from "./entities/student.entity";
 import * as bcrypt from "bcrypt";
+import { StudentSpecificDto } from "./dto/student-specific.dto";
+import { Profile } from "../profiles/entities/profile.entity";
 
 @Injectable()
 export class StudentsService {
   constructor(
     @InjectRepository(Student)
     private readonly studentsRepository: Repository<Student>,
+    @InjectRepository(Profile)
+    private readonly profilesRepository: Repository<Profile>,
     private readonly profilesService: ProfilesService,
   ) {}
 
@@ -40,13 +48,39 @@ export class StudentsService {
   }
 
   async findOne(id: number): Promise<Student> {
-    const student = await this.studentsRepository.findOne(id);
-
-    if (!student) {
+    const profile = await this.profilesRepository.findOne(id);
+    if (!profile || profile.type != ProfileType.Student) {
       throw new NotFoundException("Student not found");
     }
 
-    return student;
+    if (!profile.hasAdditionalInfo) {
+      throw new BadRequestException(
+        "Student has not filled in additional information",
+      );
+    }
+
+    return this.studentsRepository.findOne(id);
+  }
+
+  async addStudentSpecificInfo(
+    id: number,
+    studentSpecificDto: StudentSpecificDto,
+  ) {
+    const profile = await this.profilesService.findOne(id);
+
+    if (profile.hasAdditionalInfo) {
+      throw new BadRequestException(
+        "Student specific information already added. Please use patch method for further updates",
+      );
+    }
+
+    profile.hasAdditionalInfo = true;
+
+    await this.studentsRepository.save({
+      profile,
+    });
+
+    return this.findOne(id);
   }
 
   async update(

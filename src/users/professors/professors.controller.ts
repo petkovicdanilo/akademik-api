@@ -7,6 +7,7 @@ import {
   Delete,
   Req,
   Query,
+  Post,
 } from "@nestjs/common";
 import { ProfessorsService } from "./professors.service";
 import { UpdateProfessorDto } from "./dto/update-professor.dto";
@@ -17,6 +18,7 @@ import { Pagination } from "nestjs-typeorm-paginate";
 import { Request } from "express";
 import { PaginationParams } from "src/pagination/pagination-params.dto";
 import { UtilService } from "src/util/util.service";
+import { ProfessorSpecificDto } from "./dto/professor-specific.dto";
 
 @Controller("professors")
 @ApiTags("professors")
@@ -72,6 +74,23 @@ export class ProfessorsController {
   })
   async findOne(@Param("id") id: number): Promise<ProfessorDto> {
     const professor = await this.professorsService.findOne(+id);
+    return this.professorsService.mapProfessorToProfessorDto(professor);
+  }
+
+  @Post(":id")
+  @ApiResponse({
+    status: 200,
+    type: ProfessorDto,
+  })
+  async addProfessorSpecificInfo(
+    @Param("id") id: number,
+    @Body() professorSpecificDto: ProfessorSpecificDto,
+  ) {
+    const professor = await this.professorsService.addProfessorSpecificInfo(
+      id,
+      professorSpecificDto,
+    );
+
     return this.professorsService.mapProfessorToProfessorDto(professor);
   }
 

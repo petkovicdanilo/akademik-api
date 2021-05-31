@@ -5,6 +5,11 @@ import { UpdateUserDto } from "../dto/update-user.dto";
 import { ProfileDto } from "./dto/profile.dto";
 import { Profile } from "./entities/profile.entity";
 import * as bcrypt from "bcrypt";
+import {
+  IPaginationOptions,
+  Pagination,
+  paginate,
+} from "nestjs-typeorm-paginate";
 
 @Injectable()
 export class ProfilesService {
@@ -12,6 +17,10 @@ export class ProfilesService {
     @InjectRepository(Profile)
     private readonly profilesRepository: Repository<Profile>,
   ) {}
+
+  findAll(options: IPaginationOptions): Promise<Pagination<Profile>> {
+    return paginate<Profile>(this.profilesRepository, options);
+  }
 
   async findOne(id: number): Promise<Profile> {
     const profile = await this.profilesRepository.findOne(id);
@@ -46,7 +55,9 @@ export class ProfilesService {
 
   async remove(id: number): Promise<Profile> {
     const profile = await this.findOne(id);
+
     await this.profilesRepository.remove(profile);
+    profile.id = id as number;
 
     return profile;
   }

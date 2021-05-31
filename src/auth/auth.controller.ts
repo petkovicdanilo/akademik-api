@@ -7,16 +7,15 @@ import { ForgotPasswordDto } from "./dto/forgot-password.dto";
 import { LoginResponseDto } from "./dto/login-response.dto";
 import { ResetPasswordDto } from "./dto/reset-password.dto";
 import { JwtResetPasswordGuard } from "./guards/jwt-reset-password.guard";
-import { ProfileDto } from "src/users/profiles/dto/profile.dto";
-import { Profile } from "src/users/profiles/entities/profile.entity";
-import { ProfilesService } from "src/users/profiles/profiles.service";
+import { UnverifiedProfileDto } from "src/users/unverified-profiles/dto/unverified-profile.dto";
+import { UnverifiedProfilesService } from "src/users/unverified-profiles/unverified-profiles.service";
 
 @Controller()
 @ApiTags("auth")
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private readonly profilesService: ProfilesService,
+    private readonly unverifiedProfilesService: UnverifiedProfilesService,
   ) {}
 
   @Post("login")
@@ -33,11 +32,14 @@ export class AuthController {
   @Post("register")
   @ApiResponse({
     status: 201,
-    type: ProfileDto,
+    type: UnverifiedProfileDto,
   })
-  async register(@Body() registerDto: RegisterDto): Promise<ProfileDto> {
-    const profile: Profile = await this.authService.register(registerDto);
-    return this.profilesService.mapProfileToProfileDto(profile);
+  async register(
+    @Body() registerDto: RegisterDto,
+  ): Promise<UnverifiedProfileDto> {
+    const profile = await this.authService.register(registerDto);
+
+    return this.unverifiedProfilesService.mapToDto(profile);
   }
 
   @Post("forgot-password")

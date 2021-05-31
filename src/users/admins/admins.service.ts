@@ -30,6 +30,7 @@ export class AdminsService {
       profile: {
         type: ProfileType.Admin,
         salt,
+        hasAdditionalInfo: true,
         ...adminDto,
       },
     });

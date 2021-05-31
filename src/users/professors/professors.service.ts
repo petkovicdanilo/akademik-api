@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { UpdateProfessorDto } from "./dto/update-professor.dto";
@@ -13,12 +17,16 @@ import { ProfilesService } from "../profiles/profiles.service";
 import { CreateUserDto } from "../dto/create-user.dto";
 import { ProfileType } from "../profiles/types";
 import * as bcrypt from "bcrypt";
+import { ProfessorSpecificDto } from "./dto/professor-specific.dto";
+import { Profile } from "../profiles/entities/profile.entity";
 
 @Injectable()
 export class ProfessorsService {
   constructor(
     @InjectRepository(Professor)
     private readonly professorsRepository: Repository<Professor>,
+    @InjectRepository(Profile)
+    private readonly profilesRepository: Repository<Profile>,
     private readonly profilesService: ProfilesService,
   ) {}
 
@@ -40,13 +48,39 @@ export class ProfessorsService {
   }
 
   async findOne(id: number): Promise<Professor> {
-    const professor = await this.professorsRepository.findOne(id);
-
-    if (!professor) {
+    const profile = await this.profilesRepository.findOne(id);
+    if (!profile || profile.type != ProfileType.Professor) {
       throw new NotFoundException("Professor not found");
     }
 
-    return professor;
+    if (!profile.hasAdditionalInfo) {
+      throw new BadRequestException(
+        "Professor has not filled in additional information",
+      );
+    }
+
+    return this.professorsRepository.findOne(id);
+  }
+
+  async addProfessorSpecificInfo(
+    id: number,
+    professorSpecificDto: ProfessorSpecificDto,
+  ) {
+    const profile = await this.profilesService.findOne(id);
+
+    if (profile.hasAdditionalInfo) {
+      throw new BadRequestException(
+        "Professor specific information already added. Please use patch method for further updates",
+      );
+    }
+
+    profile.hasAdditionalInfo = true;
+
+    await this.professorsRepository.save({
+      profile,
+    });
+
+    return this.findOne(id);
   }
 
   async update(

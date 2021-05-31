@@ -9,6 +9,7 @@ import { ProfessorsModule } from "./users/professors/professors.module";
 import { MailModule } from "./mail/mail.module";
 import { UtilModule } from "./util/util.module";
 import { AdminsModule } from "./users/admins/admins.module";
+import { DepartmentsModule } from "./departments/departments.module";
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { AdminsModule } from "./users/admins/admins.module";
     MailModule,
     UtilModule,
     AdminsModule,
+    DepartmentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

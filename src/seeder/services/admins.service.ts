@@ -1,0 +1,38 @@
+import { Injectable } from "@nestjs/common";
+import * as faker from "faker";
+import { CreateUserDto } from "src/users/dto/create-user.dto";
+import { AdminsService } from "src/users/admins/admins.service";
+
+@Injectable()
+export class AdminsSeederService {
+  constructor(private readonly adminsService: AdminsService) {}
+
+  async seed() {
+    try {
+      await this.adminsService.create({
+        email: "admin@akademik.com",
+        firstName: "admin",
+        lastName: "admin",
+        dateOfBirth: new Date(),
+        password: "admin",
+      });
+
+      for (let i = 0; i < 5; i++) {
+        const admin = this.generateAdminDto();
+        await this.adminsService.create(admin);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  private generateAdminDto(): CreateUserDto {
+    return {
+      firstName: faker.name.firstName(),
+      lastName: faker.name.lastName(),
+      dateOfBirth: faker.date.past(20),
+      email: faker.internet.email(),
+      password: "password",
+    };
+  }
+}

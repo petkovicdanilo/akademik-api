@@ -20,8 +20,8 @@ import { ProfilesService } from "../profiles/profiles.service";
 import { UnverifiedProfileDto } from "./dto/unverified-profile.dto";
 import { UnverifiedProfilesService } from "./unverified-profiles.service";
 
-@Controller("unverified")
-@ApiTags("unverified users")
+@Controller("users/unverified")
+@ApiTags("users")
 @UseGuards(AdminGuard)
 @ApiBearerAuth()
 export class UnverifiedProfilesController {

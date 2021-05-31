@@ -20,7 +20,7 @@ import { PaginationParams } from "src/pagination/pagination-params.dto";
 import { UtilService } from "src/util/util.service";
 import { StudentSpecificDto } from "./dto/student-specific.dto";
 
-@Controller("students")
+@Controller("users/students")
 @ApiTags("students")
 export class StudentsController {
   constructor(

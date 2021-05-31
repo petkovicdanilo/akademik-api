@@ -20,7 +20,7 @@ import { AdminsService } from "./admins.service";
 import { AdminDto } from "./dto/admin.dto";
 import { UpdateAdminDto } from "./dto/update-admin.dto";
 
-@Controller("admins")
+@Controller("users/admins")
 @ApiTags("admins")
 // @UseGuards(AdminGuard)
 // @ApiBearerAuth()

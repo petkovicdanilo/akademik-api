@@ -8,12 +8,10 @@ import {
   Post,
   Query,
   Req,
-  UseGuards,
 } from "@nestjs/common";
-import { ApiBearerAuth, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { Pagination } from "nestjs-typeorm-paginate";
-import { AdminGuard } from "src/auth/guards/admin.guard";
 import { AdminsPaginatedDto } from "src/pagination/admin.dto";
 import { PaginationParams } from "src/pagination/pagination-params.dto";
 import { UtilService } from "src/util/util.service";
@@ -24,8 +22,8 @@ import { UpdateAdminDto } from "./dto/update-admin.dto";
 
 @Controller("admins")
 @ApiTags("admins")
-@UseGuards(AdminGuard)
-@ApiBearerAuth()
+// @UseGuards(AdminGuard)
+// @ApiBearerAuth()
 export class AdminsController {
   constructor(
     private readonly adminsService: AdminsService,

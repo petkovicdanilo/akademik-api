@@ -30,19 +30,6 @@ export class ProfessorsService {
     private readonly profilesService: ProfilesService,
   ) {}
 
-  async create(professorDto: CreateUserDto): Promise<Professor> {
-    const salt = await bcrypt.genSalt();
-    professorDto.password = await bcrypt.hash(professorDto.password, salt);
-
-    return this.professorsRepository.save({
-      profile: {
-        type: ProfileType.Professor,
-        salt,
-        ...professorDto,
-      },
-    });
-  }
-
   findAll(options: IPaginationOptions): Promise<Pagination<Professor>> {
     return paginate<Professor>(this.professorsRepository, options);
   }

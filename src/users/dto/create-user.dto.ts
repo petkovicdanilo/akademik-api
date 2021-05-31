@@ -14,7 +14,7 @@ export class CreateUserDto {
   password: string;
 
   @ApiHideProperty()
-  salt: string;
+  salt?: string;
 
   @ApiProperty({
     type: () => String,

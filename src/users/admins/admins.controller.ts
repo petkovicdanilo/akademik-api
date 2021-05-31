@@ -76,7 +76,7 @@ export class AdminsController {
     status: 200,
     type: AdminDto,
   })
-  async findOne(@Param("id") id: string): Promise<AdminDto> {
+  async findOne(@Param("id") id: number): Promise<AdminDto> {
     const admin = await this.adminsService.findOne(+id);
     return this.adminsService.mapAdminToAdminDto(admin);
   }
@@ -93,7 +93,7 @@ export class AdminsController {
     type: AdminDto,
   })
   async update(
-    @Param("id") id: string,
+    @Param("id") id: number,
     @Body() updateAdminDto: UpdateAdminDto,
   ): Promise<AdminDto> {
     const admin = await this.adminsService.update(+id, updateAdminDto);
@@ -105,7 +105,7 @@ export class AdminsController {
     status: 200,
     type: AdminDto,
   })
-  async remove(@Param("id") id: string): Promise<AdminDto> {
+  async remove(@Param("id") id: number): Promise<AdminDto> {
     const admin = await this.adminsService.remove(+id);
     return this.adminsService.mapAdminToAdminDto(admin);
   }

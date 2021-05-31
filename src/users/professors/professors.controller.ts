@@ -70,7 +70,7 @@ export class ProfessorsController {
     status: 200,
     type: ProfessorDto,
   })
-  async findOne(@Param("id") id: string): Promise<ProfessorDto> {
+  async findOne(@Param("id") id: number): Promise<ProfessorDto> {
     const professor = await this.professorsService.findOne(+id);
     return this.professorsService.mapProfessorToProfessorDto(professor);
   }
@@ -81,7 +81,7 @@ export class ProfessorsController {
     type: ProfessorDto,
   })
   async update(
-    @Param("id") id: string,
+    @Param("id") id: number,
     @Body() updateProfessorDto: UpdateProfessorDto,
   ): Promise<ProfessorDto> {
     const professor = await this.professorsService.update(
@@ -96,7 +96,7 @@ export class ProfessorsController {
     status: 200,
     type: ProfessorDto,
   })
-  async remove(@Param("id") id: string): Promise<ProfessorDto> {
+  async remove(@Param("id") id: number): Promise<ProfessorDto> {
     const professor = await this.professorsService.remove(+id);
     return this.professorsService.mapProfessorToProfessorDto(professor);
   }

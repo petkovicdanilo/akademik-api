@@ -39,11 +39,14 @@ export class ProfessorsSeederService {
   }
 
   private generateProfessorDto(): RegisterDto {
+    const firstName = faker.name.firstName();
+    const lastName = faker.name.lastName();
+
     return {
-      firstName: faker.name.firstName(),
-      lastName: faker.name.lastName(),
+      firstName,
+      lastName,
       dateOfBirth: faker.date.past(20),
-      email: faker.internet.email(),
+      email: faker.internet.email(firstName, lastName),
       password: "password",
       type: ProfileType.Professor,
     };

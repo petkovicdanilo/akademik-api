@@ -9,10 +9,10 @@ import { Repository } from "typeorm";
 import { CreateUserDto } from "../dto/create-user.dto";
 import { ProfilesService } from "../profiles/profiles.service";
 import { ProfileType } from "../profiles/types";
-import { UpdateStudentDto } from "../students/dto/update-student.dto";
 import { AdminDto } from "./dto/admin.dto";
 import { Admin } from "./entities/admin.entity";
 import * as bcrypt from "bcrypt";
+import { UpdateAdminDto } from "./dto/update-admin.dto";
 
 @Injectable()
 export class AdminsService {
@@ -50,8 +50,8 @@ export class AdminsService {
     return admin;
   }
 
-  async update(id: number, updateStudentDto: UpdateStudentDto): Promise<Admin> {
-    await this.profilesService.update(id, updateStudentDto);
+  async update(id: number, updateAdmin: UpdateAdminDto): Promise<Admin> {
+    await this.profilesService.update(id, updateAdmin);
 
     return this.findOne(id);
   }

@@ -66,12 +66,11 @@ export class UnverifiedProfilesService {
 
   async verify(id: number): Promise<Profile> {
     const profile = await this.findOne(id);
-    // don't copy id
-    profile.id = null;
 
     const verifiedProfile = await this.profilesRepository.save({
       hasAdditionalInfo: false,
       ...profile,
+      id: null, // don't copy id
     });
 
     await this.unverifiedProfilesRepository.remove(profile);

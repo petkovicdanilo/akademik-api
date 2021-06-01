@@ -10,6 +10,7 @@ import { Seeder } from "./seeder";
 import { DepartmentsSeederService } from "./services/department.service";
 import { ProfessorsSeederService } from "./services/professors.service";
 import { StudentsSeederService } from "./services/students.service";
+import { Department } from "src/departments/entities/department.entity";
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { StudentsSeederService } from "./services/students.service";
     DbModule,
     UsersModule,
     DepartmentsModule,
-    TypeOrmModule.forFeature([Admin]),
+    TypeOrmModule.forFeature([Admin, Department]),
   ],
   providers: [
     Seeder,

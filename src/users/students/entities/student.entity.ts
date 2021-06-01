@@ -1,5 +1,12 @@
+import { Department } from "src/departments/entities/department.entity";
 import { Profile } from "src/users/profiles/entities/profile.entity";
-import { Entity, JoinColumn, OneToOne, PrimaryColumn } from "typeorm";
+import {
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToOne,
+  PrimaryColumn,
+} from "typeorm";
 
 @Entity()
 export class Student {
@@ -14,4 +21,9 @@ export class Student {
   })
   @JoinColumn({ name: "id" })
   profile: Profile;
+
+  @ManyToOne(() => Department, (department) => department.students, {
+    eager: true,
+  })
+  department: Department;
 }

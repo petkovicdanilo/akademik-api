@@ -10,15 +10,14 @@ import {
   Pagination,
 } from "nestjs-typeorm-paginate";
 import { Repository } from "typeorm";
-import { CreateUserDto } from "../dto/create-user.dto";
 import { ProfilesService } from "../profiles/profiles.service";
 import { ProfileType } from "../profiles/types";
 import { StudentDto } from "./dto/student.dto";
 import { UpdateStudentDto } from "./dto/update-student.dto";
 import { Student } from "./entities/student.entity";
-import * as bcrypt from "bcrypt";
 import { StudentSpecificDto } from "./dto/student-specific.dto";
 import { Profile } from "../profiles/entities/profile.entity";
+import { Department } from "src/departments/entities/department.entity";
 
 @Injectable()
 export class StudentsService {
@@ -28,6 +27,8 @@ export class StudentsService {
     @InjectRepository(Profile)
     private readonly profilesRepository: Repository<Profile>,
     private readonly profilesService: ProfilesService,
+    @InjectRepository(Department)
+    private readonly departmentsRepository: Repository<Department>,
   ) {}
 
   findAll(options: IPaginationOptions): Promise<Pagination<Student>> {
@@ -63,8 +64,17 @@ export class StudentsService {
 
     profile.hasAdditionalInfo = true;
 
+    const department = await this.departmentsRepository.findOne(
+      studentSpecificDto.departmentId,
+    );
+
+    if (!department) {
+      throw new NotFoundException("Department not found");
+    }
+
     await this.studentsRepository.save({
       profile,
+      department,
     });
 
     return this.findOne(id);
@@ -74,9 +84,29 @@ export class StudentsService {
     id: number,
     updateStudentDto: UpdateStudentDto,
   ): Promise<Student> {
-    await this.profilesService.update(id, updateStudentDto);
+    const student = await this.findOne(id);
 
-    return this.findOne(id);
+    if (updateStudentDto.departmentId) {
+      const department = await this.departmentsRepository.findOne(
+        updateStudentDto.departmentId,
+      );
+
+      if (!department) {
+        throw new NotFoundException("Department not found");
+      } else {
+        student.department = department;
+      }
+    }
+
+    student.profile.firstName =
+      updateStudentDto.firstName ?? student.profile.firstName;
+    student.profile.lastName =
+      updateStudentDto.lastName ?? student.profile.lastName;
+    student.profile.email = updateStudentDto.email ?? student.profile.email;
+    student.profile.dateOfBirth =
+      updateStudentDto.dateOfBirth ?? student.profile.dateOfBirth;
+
+    return await this.studentsRepository.save(student);
   }
 
   async remove(id: number): Promise<Student> {
@@ -94,6 +124,7 @@ export class StudentsService {
       email: student.profile.email,
       firstName: student.profile.firstName,
       lastName: student.profile.lastName,
+      departmentId: student.department.id,
     };
   }
 }

@@ -1,19 +1,28 @@
 import { Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
 import * as faker from "faker";
 import { RegisterDto } from "src/auth/dto/register.dto";
+import { Department } from "src/departments/entities/department.entity";
 import { ProfessorsService } from "src/users/professors/professors.service";
+import { ProfessorTitle } from "src/users/professors/types";
 import { ProfileType } from "src/users/profiles/types";
 import { UnverifiedProfilesService } from "src/users/unverified-profiles/unverified-profiles.service";
+import { Repository } from "typeorm";
 
 @Injectable()
 export class ProfessorsSeederService {
   constructor(
     private readonly unverifiedProfilesService: UnverifiedProfilesService,
     private readonly professorsService: ProfessorsService,
+    @InjectRepository(Department)
+    private readonly departmentsRepository: Repository<Department>,
   ) {}
 
   async seed() {
     try {
+      const departments = await this.departmentsRepository.find();
+      const departmentIds = departments.map((department) => department.id);
+
       for (let i = 0; i < 10; i++) {
         const studentDto = this.generateProfessorDto();
         const savedStudent = await this.unverifiedProfilesService.create(
@@ -26,10 +35,16 @@ export class ProfessorsSeederService {
           );
 
           if (Math.random() * 100 > 10) {
-            await this.professorsService.addProfessorSpecificInfo(
-              profile.id,
-              {},
+            const departmentId = faker.random.arrayElement(departmentIds);
+            const titleStr = faker.random.arrayElement(
+              Object.values(ProfessorTitle),
             );
+            const title = ProfessorTitle[titleStr];
+
+            await this.professorsService.addProfessorSpecificInfo(profile.id, {
+              departmentId,
+              title,
+            });
           }
         }
       }

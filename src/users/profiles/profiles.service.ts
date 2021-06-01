@@ -41,16 +41,14 @@ export class ProfilesService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto): Promise<Profile> {
-    const updateResult = await this.profilesRepository.update(
-      id,
-      updateUserDto,
-    );
+    const profile = await this.findOne(id);
 
-    if (updateResult.affected == 0) {
-      throw new NotFoundException("Profile not found");
-    }
+    profile.firstName = updateUserDto.firstName ?? profile.firstName;
+    profile.lastName = updateUserDto.lastName ?? profile.lastName;
+    profile.email = updateUserDto.email ?? profile.email;
+    profile.dateOfBirth = updateUserDto.dateOfBirth ?? profile.dateOfBirth;
 
-    return this.findOne(id);
+    return this.profilesRepository.save(profile);
   }
 
   async remove(id: number): Promise<Profile> {

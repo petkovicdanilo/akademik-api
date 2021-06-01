@@ -1,3 +1,5 @@
 import { AbstractUserDto } from "src/users/dto/abstract-user.dto";
 
-export class StudentDto extends AbstractUserDto {}
+export class StudentDto extends AbstractUserDto {
+  departmentId: number;
+}

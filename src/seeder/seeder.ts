@@ -16,10 +16,8 @@ export class Seeder {
   async seed() {
     await this.departmentsSeederService.seed();
 
-    await Promise.all([
-      this.adminsSeederService.seed(),
-      this.studentsSeederService.seed(),
-      this.professorsSeederService.seed(),
-    ]);
+    await this.adminsSeederService.seed();
+    await this.studentsSeederService.seed();
+    await this.professorsSeederService.seed();
   }
 }

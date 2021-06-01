@@ -1,1 +1,3 @@
-export class StudentSpecificDto {}
+export class StudentSpecificDto {
+  departmentId: number;
+}

@@ -14,11 +14,10 @@ import {
 } from "nestjs-typeorm-paginate";
 import { ProfessorDto } from "./dto/professor.dto";
 import { ProfilesService } from "../profiles/profiles.service";
-import { CreateUserDto } from "../dto/create-user.dto";
 import { ProfileType } from "../profiles/types";
-import * as bcrypt from "bcrypt";
 import { ProfessorSpecificDto } from "./dto/professor-specific.dto";
 import { Profile } from "../profiles/entities/profile.entity";
+import { Department } from "src/departments/entities/department.entity";
 
 @Injectable()
 export class ProfessorsService {
@@ -28,6 +27,8 @@ export class ProfessorsService {
     @InjectRepository(Profile)
     private readonly profilesRepository: Repository<Profile>,
     private readonly profilesService: ProfilesService,
+    @InjectRepository(Department)
+    private readonly departmentsRepository: Repository<Department>,
   ) {}
 
   findAll(options: IPaginationOptions): Promise<Pagination<Professor>> {
@@ -63,8 +64,18 @@ export class ProfessorsService {
 
     profile.hasAdditionalInfo = true;
 
+    const department = await this.departmentsRepository.findOne(
+      professorSpecificDto.departmentId,
+    );
+
+    if (!department) {
+      throw new NotFoundException("Department not found");
+    }
+
     await this.professorsRepository.save({
       profile,
+      department,
+      title: professorSpecificDto.title,
     });
 
     return this.findOne(id);
@@ -74,9 +85,30 @@ export class ProfessorsService {
     id: number,
     updateProfessorDto: UpdateProfessorDto,
   ): Promise<Professor> {
-    await this.profilesService.update(id, updateProfessorDto);
+    const professor = await this.findOne(id);
 
-    return this.findOne(id);
+    if (updateProfessorDto.departmentId) {
+      const department = await this.departmentsRepository.findOne(
+        updateProfessorDto.departmentId,
+      );
+
+      if (!department) {
+        throw new NotFoundException("Department not found");
+      } else {
+        professor.department = department;
+      }
+    }
+
+    professor.profile.firstName =
+      updateProfessorDto.firstName ?? professor.profile.firstName;
+    professor.profile.lastName =
+      updateProfessorDto.lastName ?? professor.profile.lastName;
+    professor.profile.email =
+      updateProfessorDto.email ?? professor.profile.email;
+    professor.profile.dateOfBirth =
+      updateProfessorDto.dateOfBirth ?? professor.profile.dateOfBirth;
+
+    return await this.professorsRepository.save(professor);
   }
 
   async remove(id: number): Promise<Professor> {
@@ -94,6 +126,8 @@ export class ProfessorsService {
       email: professor.profile.email,
       firstName: professor.profile.firstName,
       lastName: professor.profile.lastName,
+      departmentId: professor.department.id,
+      title: professor.title,
     };
   }
 }

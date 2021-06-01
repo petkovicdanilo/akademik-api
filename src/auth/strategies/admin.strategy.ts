@@ -1,6 +1,6 @@
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { PassportStrategy } from "@nestjs/passport";
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { ForbiddenException, Injectable } from "@nestjs/common";
 import { ProfilesService } from "src/users/profiles/profiles.service";
 
 @Injectable()
@@ -18,7 +18,7 @@ export class AdminStrategy extends PassportStrategy(Strategy, "admin") {
     const type = payload.user.type;
 
     if (type != "admin") {
-      throw new UnauthorizedException("User is not admin");
+      throw new ForbiddenException("User is not admin");
     }
 
     return { id, type };

@@ -1,6 +1,6 @@
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { PassportStrategy } from "@nestjs/passport";
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { ForbiddenException, Injectable } from "@nestjs/common";
 import { ProfilesService } from "src/users/profiles/profiles.service";
 
 @Injectable()
@@ -24,7 +24,7 @@ export class JwtResetPasswordStrategy extends PassportStrategy(
     const token = req.body.token;
 
     if (profile.passwordResetToken != token) {
-      throw new UnauthorizedException("Unauthorized");
+      throw new ForbiddenException("Invalid token");
     }
 
     return profile;

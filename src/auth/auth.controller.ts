@@ -1,14 +1,16 @@
 import { Body, Controller, Post, Request, UseGuards } from "@nestjs/common";
-import { ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { AuthService } from "./auth.service";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
 import { ForgotPasswordDto } from "./dto/forgot-password.dto";
-import { LoginResponseDto } from "./dto/login-response.dto";
+import { TokensDto } from "./dto/tokens.dto";
 import { ResetPasswordDto } from "./dto/reset-password.dto";
 import { JwtResetPasswordGuard } from "./guards/jwt-reset-password.guard";
 import { UnverifiedProfileDto } from "src/users/unverified-profiles/dto/unverified-profile.dto";
 import { UnverifiedProfilesService } from "src/users/unverified-profiles/unverified-profiles.service";
+import { RefreshTokenGuard } from "./guards/refresh-token.guard";
+import { TokensService } from "src/util/tokens.service";
 
 @Controller()
 @ApiTags("auth")
@@ -16,17 +18,26 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly unverifiedProfilesService: UnverifiedProfilesService,
+    private readonly tokensService: TokensService,
   ) {}
 
   @Post("login")
   @ApiResponse({
     status: 200,
-    type: LoginResponseDto,
+    type: TokensDto,
   })
   async login(@Body() loginDto: LoginDto) {
-    return {
-      token: await this.authService.login(loginDto),
-    };
+    return this.authService.login(loginDto);
+  }
+
+  @Post("logout")
+  @ApiBearerAuth()
+  @UseGuards(RefreshTokenGuard)
+  async logout(@Request() req: any) {
+    const refreshToken = this.tokensService.parseToken(
+      req.headers.authorization,
+    );
+    return this.authService.invalidateRefreshToken(refreshToken);
   }
 
   @Post("register")
@@ -40,6 +51,16 @@ export class AuthController {
     const profile = await this.authService.register(registerDto);
 
     return this.unverifiedProfilesService.mapToDto(profile);
+  }
+
+  @Post("refresh")
+  @UseGuards(RefreshTokenGuard)
+  @ApiBearerAuth()
+  refreshToken(@Request() req: any) {
+    const refreshToken = this.tokensService.parseToken(
+      req.headers.authorization,
+    );
+    return this.authService.refreshToken(req.user.id, refreshToken);
   }
 
   @Post("forgot-password")

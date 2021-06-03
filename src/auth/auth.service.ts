@@ -21,6 +21,7 @@ import { RefreshToken } from "./entities/refresh-token.entity";
 import { Repository } from "typeorm";
 import { TokensDto } from "./dto/tokens.dto";
 import { TokensService } from "../util/tokens.service";
+import { Cron, CronExpression } from "@nestjs/schedule";
 
 @Injectable()
 export class AuthService {
@@ -141,5 +142,17 @@ export class AuthService {
 
   async invalidateRefreshToken(refreshToken: string) {
     await this.refreshTokensRepository.delete(refreshToken);
+  }
+
+  @Cron(CronExpression.EVERY_DAY_AT_3AM)
+  private async clearExpiredRefreshTokens() {
+    await this.refreshTokensRepository
+      .createQueryBuilder()
+      .delete()
+      .from(RefreshToken)
+      .where("expirationTime < :expirationTime", {
+        expirationTime: new Date(),
+      })
+      .execute();
   }
 }

@@ -3,6 +3,7 @@ import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
 import * as helmet from "helmet";
 import { ValidationPipe } from "@nestjs/common";
+import { UtilService } from "./util/util.service";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -24,6 +25,9 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe());
 
-  await app.listen(process.env.PORT);
+  const utilService = app.get(UtilService);
+  const port = utilService.getPort();
+
+  await app.listen(port);
 }
 bootstrap();

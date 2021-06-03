@@ -17,4 +17,8 @@ export class UtilService {
   getFrontendResetPasswordUrl() {
     return new URL("/auth/reset-password", this.getFrontendUrl()).toString();
   }
+
+  getPort(): number {
+    return parseInt(this.configService.get("PORT"));
+  }
 }

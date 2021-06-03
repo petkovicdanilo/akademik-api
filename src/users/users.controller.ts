@@ -5,12 +5,14 @@ import {
   Param,
   Query,
   Req,
+  Request as NestJsRequest,
   UseGuards,
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { Pagination } from "nestjs-typeorm-paginate";
 import { AdminGuard } from "src/auth/guards/admin.guard";
+import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 import { PaginationParams } from "src/pagination/pagination-params.dto";
 import { ProfilesPaginatedDto } from "src/pagination/profile.dto";
 import { UtilService } from "src/util/util.service";
@@ -19,7 +21,6 @@ import { ProfilesService } from "./profiles/profiles.service";
 
 @Controller("users")
 @ApiTags("users")
-@UseGuards(AdminGuard)
 @ApiBearerAuth()
 export class UsersController {
   constructor(
@@ -28,6 +29,7 @@ export class UsersController {
   ) {}
 
   @Get()
+  @UseGuards(AdminGuard)
   @ApiQuery({
     name: "page",
     type: Number,
@@ -67,12 +69,21 @@ export class UsersController {
   }
 
   @Delete(":id")
+  @UseGuards(AdminGuard)
   @ApiResponse({
     status: 200,
     type: ProfileDto,
   })
   async remove(@Param("id") id: number) {
     const profile = await this.profilesService.remove(+id);
+
+    return this.profilesService.mapProfileToProfileDto(profile);
+  }
+
+  @Get("me")
+  @UseGuards(JwtAuthGuard)
+  async me(@NestJsRequest() req: any) {
+    const profile = await this.profilesService.findOne(req.user.id);
 
     return this.profilesService.mapProfileToProfileDto(profile);
   }

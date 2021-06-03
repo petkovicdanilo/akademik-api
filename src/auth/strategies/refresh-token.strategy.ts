@@ -1,10 +1,6 @@
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { PassportStrategy } from "@nestjs/passport";
-import {
-  ForbiddenException,
-  Injectable,
-  UnauthorizedException,
-} from "@nestjs/common";
+import { ForbiddenException, Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { InjectRepository } from "@nestjs/typeorm";
 import { RefreshToken } from "../entities/refresh-token.entity";
@@ -31,14 +27,16 @@ export class RefreshTokenStrategy extends PassportStrategy(
       secretOrKeyProvider: async (req, rawJwtToken, done) => {
         const payload: any = jwtService.decode(rawJwtToken);
 
-        if (!payload.user || !payload.user.id) {
-          throw new UnauthorizedException("Unauthorized");
+        if (!payload?.user?.id) {
+          done("Unauthorized", null);
+          return;
         }
 
         const profile = await profilesRepository.findOne(payload.user.id);
 
         if (!profile) {
-          throw new UnauthorizedException("Unauthorized");
+          done("Unauthorized", null);
+          return;
         }
 
         const secret: string = tokensService.getRefreshTokenSecret(

@@ -6,7 +6,6 @@ import {
 import { JwtService } from "@nestjs/jwt";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
-import * as bcrypt from "bcrypt";
 import { MailService } from "src/mail/mail.service";
 import { ResetPasswordDto } from "./dto/reset-password.dto";
 import { ResetPasswordTokenPayload } from "./dto/jwt/reset-password-token-payload.dto";
@@ -42,7 +41,7 @@ export class AuthService {
       throw new BadRequestException("Wrong username or password");
     }
 
-    const hashedPassword = await this.hashPassword(
+    const hashedPassword = await this.profilesService.hashPassword(
       loginDto.password,
       profile.salt,
     );
@@ -81,10 +80,6 @@ export class AuthService {
     await this.profilesService.setPasswordResetToken(profile.id, token);
 
     return this.mailService.sendResetPasswordEmail(profile, token);
-  }
-
-  hashPassword(password: string, salt: string) {
-    return bcrypt.hash(password, salt);
   }
 
   async resetPassword(

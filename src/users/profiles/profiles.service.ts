@@ -47,6 +47,9 @@ export class ProfilesService {
     profile.lastName = updateUserDto.lastName ?? profile.lastName;
     profile.email = updateUserDto.email ?? profile.email;
     profile.dateOfBirth = updateUserDto.dateOfBirth ?? profile.dateOfBirth;
+    profile.password = updateUserDto.password
+      ? await this.hashPassword(updateUserDto.password, profile.salt)
+      : profile.password;
 
     return this.profilesRepository.save(profile);
   }
@@ -73,6 +76,10 @@ export class ProfilesService {
       password,
       passwordResetToken: null,
     });
+  }
+
+  hashPassword(password: string, salt: string) {
+    return bcrypt.hash(password, salt);
   }
 
   mapProfileToProfileDto(user: Profile): ProfileDto {

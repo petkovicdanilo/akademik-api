@@ -107,6 +107,12 @@ export class ProfessorsService {
       updateProfessorDto.email ?? professor.profile.email;
     professor.profile.dateOfBirth =
       updateProfessorDto.dateOfBirth ?? professor.profile.dateOfBirth;
+    professor.profile.password = updateProfessorDto.password
+      ? await this.profilesService.hashPassword(
+          updateProfessorDto.password,
+          professor.profile.salt,
+        )
+      : professor.profile.password;
 
     return await this.professorsRepository.save(professor);
   }

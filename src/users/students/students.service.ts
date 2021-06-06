@@ -105,6 +105,12 @@ export class StudentsService {
     student.profile.email = updateStudentDto.email ?? student.profile.email;
     student.profile.dateOfBirth =
       updateStudentDto.dateOfBirth ?? student.profile.dateOfBirth;
+    student.profile.password = updateStudentDto.password
+      ? await this.profilesService.hashPassword(
+          updateStudentDto.password,
+          student.profile.salt,
+        )
+      : student.profile.password;
 
     return await this.studentsRepository.save(student);
   }

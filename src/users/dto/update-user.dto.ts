@@ -10,6 +10,9 @@ export abstract class UpdateUserDto {
   @ApiProperty({ required: false })
   email: string;
 
+  @ApiProperty({ required: false })
+  password: string;
+
   @ApiProperty({
     required: false,
     type: () => String,

@@ -61,7 +61,7 @@ export class ProfessorsSeederService {
       firstName,
       lastName,
       dateOfBirth: faker.date.past(20),
-      email: faker.internet.email(firstName, lastName),
+      email: faker.internet.email(firstName, lastName).toLowerCase(),
       password: "password",
       type: ProfileType.Professor,
     };

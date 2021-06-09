@@ -1,10 +1,5 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import {
-  IPaginationOptions,
-  Pagination,
-  paginate,
-} from "nestjs-typeorm-paginate";
 import { Repository } from "typeorm";
 import { CreateDepartmentDto } from "./dto/create-department.dto";
 import { DepartmentDto } from "./dto/department.dto";
@@ -22,8 +17,12 @@ export class DepartmentsService {
     return this.departmentsRepository.save(createDepartmentDto);
   }
 
-  findAll(options: IPaginationOptions): Promise<Pagination<Department>> {
-    return paginate<Department>(this.departmentsRepository, options);
+  findAll(): Promise<Department[]> {
+    return this.departmentsRepository.find({
+      order: {
+        id: "ASC",
+      },
+    });
   }
 
   async findOne(id: number): Promise<Department> {

@@ -1,9 +1,11 @@
 import { Department } from "src/departments/entities/department.entity";
+import { EnrolledSubject } from "src/subjects/entities/enrolled-subject.entity";
 import { Profile } from "src/users/profiles/entities/profile.entity";
 import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryColumn,
 } from "typeorm";
@@ -26,4 +28,10 @@ export class Student {
     eager: true,
   })
   department: Department;
+
+  @OneToMany(
+    () => EnrolledSubject,
+    (enrolledSubject) => enrolledSubject.student,
+  )
+  enrolledSubjects: EnrolledSubject[];
 }

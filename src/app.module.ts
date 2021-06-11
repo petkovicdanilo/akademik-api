@@ -9,6 +9,7 @@ import { AdminsModule } from "./users/admins/admins.module";
 import { DepartmentsModule } from "./departments/departments.module";
 import { DbModule } from "./db/db.module";
 import { ScheduleModule } from "@nestjs/schedule";
+import { SubjectsModule } from "./subjects/subjects.module";
 import { SchoolYearsModule } from "./school-years/school-years.module";
 
 @Module({
@@ -26,6 +27,7 @@ import { SchoolYearsModule } from "./school-years/school-years.module";
     AdminsModule,
     DepartmentsModule,
     ScheduleModule.forRoot(),
+    SubjectsModule,
     SchoolYearsModule,
   ],
 })

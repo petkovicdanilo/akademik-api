@@ -11,11 +11,17 @@ import { SubjectsService } from "./subjects.service";
 import { CreateSubjectDto } from "./dto/create-subject.dto";
 import { UpdateSubjectDto } from "./dto/update-subject.dto";
 import { ApiTags } from "@nestjs/swagger";
+import { UtilService } from "src/util/util.service";
+import { StudentsService } from "src/users/students/students.service";
 
 @Controller("subjects")
 @ApiTags("subjects")
 export class SubjectsController {
-  constructor(private readonly subjectsService: SubjectsService) {}
+  constructor(
+    private readonly subjectsService: SubjectsService,
+    private readonly utilService: UtilService,
+    private readonly studentsService: StudentsService,
+  ) {}
 
   @Post()
   async create(@Body() createSubjectDto: CreateSubjectDto) {
@@ -47,13 +53,4 @@ export class SubjectsController {
 
     return this.subjectsService.mapToDto(subject);
   }
-
-  // @Get("/:id/:schoolYear/students")
-  // @ApiTags("students")
-  // findStudents(
-  //   @Param("id") id: number,
-  //   @Param("schoolYear") schoolYear: string,
-  // ) {
-  //   return 1;
-  // }
 }

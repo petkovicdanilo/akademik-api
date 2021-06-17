@@ -49,6 +49,9 @@ export class Subject {
   @OneToMany(
     () => EnrolledSubject,
     (enrolledSubject) => enrolledSubject.subject,
+    {
+      cascade: true,
+    },
   )
   enrolledStudents: Promise<EnrolledSubject[]>;
 }

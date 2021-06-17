@@ -7,6 +7,7 @@ import { ProfilesModule } from "../profiles/profiles.module";
 import { UtilModule } from "src/util/util.module";
 import { Profile } from "../profiles/entities/profile.entity";
 import { Department } from "src/departments/entities/department.entity";
+import { StudentsOtherController } from "./students-other.controller";
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { Department } from "src/departments/entities/department.entity";
     UtilModule,
   ],
   exports: [StudentsService],
-  controllers: [StudentsController],
+  controllers: [StudentsController, StudentsOtherController],
   providers: [StudentsService],
 })
 export class StudentsModule {}

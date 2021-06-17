@@ -123,6 +123,22 @@ export class StudentsService {
     return student;
   }
 
+  findBySubjectSchoolYear(
+    subjectId: number,
+    schoolYearId: string,
+    options: IPaginationOptions,
+  ): Promise<Pagination<Student>> {
+    const queryBuilder = this.studentsRepository
+      .createQueryBuilder("student")
+      .leftJoin("student.enrolledSubjects", "enrolled")
+      .leftJoinAndSelect("student.profile", "profile")
+      .leftJoinAndSelect("student.department", "department")
+      .where("enrolled.subjectId = :subjectId", { subjectId })
+      .andWhere("enrolled.schoolYear = :schoolYearId", { schoolYearId });
+
+    return paginate<Student>(queryBuilder, options);
+  }
+
   mapStudentToStudentDto(student: Student): StudentDto {
     return {
       id: student.profile.id,

@@ -1,6 +1,7 @@
 import { SchoolYear } from "src/school-years/entities/school-year.entity";
 import { Student } from "src/users/students/entities/student.entity";
 import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
+import { Grade } from "../types";
 import { Subject } from "./subject.entity";
 
 @Entity()
@@ -26,5 +27,5 @@ export class EnrolledSubject {
   schoolYear: SchoolYear;
 
   @Column({ nullable: true })
-  grade?: number;
+  grade?: Grade;
 }

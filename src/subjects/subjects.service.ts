@@ -1,20 +1,38 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import {
+  IPaginationOptions,
+  paginate,
+  Pagination,
+} from "nestjs-typeorm-paginate";
 import { DepartmentsService } from "src/departments/departments.service";
+import { SchoolYearsService } from "src/school-years/school-years.service";
 import { ProfessorsService } from "src/users/professors/professors.service";
+import { StudentsService } from "src/users/students/students.service";
 import { Repository } from "typeorm";
 import { CreateSubjectDto } from "./dto/create-subject.dto";
+import { StudentsSubjectDto } from "./dto/students-subject.dto";
 import { SubjectDto } from "./dto/subject.dto";
 import { UpdateSubjectDto } from "./dto/update-subject.dto";
+import { EnrolledSubject } from "./entities/enrolled-subject.entity";
 import { Subject } from "./entities/subject.entity";
+import { Grade } from "./types";
 
 @Injectable()
 export class SubjectsService {
   constructor(
     @InjectRepository(Subject)
     private readonly subjectsRepository: Repository<Subject>,
+    @InjectRepository(EnrolledSubject)
+    private readonly enrolledSubjectsRepository: Repository<EnrolledSubject>,
     private readonly departmentsService: DepartmentsService,
     private readonly professorsService: ProfessorsService,
+    private readonly studentsService: StudentsService,
+    private readonly schoolYearsService: SchoolYearsService,
   ) {}
 
   async create(createSubjectDto: CreateSubjectDto): Promise<Subject> {
@@ -83,6 +101,103 @@ export class SubjectsService {
     return subject;
   }
 
+  async findByStudentSchoolYear(
+    studentId: number,
+    schoolYearId: string,
+  ): Promise<StudentsSubjectDto[]> {
+    const student = await this.studentsService.findOne(studentId);
+    const schoolYear = await this.schoolYearsService.findOne(schoolYearId);
+
+    const enrolledSubjects = await this.enrolledSubjectsRepository.find({
+      where: {
+        student,
+        schoolYear,
+      },
+      relations: ["subject"],
+    });
+
+    return enrolledSubjects.map((enrolledSubject) =>
+      this.mapToStudentsDto(enrolledSubject.subject, enrolledSubject.grade),
+    );
+  }
+
+  async addSubjectsToStudent(
+    subjectIds: number[],
+    studentId: number,
+    schoolYearId: string,
+  ) {
+    const student = await this.studentsService.findOne(studentId);
+
+    const schoolYear = await this.schoolYearsService.findOne(schoolYearId);
+
+    const subjects = await this.subjectsRepository
+      .createQueryBuilder("subject")
+      .where("subject.id IN (:...subjectIds)", { subjectIds })
+      .orderBy("subject.id")
+      .getMany();
+
+    const subjectsFromAnotherDepartment = subjects.filter(
+      (subject) => subject.departmentId != student.department.id,
+    );
+
+    if (subjectsFromAnotherDepartment.length > 0) {
+      throw new BadRequestException(
+        "Student can't enroll in subject from another department",
+      );
+    }
+
+    const alreadyPassedSubjects = await this.enrolledSubjectsRepository
+      .createQueryBuilder("enrolled")
+      .where("enrolled.subjectId IN (:...subjectIds)", { subjectIds })
+      .andWhere("enrolled.studentId = :studentId", { studentId })
+      .andWhere("enrolled.grade IS NOT NULL")
+      .getCount();
+
+    if (alreadyPassedSubjects > 0) {
+      throw new BadRequestException(
+        "Student can't enroll in already passed subjects",
+      );
+    }
+
+    const totalEctsPoints = subjects.reduce(
+      (accumulator, subject) => accumulator + subject.ectsPoints,
+      0,
+    );
+
+    if (totalEctsPoints < 60) {
+      throw new BadRequestException("Minumum of 60 ects points not satisfied");
+    }
+
+    const enrolledSubjects = subjects.map<EnrolledSubject>((subject) => {
+      return {
+        student,
+        subject,
+        schoolYear,
+      };
+    });
+
+    return this.enrolledSubjectsRepository.save(enrolledSubjects);
+  }
+
+  findByDepartment(
+    departmentId: number,
+    options: IPaginationOptions,
+  ): Promise<Pagination<Subject>> {
+    const queryBuilder = this.subjectsRepository
+      .createQueryBuilder("subject")
+      .where("subject.departmentId = :departmentId", { departmentId });
+
+    return paginate<Subject>(queryBuilder, options);
+  }
+
+  findByProfessor(professorId: number) {
+    return this.subjectsRepository.find({
+      where: {
+        professorId,
+      },
+    });
+  }
+
   mapToDto(subject: Subject): SubjectDto {
     return {
       id: subject.id,
@@ -92,6 +207,26 @@ export class SubjectsService {
       departmentId: subject.departmentId,
       professorId: subject.professorId,
       semester: subject.semester,
+    };
+  }
+
+  mapToStudentsDto(subject: Subject, grade?: Grade): StudentsSubjectDto {
+    return {
+      ...this.mapToDto(subject),
+      grade,
+    };
+  }
+
+  mapEnrolledToDto(enrolledSubject: EnrolledSubject): StudentsSubjectDto {
+    return {
+      id: enrolledSubject.subject.id,
+      name: enrolledSubject.subject.name,
+      compulsory: enrolledSubject.subject.compulsory,
+      ectsPoints: enrolledSubject.subject.ectsPoints,
+      departmentId: enrolledSubject.subject.departmentId,
+      professorId: enrolledSubject.subject.professorId,
+      semester: enrolledSubject.subject.semester,
+      grade: enrolledSubject.grade,
     };
   }
 }

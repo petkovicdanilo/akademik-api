@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, Post, Query, Req } from "@nestjs/common";
-import { ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiBody, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { PaginationParams } from "src/pagination/pagination-params.dto";
 import { StudentsPaginatedDto } from "src/pagination/student.dto";
@@ -23,6 +23,10 @@ export class SubjectsOtherController {
   }
 
   @Post("students/:id/:schoolYear/subjects")
+  @ApiBody({
+    isArray: true,
+    type: Number,
+  })
   async addSubjects(
     @Param("id") id: number,
     @Param("schoolYear") schoolYear: string,

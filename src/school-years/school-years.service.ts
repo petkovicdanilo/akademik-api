@@ -26,9 +26,8 @@ export class SchoolYearsService {
     }
 
     const startYear = startDate.getFullYear();
-    const endYear = endDate.getFullYear();
 
-    const id = `${startYear}-${endYear.toString().slice(2, 4)}`;
+    const id = this.schoolYearIdFromStartYear(startYear);
 
     const schoolYear: SchoolYear = {
       id,
@@ -91,6 +90,11 @@ export class SchoolYearsService {
 
   private idToFirstYear(id: string): number {
     return parseInt(id.slice(0, 4));
+  }
+
+  schoolYearIdFromStartYear(startYear: number) {
+    const endYear = startYear + 1;
+    return `${startYear}-${endYear.toString().slice(2, 4)}`;
   }
 
   mapToDto(schoolYear: SchoolYear): SchoolYearDto {

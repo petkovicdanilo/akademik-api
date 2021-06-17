@@ -11,6 +11,15 @@ import { DepartmentsSeederService } from "./services/department.service";
 import { ProfessorsSeederService } from "./services/professors.service";
 import { StudentsSeederService } from "./services/students.service";
 import { Department } from "src/departments/entities/department.entity";
+import { Professor } from "src/users/professors/entities/professor.entity";
+import { Subject } from "src/subjects/entities/subject.entity";
+import { Student } from "src/users/students/entities/student.entity";
+import { EnrolledSubject } from "src/subjects/entities/enrolled-subject.entity";
+import { SchoolYear } from "src/school-years/entities/school-year.entity";
+import { RefreshToken } from "src/auth/entities/refresh-token.entity";
+import { EnrolledSubjectsSeederService } from "./services/enrolled-subjects.service";
+import { SchoolYearsSeederService } from "./services/school-years.service";
+import { SchoolYearsModule } from "src/school-years/school-years.module";
 
 @Module({
   imports: [
@@ -21,7 +30,17 @@ import { Department } from "src/departments/entities/department.entity";
     DbModule,
     UsersModule,
     DepartmentsModule,
-    TypeOrmModule.forFeature([Admin, Department]),
+    TypeOrmModule.forFeature([
+      Admin,
+      Department,
+      Professor,
+      Subject,
+      Student,
+      EnrolledSubject,
+      SchoolYear,
+      RefreshToken,
+    ]),
+    SchoolYearsModule,
   ],
   providers: [
     Seeder,
@@ -29,6 +48,7 @@ import { Department } from "src/departments/entities/department.entity";
     StudentsSeederService,
     ProfessorsSeederService,
     DepartmentsSeederService,
+    SchoolYearsSeederService,
   ],
 })
 export class SeederModule {}

@@ -8,7 +8,10 @@ export class Department {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({
+    unique: true,
+    nullable: false,
+  })
   name: string;
 
   @OneToMany(() => Student, (student) => student.department)

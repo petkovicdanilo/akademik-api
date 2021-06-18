@@ -2,7 +2,7 @@ import { Body, Controller, Get, Param, Post, Query, Req } from "@nestjs/common";
 import { ApiBody, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { PaginationParams } from "src/pagination/pagination-params.dto";
-import { StudentsPaginatedDto } from "src/pagination/student.dto";
+import { SubjectsPaginatedDto } from "src/pagination/subject.dto";
 import { UtilService } from "src/util/util.service";
 import { SubjectsService } from "./subjects.service";
 
@@ -43,7 +43,7 @@ export class SubjectsOtherController {
     );
   }
 
-  @Get("departments/:id/subject")
+  @Get("departments/:id/subjects")
   @ApiQuery({
     name: "page",
     type: Number,
@@ -56,7 +56,7 @@ export class SubjectsOtherController {
   })
   @ApiResponse({
     status: 200,
-    type: StudentsPaginatedDto,
+    type: SubjectsPaginatedDto,
   })
   async findByDepartment(
     @Param("id") id: number,

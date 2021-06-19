@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { AdminsSeederService } from "./services/admins.service";
 import { DepartmentsSeederService } from "./services/department.service";
 import { EnrolledSubjectsSeederService } from "./services/enrolled-subjects.service";
+import { ExamPeriodsSeederService } from "./services/exam-periods.service";
 import { ProfessorsSeederService } from "./services/professors.service";
 import { SchoolYearsSeederService } from "./services/school-years.service";
 import { StudentsSeederService } from "./services/students.service";
@@ -17,10 +18,13 @@ export class Seeder {
     private readonly subjectsSeederService: SubjectsSeederService,
     private readonly enrolledSubjectsSeederService: EnrolledSubjectsSeederService,
     private readonly schoolYearsSeederService: SchoolYearsSeederService,
+    private readonly examPeriodsSeederService: ExamPeriodsSeederService,
   ) {}
 
   async seed() {
     await this.schoolYearsSeederService.seed();
+
+    await this.examPeriodsSeederService.seed();
 
     await this.departmentsSeederService.seed();
 

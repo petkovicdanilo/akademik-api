@@ -14,7 +14,13 @@ export class SchoolYearsSeederService {
 
   async seed() {
     try {
-      const currentYear = new Date().getFullYear();
+      const today = new Date();
+      let currentYear = today.getFullYear();
+
+      // if is not past october
+      if (today.getMonth() < 8) {
+        currentYear--;
+      }
 
       const schoolYears = [];
 

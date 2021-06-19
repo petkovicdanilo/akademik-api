@@ -11,17 +11,11 @@ import { SubjectsService } from "./subjects.service";
 import { CreateSubjectDto } from "./dto/create-subject.dto";
 import { UpdateSubjectDto } from "./dto/update-subject.dto";
 import { ApiTags } from "@nestjs/swagger";
-import { UtilService } from "src/util/util.service";
-import { StudentsService } from "src/users/students/students.service";
 
 @Controller("subjects")
 @ApiTags("subjects")
 export class SubjectsController {
-  constructor(
-    private readonly subjectsService: SubjectsService,
-    private readonly utilService: UtilService,
-    private readonly studentsService: StudentsService,
-  ) {}
+  constructor(private readonly subjectsService: SubjectsService) {}
 
   @Post()
   async create(@Body() createSubjectDto: CreateSubjectDto) {

@@ -1,18 +1,12 @@
-import { Body, Controller, Get, Param, Post, Query, Req } from "@nestjs/common";
-import { ApiBody, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { Request } from "express";
-import { PaginationParams } from "src/pagination/pagination-params.dto";
-import { SubjectsPaginatedDto } from "src/pagination/subject.dto";
-import { UtilService } from "src/util/util.service";
+import { Body, Controller, Get, Param, Post } from "@nestjs/common";
+import { ApiBody, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { SubjectDto } from "./dto/subject.dto";
 import { SubjectsService } from "./subjects.service";
 
 @Controller()
 @ApiTags("subjects")
 export class SubjectsOtherController {
-  constructor(
-    private readonly subjectsService: SubjectsService,
-    private readonly utilService: UtilService,
-  ) {}
+  constructor(private readonly subjectsService: SubjectsService) {}
 
   @Get("students/:id/:schoolYear/subjects")
   async findByStudentSchoolYear(
@@ -44,43 +38,14 @@ export class SubjectsOtherController {
   }
 
   @Get("departments/:id/subjects")
-  @ApiQuery({
-    name: "page",
-    type: Number,
-    required: false,
-  })
-  @ApiQuery({
-    name: "limit",
-    type: Number,
-    required: false,
-  })
   @ApiResponse({
     status: 200,
-    type: SubjectsPaginatedDto,
+    type: [SubjectDto],
   })
-  async findByDepartment(
-    @Param("id") id: number,
-    @Req() request: Request,
-    @Query() paginationParams: PaginationParams,
-  ) {
-    const page = paginationParams.page || 1;
-    const limit = paginationParams.limit || 10;
+  async findByDepartment(@Param("id") id: number) {
+    const subjects = await this.subjectsService.findByDepartment(id);
 
-    const route = this.utilService.getAppRoute(request.path);
-
-    const subjectsPaginated = await this.subjectsService.findByDepartment(id, {
-      page,
-      limit,
-      route,
-    });
-
-    return {
-      items: subjectsPaginated.items.map((subject) =>
-        this.subjectsService.mapToDto(subject),
-      ),
-      meta: subjectsPaginated.meta,
-      links: subjectsPaginated.links,
-    };
+    return subjects.map((subject) => this.subjectsService.mapToDto(subject));
   }
   @Get("professor/:id/subjects")
   async findByProfessor(@Param("id") id: number) {

@@ -4,11 +4,6 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import {
-  IPaginationOptions,
-  paginate,
-  Pagination,
-} from "nestjs-typeorm-paginate";
 import { DepartmentsService } from "src/departments/departments.service";
 import { SchoolYearsService } from "src/school-years/school-years.service";
 import { ProfessorsService } from "src/users/professors/professors.service";
@@ -179,15 +174,11 @@ export class SubjectsService {
     return this.enrolledSubjectsRepository.save(enrolledSubjects);
   }
 
-  findByDepartment(
-    departmentId: number,
-    options: IPaginationOptions,
-  ): Promise<Pagination<Subject>> {
-    const queryBuilder = this.subjectsRepository
+  findByDepartment(departmentId: number): Promise<Subject[]> {
+    return this.subjectsRepository
       .createQueryBuilder("subject")
-      .where("subject.departmentId = :departmentId", { departmentId });
-
-    return paginate<Subject>(queryBuilder, options);
+      .where("subject.departmentId = :departmentId", { departmentId })
+      .getMany();
   }
 
   findByProfessor(professorId: number) {

@@ -11,6 +11,7 @@ import { DbModule } from "./db/db.module";
 import { ScheduleModule } from "@nestjs/schedule";
 import { SubjectsModule } from "./subjects/subjects.module";
 import { SchoolYearsModule } from "./school-years/school-years.module";
+import { ExamsModule } from "./exams/exams.module";
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { SchoolYearsModule } from "./school-years/school-years.module";
     ScheduleModule.forRoot(),
     SubjectsModule,
     SchoolYearsModule,
+    ExamsModule,
   ],
 })
 export class AppModule {}

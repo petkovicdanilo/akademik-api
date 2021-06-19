@@ -7,8 +7,8 @@ import { ExamPeriodsService } from "./exam-periods.service";
 export class ExamPeriodsOtherController {
   constructor(private readonly examPeriodsService: ExamPeriodsService) {}
 
-  @Get("school-years/:schoolYearId/exam-periods")
-  async findBySchoolYearId(@Param("schoolYearId") schoolYearId: string) {
+  @Get("school-years/:id/exam-periods")
+  async findBySchoolYearId(@Param("id") schoolYearId: string) {
     const examPeriods = await this.examPeriodsService.findBySchoolYearId(
       schoolYearId,
     );

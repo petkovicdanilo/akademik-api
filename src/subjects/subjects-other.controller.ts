@@ -8,28 +8,28 @@ import { SubjectsService } from "./subjects.service";
 export class SubjectsOtherController {
   constructor(private readonly subjectsService: SubjectsService) {}
 
-  @Get("students/:id/:schoolYear/subjects")
-  async findByStudentSchoolYear(
+  @Get("students/:id/:schoolYearId/subjects")
+  async findByStudentSchoolYearId(
     @Param("id") id: number,
-    @Param("schoolYear") schoolYear: string,
+    @Param("schoolYearId") schoolYearId: string,
   ) {
-    return this.subjectsService.findByStudentSchoolYear(id, schoolYear);
+    return this.subjectsService.findByStudentSchoolYearId(id, schoolYearId);
   }
 
-  @Post("students/:id/:schoolYear/subjects")
+  @Post("students/:id/:schoolYearId/subjects")
   @ApiBody({
     isArray: true,
     type: Number,
   })
   async addSubjects(
     @Param("id") id: number,
-    @Param("schoolYear") schoolYear: string,
+    @Param("schoolYearId") schoolYearId: string,
     @Body() subjectIds: number[],
   ) {
     const enrolledSubjects = await this.subjectsService.addSubjectsToStudent(
       subjectIds,
       id,
-      schoolYear,
+      schoolYearId,
     );
 
     return enrolledSubjects.map((enrolledSubject) =>

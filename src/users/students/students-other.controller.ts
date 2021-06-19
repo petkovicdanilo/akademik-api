@@ -14,7 +14,7 @@ export class StudentsOtherController {
     private readonly utilService: UtilService,
   ) {}
 
-  @Get("/subjects/:id/:schoolYear/students")
+  @Get("/subjects/:id/:schoolYearId/students")
   @ApiQuery({
     name: "page",
     type: Number,
@@ -31,7 +31,7 @@ export class StudentsOtherController {
   })
   async findStudents(
     @Param("id") id: number,
-    @Param("schoolYear") schoolYear: string,
+    @Param("schoolYearId") schoolYearId: string,
     @Req() request: Request,
     @Query() paginationParams: PaginationParams,
   ) {
@@ -40,9 +40,9 @@ export class StudentsOtherController {
 
     const route = this.utilService.getAppRoute(request.path);
 
-    const studentsPaginated = await this.studentsService.findBySubjectSchoolYear(
+    const studentsPaginated = await this.studentsService.findBySubjectSchoolYearId(
       id,
-      schoolYear,
+      schoolYearId,
       {
         page,
         limit,

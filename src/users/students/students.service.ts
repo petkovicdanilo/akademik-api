@@ -123,7 +123,7 @@ export class StudentsService {
     return student;
   }
 
-  findBySubjectSchoolYear(
+  findBySubjectSchoolYearId(
     subjectId: number,
     schoolYearId: string,
     options: IPaginationOptions,

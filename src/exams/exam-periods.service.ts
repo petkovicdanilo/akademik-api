@@ -17,7 +17,7 @@ export class ExamPeriodsService {
 
   async create(createExamPeriodDto: CreateExamPeriodDto) {
     const schoolYear = await this.schoolYearsService.findOne(
-      createExamPeriodDto.schoolYear,
+      createExamPeriodDto.schoolYearId,
     );
 
     const examPeriod = new ExamPeriod();
@@ -56,9 +56,9 @@ export class ExamPeriodsService {
     examPeriod.registrationEndTime =
       updateExamPeriodDto.registrationEndTime ?? examPeriod.registrationEndTime;
 
-    if (updateExamPeriodDto.schoolYear) {
+    if (updateExamPeriodDto.schoolYearId) {
       const schoolYear = await this.schoolYearsService.findOne(
-        updateExamPeriodDto.schoolYear,
+        updateExamPeriodDto.schoolYearId,
       );
 
       examPeriod.schoolYear = schoolYear;
@@ -94,7 +94,7 @@ export class ExamPeriodsService {
       endTime: examPeriod.endTime,
       registrationStartTime: examPeriod.registrationStartTime,
       registrationEndTime: examPeriod.registrationEndTime,
-      schoolYear: examPeriod.schoolYear.id,
+      schoolYearId: examPeriod.schoolYear.id,
     };
   }
 }

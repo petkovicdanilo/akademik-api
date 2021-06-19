@@ -27,9 +27,9 @@ export class SchoolYearsController {
     return this.schoolYearsService.findAll();
   }
 
-  @Get(":schoolYear")
-  findOne(@Param("schoolYear") schoolYear: string) {
-    return this.schoolYearsService.findOne(schoolYear);
+  @Get(":id")
+  findOne(@Param("id") id: string) {
+    return this.schoolYearsService.findOne(id);
   }
 
   // @Post("current")

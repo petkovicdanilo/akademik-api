@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 
 export class CreateExamPeriodDto {
-  schoolYear: string;
+  schoolYearId: string;
 
   name: string;
 

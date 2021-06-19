@@ -96,7 +96,7 @@ export class SubjectsService {
     return subject;
   }
 
-  async findByStudentSchoolYear(
+  async findByStudentSchoolYearId(
     studentId: number,
     schoolYearId: string,
   ): Promise<StudentsSubjectDto[]> {

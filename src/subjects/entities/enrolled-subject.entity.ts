@@ -21,9 +21,7 @@ export class EnrolledSubject {
   @ManyToOne(() => SchoolYear, {
     primary: true,
   })
-  @JoinColumn({
-    name: "schoolYear",
-  })
+  @JoinColumn()
   schoolYear: SchoolYear;
 
   @Column({ nullable: true })

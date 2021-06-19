@@ -15,6 +15,7 @@ export class ExamPeriod {
 
   @ManyToOne(() => SchoolYear, {
     eager: true,
+    nullable: false,
   })
   schoolYear: SchoolYear;
 

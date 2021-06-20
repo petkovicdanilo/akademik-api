@@ -1,10 +1,15 @@
 import { Injectable } from "@nestjs/common";
-import { DepartmentsService } from "src/departments/departments.service";
+import { InjectRepository } from "@nestjs/typeorm";
 import { CreateDepartmentDto } from "src/departments/dto/create-department.dto";
+import { Department } from "src/departments/entities/department.entity";
+import { Repository } from "typeorm";
 
 @Injectable()
 export class DepartmentsSeederService {
-  constructor(private readonly departmentsService: DepartmentsService) {}
+  constructor(
+    @InjectRepository(Department)
+    private readonly departmentsRepository: Repository<Department>,
+  ) {}
 
   departments: CreateDepartmentDto[] = [
     {
@@ -29,9 +34,7 @@ export class DepartmentsSeederService {
 
   async seed() {
     try {
-      this.departments.forEach(async (department) => {
-        await this.departmentsService.create(department);
-      });
+      await this.departmentsRepository.save(this.departments);
     } catch (e) {
       console.log(e);
     }

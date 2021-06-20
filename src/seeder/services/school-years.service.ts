@@ -22,7 +22,7 @@ export class SchoolYearsSeederService {
         currentYear--;
       }
 
-      const schoolYears = [];
+      const schoolYearsToInsert = [];
 
       for (let i = 0; i < 5; i++) {
         const year = currentYear - i;
@@ -33,14 +33,14 @@ export class SchoolYearsSeederService {
         const startDate = new Date(`October 1, ${year} 00:00:00`);
         const endDate = new Date(`September 31, ${year} 00:00:00`);
 
-        schoolYears.push({
+        schoolYearsToInsert.push({
           id: schoolYearId,
           startDate,
           endDate,
         });
       }
 
-      await this.schoolYearsRepository.save(schoolYears);
+      await this.schoolYearsRepository.save(schoolYearsToInsert);
     } catch (err) {
       console.log(err);
     }

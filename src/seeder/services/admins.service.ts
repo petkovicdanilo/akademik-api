@@ -33,7 +33,7 @@ export class AdminsSeederService {
     return {
       firstName,
       lastName,
-      dateOfBirth: faker.date.past(20),
+      dateOfBirth: faker.date.between("1945-01-01", "1990-12-31"),
       email: faker.internet.email(firstName, lastName).toLowerCase(),
       password: "password",
     };

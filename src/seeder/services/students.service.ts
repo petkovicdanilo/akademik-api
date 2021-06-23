@@ -54,7 +54,7 @@ export class StudentsSeederService {
     return {
       firstName,
       lastName,
-      dateOfBirth: faker.date.past(20),
+      dateOfBirth: faker.date.between("1990-01-01", "2001-12-31"),
       email: faker.internet.email(firstName, lastName).toLowerCase(),
       password: "password",
       type: ProfileType.Student,

@@ -18,18 +18,28 @@ export class SchoolYearsController {
   constructor(private readonly schoolYearsService: SchoolYearsService) {}
 
   @Post()
-  create(@Body() createSchoolYearDto: CreateSchoolYearDto) {
-    return this.schoolYearsService.create(createSchoolYearDto);
+  async create(@Body() createSchoolYearDto: CreateSchoolYearDto) {
+    const schoolYear = await this.schoolYearsService.create(
+      createSchoolYearDto,
+    );
+
+    return this.schoolYearsService.mapToDto(schoolYear);
   }
 
   @Get()
-  findAll() {
-    return this.schoolYearsService.findAll();
+  async findAll() {
+    const schoolYears = await this.schoolYearsService.findAll();
+
+    return schoolYears.map((schoolYear) =>
+      this.schoolYearsService.mapToDto(schoolYear),
+    );
   }
 
   @Get(":id")
-  findOne(@Param("id") id: string) {
-    return this.schoolYearsService.findOne(id);
+  async findOne(@Param("id") id: string) {
+    const schoolYear = await this.schoolYearsService.findOne(id);
+
+    return this.schoolYearsService.mapToDto(schoolYear);
   }
 
   // @Post("current")
@@ -43,15 +53,22 @@ export class SchoolYearsController {
   // }
 
   @Patch(":id")
-  update(
+  async update(
     @Param("id") id: string,
     @Body() updateSchoolYearDto: UpdateSchoolYearDto,
   ) {
-    return this.schoolYearsService.update(id, updateSchoolYearDto);
+    const schoolYear = await this.schoolYearsService.update(
+      id,
+      updateSchoolYearDto,
+    );
+
+    return this.schoolYearsService.mapToDto(schoolYear);
   }
 
   @Delete(":id")
-  remove(@Param("id") id: string) {
-    return this.schoolYearsService.remove(id);
+  async remove(@Param("id") id: string) {
+    const schoolYear = await this.schoolYearsService.remove(id);
+
+    return this.schoolYearsService.mapToDto(schoolYear);
   }
 }

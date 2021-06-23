@@ -3,6 +3,7 @@ import { AdminsSeederService } from "./services/admins.service";
 import { DepartmentsSeederService } from "./services/department.service";
 import { EnrolledSubjectsSeederService } from "./services/enrolled-subjects.service";
 import { ExamPeriodsSeederService } from "./services/exam-periods.service";
+import { ExamRegistrationsSeederService } from "./services/exam-registrations.service";
 import { ProfessorsSeederService } from "./services/professors.service";
 import { SchoolYearsSeederService } from "./services/school-years.service";
 import { StudentsSeederService } from "./services/students.service";
@@ -19,6 +20,7 @@ export class Seeder {
     private readonly enrolledSubjectsSeederService: EnrolledSubjectsSeederService,
     private readonly schoolYearsSeederService: SchoolYearsSeederService,
     private readonly examPeriodsSeederService: ExamPeriodsSeederService,
+    private readonly examRegistrationsSeederService: ExamRegistrationsSeederService,
   ) {}
 
   async seed() {
@@ -34,5 +36,7 @@ export class Seeder {
 
     await this.subjectsSeederService.seed();
     await this.enrolledSubjectsSeederService.seed();
+
+    await this.examRegistrationsSeederService.seed();
   }
 }

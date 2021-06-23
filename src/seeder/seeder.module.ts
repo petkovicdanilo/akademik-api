@@ -23,6 +23,8 @@ import { SchoolYearsSeederService } from "./services/school-years.service";
 import { SchoolYearsModule } from "src/school-years/school-years.module";
 import { ExamPeriod } from "src/exams/entities/exam-period.entity";
 import { ExamPeriodsSeederService } from "./services/exam-periods.service";
+import { ExamRegistration } from "src/exams/entities/exam-registration.entity";
+import { ExamRegistrationsSeederService } from "./services/exam-registrations.service";
 
 @Module({
   imports: [
@@ -43,6 +45,7 @@ import { ExamPeriodsSeederService } from "./services/exam-periods.service";
       SchoolYear,
       RefreshToken,
       ExamPeriod,
+      ExamRegistration,
     ]),
     SchoolYearsModule,
   ],
@@ -56,6 +59,7 @@ import { ExamPeriodsSeederService } from "./services/exam-periods.service";
     EnrolledSubjectsSeederService,
     SchoolYearsSeederService,
     ExamPeriodsSeederService,
+    ExamRegistrationsSeederService,
   ],
 })
 export class SeederModule {}

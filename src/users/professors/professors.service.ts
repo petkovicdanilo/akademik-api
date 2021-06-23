@@ -125,6 +125,15 @@ export class ProfessorsService {
     return professor;
   }
 
+  findByDepartment(departmentId: number): Promise<Professor[]> {
+    return this.professorsRepository
+      .createQueryBuilder("professor")
+      .leftJoinAndSelect("professor.profile", "profile")
+      .leftJoinAndSelect("professor.department", "department")
+      .where("professor.departmentId = :departmentId", { departmentId })
+      .getMany();
+  }
+
   mapProfessorToProfessorDto(professor: Professor): ProfessorDto {
     return {
       id: professor.profile.id,

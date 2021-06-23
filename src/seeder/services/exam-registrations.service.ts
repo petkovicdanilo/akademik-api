@@ -49,6 +49,12 @@ export class ExamRegistrationsSeederService {
         let graded = false;
 
         while (i < examPeriods.length && !graded) {
+          // no exam registration in this exam period
+          if (faker.datatype.number({ min: 1, max: 2 }) == 1) {
+            i++;
+            continue;
+          }
+
           const grade = faker.datatype.number({ min: 1, max: 10 });
 
           const examRegistration: DeepPartial<ExamRegistration> = {

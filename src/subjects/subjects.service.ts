@@ -8,7 +8,7 @@ import { DepartmentsService } from "src/departments/departments.service";
 import { SchoolYearsService } from "src/school-years/school-years.service";
 import { ProfessorsService } from "src/users/professors/professors.service";
 import { StudentsService } from "src/users/students/students.service";
-import { Repository } from "typeorm";
+import { DeepPartial, Repository } from "typeorm";
 import { CreateSubjectDto } from "./dto/create-subject.dto";
 import { StudentsSubjectDto } from "./dto/students-subject.dto";
 import { SubjectDto } from "./dto/subject.dto";
@@ -58,6 +58,14 @@ export class SubjectsService {
     }
 
     return subject;
+  }
+
+  find(ids: number[]) {
+    return this.subjectsRepository
+      .createQueryBuilder("subject")
+      .where("subject.id IN (:...ids)", { ids })
+      .orderBy("subject.id")
+      .getMany();
   }
 
   async update(id: number, updateSubjectDto: UpdateSubjectDto) {
@@ -163,15 +171,46 @@ export class SubjectsService {
       throw new BadRequestException("Minumum of 60 ects points not satisfied");
     }
 
-    const enrolledSubjects = subjects.map<EnrolledSubject>((subject) => {
-      return {
-        student,
-        subject,
-        schoolYear,
-      };
-    });
+    const enrolledSubjects = subjects.map<DeepPartial<EnrolledSubject>>(
+      (subject) => {
+        return {
+          studentId: student.id,
+          subjectId: subject.id,
+          schoolYearId: schoolYear.id,
+        };
+      },
+    );
 
     return this.enrolledSubjectsRepository.save(enrolledSubjects);
+  }
+
+  async setGrade(
+    studentId: number,
+    schoolYearId: string,
+    subjectId: number,
+    grade: Grade,
+  ) {
+    const enrolledSubject = await this.enrolledSubjectsRepository
+      .createQueryBuilder("enrolledSubject")
+      .select("enrolledSubject")
+      .where("enrolledSubject.studentId = :studentId", {
+        studentId: studentId,
+      })
+      .andWhere("enrolledSubject.subjectId = :subjectId", {
+        subjectId: subjectId,
+      })
+      .andWhere("enrolledSubject.schoolYearId = :schoolYearId", {
+        schoolYearId: schoolYearId,
+      })
+      .getOne();
+
+    if (!enrolledSubject) {
+      throw new BadRequestException("Student is not enrolled in subject");
+    }
+
+    enrolledSubject.grade = grade;
+
+    await this.enrolledSubjectsRepository.save(enrolledSubject);
   }
 
   findByDepartment(departmentId: number): Promise<Subject[]> {

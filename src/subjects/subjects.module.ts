@@ -19,5 +19,6 @@ import { SchoolYearsModule } from "src/school-years/school-years.module";
     SchoolYearsModule,
   ],
   providers: [SubjectsService],
+  exports: [SubjectsService],
 })
 export class SubjectsModule {}

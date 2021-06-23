@@ -42,16 +42,6 @@ export class SchoolYearsController {
     return this.schoolYearsService.mapToDto(schoolYear);
   }
 
-  // @Post("current")
-  // setCurrent(@Body() schoolYear: string) {
-  //   return this.schoolYearsService.setCurrent(schoolYear);
-  // }
-
-  // @Get("current")
-  // findCurrent() {
-  //   return this.schoolYearsService.findCurrent();
-  // }
-
   @Patch(":id")
   async update(
     @Param("id") id: string,

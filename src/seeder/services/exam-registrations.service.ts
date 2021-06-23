@@ -61,8 +61,8 @@ export class ExamRegistrationsSeederService {
 
           const examRegistration: DeepPartial<ExamRegistration> = {
             createdAt: faker.date.between(
-              examPeriod.startTime,
-              examPeriod.endTime,
+              examPeriod.startDate,
+              examPeriod.endDate,
             ),
             studentId: enrolledSubject.studentId,
             subjectId: enrolledSubject.subjectId,

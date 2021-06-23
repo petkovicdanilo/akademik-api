@@ -11,23 +11,23 @@ export class ExamPeriodDto {
     type: () => String,
     format: "date",
   })
-  startTime: Date;
+  startDate: Date;
 
   @ApiProperty({
     type: () => String,
     format: "date",
   })
-  endTime: Date;
+  endDate: Date;
 
   @ApiProperty({
     type: () => String,
     format: "date",
   })
-  registrationStartTime: Date;
+  registrationStartDate: Date;
 
   @ApiProperty({
     type: () => String,
     format: "date",
   })
-  registrationEndTime: Date;
+  registrationEndDate: Date;
 }

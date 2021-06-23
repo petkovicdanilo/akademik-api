@@ -25,20 +25,20 @@ export class ExamPeriod {
   @Column({
     type: "date",
   })
-  startTime: Date;
+  startDate: Date;
 
   @Column({
     type: "date",
   })
-  endTime: Date;
+  endDate: Date;
 
   @Column({
     type: "date",
   })
-  registrationStartTime: Date;
+  registrationStartDate: Date;
 
   @Column({
     type: "date",
   })
-  registrationEndTime: Date;
+  registrationEndDate: Date;
 }

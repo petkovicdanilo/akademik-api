@@ -23,11 +23,11 @@ export class ExamPeriodsService {
     const examPeriod = new ExamPeriod();
 
     examPeriod.name = createExamPeriodDto.name;
-    examPeriod.startTime = createExamPeriodDto.startTime;
-    examPeriod.endTime = createExamPeriodDto.endTime;
-    examPeriod.registrationStartTime =
-      createExamPeriodDto.registrationStartTime;
-    examPeriod.registrationEndTime = createExamPeriodDto.registrationEndTime;
+    examPeriod.startDate = createExamPeriodDto.startDate;
+    examPeriod.endDate = createExamPeriodDto.endDate;
+    examPeriod.registrationStartDate =
+      createExamPeriodDto.registrationStartDate;
+    examPeriod.registrationEndDate = createExamPeriodDto.registrationEndDate;
     examPeriod.schoolYear = schoolYear;
 
     return this.examPeriodsRepository.save(examPeriod);
@@ -47,14 +47,14 @@ export class ExamPeriodsService {
     const examPeriod = await this.findOne(id);
 
     examPeriod.name = updateExamPeriodDto.name ?? examPeriod.name;
-    examPeriod.startTime =
-      updateExamPeriodDto.startTime ?? examPeriod.startTime;
-    examPeriod.endTime = updateExamPeriodDto.endTime ?? examPeriod.endTime;
-    examPeriod.registrationStartTime =
-      updateExamPeriodDto.registrationStartTime ??
-      examPeriod.registrationStartTime;
-    examPeriod.registrationEndTime =
-      updateExamPeriodDto.registrationEndTime ?? examPeriod.registrationEndTime;
+    examPeriod.startDate =
+      updateExamPeriodDto.startDate ?? examPeriod.startDate;
+    examPeriod.endDate = updateExamPeriodDto.endDate ?? examPeriod.endDate;
+    examPeriod.registrationStartDate =
+      updateExamPeriodDto.registrationStartDate ??
+      examPeriod.registrationStartDate;
+    examPeriod.registrationEndDate =
+      updateExamPeriodDto.registrationEndDate ?? examPeriod.registrationEndDate;
 
     if (updateExamPeriodDto.schoolYearId) {
       const schoolYear = await this.schoolYearsService.findOne(
@@ -90,10 +90,10 @@ export class ExamPeriodsService {
     return {
       id: examPeriod.id,
       name: examPeriod.name,
-      startTime: examPeriod.startTime,
-      endTime: examPeriod.endTime,
-      registrationStartTime: examPeriod.registrationStartTime,
-      registrationEndTime: examPeriod.registrationEndTime,
+      startDate: examPeriod.startDate,
+      endDate: examPeriod.endDate,
+      registrationStartDate: examPeriod.registrationStartDate,
+      registrationEndDate: examPeriod.registrationEndDate,
       schoolYearId: examPeriod.schoolYear.id,
     };
   }

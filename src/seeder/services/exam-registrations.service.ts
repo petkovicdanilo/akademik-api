@@ -55,13 +55,18 @@ export class ExamRegistrationsSeederService {
             continue;
           }
 
+          const examPeriod = examPeriods[i];
+
           const grade = faker.datatype.number({ min: 1, max: 10 });
 
           const examRegistration: DeepPartial<ExamRegistration> = {
-            createdAt: examPeriods[i].startTime,
+            createdAt: faker.date.between(
+              examPeriod.startTime,
+              examPeriod.endTime,
+            ),
             studentId: enrolledSubject.studentId,
             subjectId: enrolledSubject.subjectId,
-            examPeriodId: examPeriods[i].id,
+            examPeriodId: examPeriod.id,
           };
 
           if (grade >= 6) {

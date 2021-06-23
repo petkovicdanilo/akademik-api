@@ -8,6 +8,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from "typeorm";
+import { Semester, SubjectYear } from "../types";
 import { EnrolledSubject } from "./enrolled-subject.entity";
 
 @Entity()
@@ -19,7 +20,10 @@ export class Subject {
   name: string;
 
   @Column()
-  semester: 1 | 2;
+  semester: Semester;
+
+  @Column()
+  year: SubjectYear;
 
   @Column()
   compulsory: boolean;

@@ -48,6 +48,7 @@ export class SubjectsSeederService {
       compulsory: faker.datatype.boolean(),
       ectsPoints: faker.datatype.number({ min: 3, max: 8 }),
       semester: faker.random.arrayElement([1, 2]),
+      year: faker.random.arrayElement([1, 2, 3, 4]),
     };
   }
 }

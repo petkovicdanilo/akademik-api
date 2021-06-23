@@ -64,7 +64,8 @@ export class SubjectsService {
     return this.subjectsRepository
       .createQueryBuilder("subject")
       .where("subject.id IN (:...ids)", { ids })
-      .orderBy("subject.id")
+      .orderBy("subject.year")
+      .addOrderBy("subject.id")
       .getMany();
   }
 
@@ -75,6 +76,7 @@ export class SubjectsService {
     subject.compulsory = updateSubjectDto.compulsory ?? subject.compulsory;
     subject.ectsPoints = updateSubjectDto.ectsPoints ?? subject.ectsPoints;
     subject.semester = updateSubjectDto.semester ?? subject.semester;
+    subject.year = updateSubjectDto.year ?? subject.year;
 
     if (updateSubjectDto.departmentId) {
       const department = await this.departmentsService.findOne(
@@ -217,15 +219,18 @@ export class SubjectsService {
     return this.subjectsRepository
       .createQueryBuilder("subject")
       .where("subject.departmentId = :departmentId", { departmentId })
+      .orderBy("subject.year")
+      .addOrderBy("subject.semester")
       .getMany();
   }
 
   findByProfessor(professorId: number) {
-    return this.subjectsRepository.find({
-      where: {
-        professorId,
-      },
-    });
+    return this.subjectsRepository
+      .createQueryBuilder("subject")
+      .where("subject.professorId = :professorId", { professorId })
+      .orderBy("subject.year")
+      .addOrderBy("subject.semester")
+      .getMany();
   }
 
   mapToDto(subject: Subject): SubjectDto {
@@ -237,6 +242,7 @@ export class SubjectsService {
       departmentId: subject.departmentId,
       professorId: subject.professorId,
       semester: subject.semester,
+      year: subject.year,
     };
   }
 
@@ -256,6 +262,7 @@ export class SubjectsService {
       departmentId: enrolledSubject.subject.departmentId,
       professorId: enrolledSubject.subject.professorId,
       semester: enrolledSubject.subject.semester,
+      year: enrolledSubject.subject.year,
       grade: enrolledSubject.grade,
     };
   }

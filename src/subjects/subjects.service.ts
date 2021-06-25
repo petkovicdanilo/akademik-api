@@ -36,6 +36,7 @@ export class SubjectsService {
     subject.compulsory = createSubjectDto.compulsory;
     subject.ectsPoints = createSubjectDto.ectsPoints;
     subject.semester = createSubjectDto.semester;
+    subject.year = createSubjectDto.year;
 
     const department = await this.departmentsService.findOne(
       createSubjectDto.departmentId,

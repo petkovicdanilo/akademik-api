@@ -16,6 +16,7 @@ import { UnverifiedProfile } from "./entities/unverified-profile.entity";
 import * as bcrypt from "bcrypt";
 import { Profile } from "../profiles/entities/profile.entity";
 import { ProfileType } from "../profiles/types";
+import { MailService } from "src/mail/mail.service";
 
 @Injectable()
 export class UnverifiedProfilesService {
@@ -24,6 +25,7 @@ export class UnverifiedProfilesService {
     private readonly unverifiedProfilesRepository: Repository<UnverifiedProfile>,
     @InjectRepository(Profile)
     private readonly profilesRepository: Repository<Profile>,
+    private readonly mailService: MailService,
   ) {}
 
   findAll(options: IPaginationOptions): Promise<Pagination<UnverifiedProfile>> {
@@ -74,7 +76,8 @@ export class UnverifiedProfilesService {
     });
 
     await this.unverifiedProfilesRepository.remove(profile);
-    profile.id = id;
+
+    await this.mailService.sendVerifiedEmail(verifiedProfile);
 
     return verifiedProfile;
   }
@@ -84,6 +87,8 @@ export class UnverifiedProfilesService {
 
     await this.unverifiedProfilesRepository.remove(profile);
     profile.id = id;
+
+    await this.mailService.sendRejectedEmail(profile);
 
     return profile;
   }

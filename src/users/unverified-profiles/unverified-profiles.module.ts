@@ -6,6 +6,7 @@ import { UnverifiedProfile } from "./entities/unverified-profile.entity";
 import { UtilModule } from "src/util/util.module";
 import { Profile } from "../profiles/entities/profile.entity";
 import { ProfilesModule } from "../profiles/profiles.module";
+import { MailModule } from "src/mail/mail.module";
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { ProfilesModule } from "../profiles/profiles.module";
     TypeOrmModule.forFeature([Profile]),
     UtilModule,
     ProfilesModule,
+    MailModule,
   ],
   controllers: [UnverifiedProfilesController],
   providers: [UnverifiedProfilesService],

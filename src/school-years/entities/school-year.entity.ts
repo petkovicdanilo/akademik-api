@@ -14,4 +14,7 @@ export class SchoolYear {
     type: "date",
   })
   endDate: Date;
+
+  @Column()
+  current: boolean;
 }

@@ -33,6 +33,7 @@ export class SchoolYearsService {
       id,
       startDate: createSchoolYearDto.startDate,
       endDate: createSchoolYearDto.endDate,
+      current: false,
     };
 
     return this.schoolYearsRepository.save(schoolYear);
@@ -79,6 +80,37 @@ export class SchoolYearsService {
     schoolYear.id = id;
 
     return schoolYear;
+  }
+
+  async findCurrent(): Promise<SchoolYear> {
+    const current = await this.schoolYearsRepository.findOne({
+      where: {
+        current: true,
+      },
+    });
+
+    if (!current) {
+      throw new NotFoundException("Current school year not found");
+    }
+
+    return current;
+  }
+
+  async setCurrent(schoolYearId: string): Promise<SchoolYear> {
+    const newCurrentSchoolYear = await this.findOne(schoolYearId);
+    const currentSchoolYear = await this.findCurrent();
+
+    newCurrentSchoolYear.current = true;
+
+    if (!currentSchoolYear) {
+      return this.schoolYearsRepository.save(newCurrentSchoolYear);
+    }
+
+    currentSchoolYear.current = false;
+
+    this.schoolYearsRepository.save([currentSchoolYear, newCurrentSchoolYear]);
+
+    return newCurrentSchoolYear;
   }
 
   private validYears(startDate: Date, endDate: Date): boolean {

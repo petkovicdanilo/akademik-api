@@ -35,6 +35,20 @@ export class SchoolYearsController {
     );
   }
 
+  @Post(":id/current")
+  async setCurrent(@Param("id") id: string) {
+    const schoolYear = await this.schoolYearsService.setCurrent(id);
+
+    return this.schoolYearsService.mapToDto(schoolYear);
+  }
+
+  @Get("current")
+  async findCurrent() {
+    const schoolYear = await this.schoolYearsService.findCurrent();
+
+    return this.schoolYearsService.mapToDto(schoolYear);
+  }
+
   @Get(":id")
   async findOne(@Param("id") id: string) {
     const schoolYear = await this.schoolYearsService.findOne(id);

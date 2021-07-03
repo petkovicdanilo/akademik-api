@@ -22,7 +22,7 @@ export class SchoolYearsSeederService {
         currentYear--;
       }
 
-      const schoolYearsToInsert = [];
+      const schoolYearsToInsert: SchoolYear[] = [];
 
       for (let i = 0; i < 5; i++) {
         const year = currentYear - i;
@@ -37,6 +37,7 @@ export class SchoolYearsSeederService {
           id: schoolYearId,
           startDate,
           endDate,
+          current: i == 0,
         });
       }
 

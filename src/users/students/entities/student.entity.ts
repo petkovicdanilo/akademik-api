@@ -1,4 +1,5 @@
 import { Department } from "src/departments/entities/department.entity";
+import { SchoolYear } from "src/school-years/entities/school-year.entity";
 import { EnrolledSubject } from "src/subjects/entities/enrolled-subject.entity";
 import { Profile } from "src/users/profiles/entities/profile.entity";
 import {
@@ -34,4 +35,10 @@ export class Student {
     (enrolledSubject) => enrolledSubject.student,
   )
   enrolledSubjects: EnrolledSubject[];
+
+  @ManyToOne(() => SchoolYear, {
+    eager: true,
+    cascade: true,
+  })
+  startingSchoolYear: SchoolYear;
 }

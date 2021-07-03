@@ -18,6 +18,7 @@ import { Student } from "./entities/student.entity";
 import { StudentSpecificDto } from "./dto/student-specific.dto";
 import { Profile } from "../profiles/entities/profile.entity";
 import { Department } from "src/departments/entities/department.entity";
+import { SchoolYearsService } from "src/school-years/school-years.service";
 
 @Injectable()
 export class StudentsService {
@@ -29,6 +30,7 @@ export class StudentsService {
     private readonly profilesService: ProfilesService,
     @InjectRepository(Department)
     private readonly departmentsRepository: Repository<Department>,
+    private readonly schoolYearsService: SchoolYearsService,
   ) {}
 
   findAll(options: IPaginationOptions): Promise<Pagination<Student>> {
@@ -53,6 +55,7 @@ export class StudentsService {
   async addStudentSpecificInfo(
     id: number,
     studentSpecificDto: StudentSpecificDto,
+    startingSchoolYearId: string = null,
   ) {
     const profile = await this.profilesService.findOne(id);
 
@@ -72,9 +75,19 @@ export class StudentsService {
       throw new NotFoundException("Department not found");
     }
 
+    let startingSchoolYear;
+    if (startingSchoolYearId == null) {
+      startingSchoolYear = await this.schoolYearsService.findCurrent();
+    } else {
+      startingSchoolYear = await this.schoolYearsService.findOne(
+        startingSchoolYearId,
+      );
+    }
+
     await this.studentsRepository.save({
       profile,
       department,
+      startingSchoolYear,
     });
 
     return this.findOne(id);
@@ -147,6 +160,7 @@ export class StudentsService {
       firstName: student.profile.firstName,
       lastName: student.profile.lastName,
       departmentId: student.department.id,
+      startingSchoolYearId: student.startingSchoolYear.id,
     };
   }
 }

@@ -3,6 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import * as faker from "faker";
 import { RegisterDto } from "src/auth/dto/register.dto";
 import { Department } from "src/departments/entities/department.entity";
+import { SchoolYear } from "src/school-years/entities/school-year.entity";
 import { ProfileType } from "src/users/profiles/types";
 import { StudentsService } from "src/users/students/students.service";
 import { UnverifiedProfilesService } from "src/users/unverified-profiles/unverified-profiles.service";
@@ -15,12 +16,17 @@ export class StudentsSeederService {
     private readonly studentsService: StudentsService,
     @InjectRepository(Department)
     private readonly departmentsRepository: Repository<Department>,
+    @InjectRepository(SchoolYear)
+    private readonly schoolYearsRepository: Repository<SchoolYear>,
   ) {}
 
   async seed() {
     try {
       const departments = await this.departmentsRepository.find();
       const departmentIds = departments.map((department) => department.id);
+
+      const schoolYears = await this.schoolYearsRepository.find();
+      const schoolYearIds = schoolYears.map((schoolYear) => schoolYear.id);
 
       for (let i = 0; i < 30; i++) {
         const studentDto = this.generateStudentDto();
@@ -36,10 +42,15 @@ export class StudentsSeederService {
 
           if (Math.random() * 100 > 10) {
             const departmentId = faker.random.arrayElement(departmentIds);
+            const schoolYearId = faker.random.arrayElement(schoolYearIds);
 
-            await this.studentsService.addStudentSpecificInfo(profile.id, {
-              departmentId,
-            });
+            await this.studentsService.addStudentSpecificInfo(
+              profile.id,
+              {
+                departmentId,
+              },
+              schoolYearId,
+            );
           }
         }
       }

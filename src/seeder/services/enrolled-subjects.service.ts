@@ -50,7 +50,11 @@ export class EnrolledSubjectsSeederService {
           enrolledSubjects.push({
             student,
             subject,
-            schoolYear: faker.random.arrayElement(schoolYears),
+            schoolYear: faker.random.arrayElement(
+              schoolYears.filter(
+                (schoolYear) => schoolYear.id >= student.startingSchoolYear.id,
+              ),
+            ),
             grade: grade > 5 ? grade : null,
           });
         });

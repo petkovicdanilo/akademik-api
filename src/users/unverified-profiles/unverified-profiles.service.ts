@@ -66,7 +66,7 @@ export class UnverifiedProfilesService {
     return this.unverifiedProfilesRepository.save(profile);
   }
 
-  async verify(id: number): Promise<Profile> {
+  async verify(id: number, sendEmail = true): Promise<Profile> {
     const profile = await this.findOne(id);
 
     const verifiedProfile = await this.profilesRepository.save({
@@ -77,18 +77,22 @@ export class UnverifiedProfilesService {
 
     await this.unverifiedProfilesRepository.remove(profile);
 
-    await this.mailService.sendVerifiedEmail(verifiedProfile);
+    if (sendEmail) {
+      await this.mailService.sendVerifiedEmail(verifiedProfile);
+    }
 
     return verifiedProfile;
   }
 
-  async remove(id: number): Promise<UnverifiedProfile> {
+  async remove(id: number, sendEmail = true): Promise<UnverifiedProfile> {
     const profile = await this.findOne(id);
 
     await this.unverifiedProfilesRepository.remove(profile);
     profile.id = id;
 
-    await this.mailService.sendRejectedEmail(profile);
+    if (sendEmail) {
+      await this.mailService.sendRejectedEmail(profile);
+    }
 
     return profile;
   }

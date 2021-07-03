@@ -32,6 +32,7 @@ export class ProfessorsSeederService {
         if (Math.random() * 100 > 33) {
           const profile = await this.unverifiedProfilesService.verify(
             savedStudent.id,
+            false,
           );
 
           if (Math.random() * 100 > 10) {

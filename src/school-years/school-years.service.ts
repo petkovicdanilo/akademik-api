@@ -40,7 +40,11 @@ export class SchoolYearsService {
   }
 
   findAll() {
-    return this.schoolYearsRepository.find();
+    return this.schoolYearsRepository.find({
+      order: {
+        id: "DESC",
+      },
+    });
   }
 
   async findOne(id: string) {

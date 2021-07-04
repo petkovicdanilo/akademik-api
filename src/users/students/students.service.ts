@@ -146,6 +146,7 @@ export class StudentsService {
       .leftJoin("student.enrolledSubjects", "enrolled")
       .leftJoinAndSelect("student.profile", "profile")
       .leftJoinAndSelect("student.department", "department")
+      .leftJoinAndSelect("student.startingSchoolYear", "startingSchoolYear")
       .where("enrolled.subjectId = :subjectId", { subjectId })
       .andWhere("enrolled.schoolYear = :schoolYearId", { schoolYearId });
 

@@ -20,14 +20,18 @@ export class EnrolledSubject {
   @Column()
   studentId: number;
 
-  @ManyToOne(() => Student, (student) => student.enrolledSubjects)
+  @ManyToOne(() => Student, (student) => student.enrolledSubjects, {
+    onDelete: "CASCADE",
+  })
   @JoinColumn({ name: "studentId" })
   student: Student;
 
   @Column()
   subjectId: number;
 
-  @ManyToOne(() => Subject, (subject) => subject.enrolledStudents)
+  @ManyToOne(() => Subject, (subject) => subject.enrolledStudents, {
+    onDelete: "CASCADE",
+  })
   @JoinColumn({ name: "subjectId" })
   subject: Subject;
 

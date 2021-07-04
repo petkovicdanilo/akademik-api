@@ -21,14 +21,14 @@ export class ExamRegistration {
   @Column()
   studentId: number;
 
-  @ManyToOne(() => Student, { cascade: true })
+  @ManyToOne(() => Student, { cascade: true, onDelete: "CASCADE" })
   @JoinColumn({ name: "studentId" })
   student: Student;
 
   @Column()
   subjectId: number;
 
-  @ManyToOne(() => Subject)
+  @ManyToOne(() => Subject, { onDelete: "CASCADE" })
   @JoinColumn({ name: "subjectId" })
   subject: Subject;
 

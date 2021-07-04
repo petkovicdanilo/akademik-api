@@ -92,7 +92,7 @@ export class SubjectsService {
         updateSubjectDto.professorId,
       );
 
-      subject.professorId = professor.id;
+      subject.professor = Promise.resolve(professor);
     }
 
     return this.subjectsRepository.save(subject);

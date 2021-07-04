@@ -31,11 +31,12 @@ export class Subject {
   @Column()
   ectsPoints: number;
 
-  @Column("int", { nullable: false })
+  @Column("int", { nullable: true })
   professorId: number;
 
   @ManyToOne(() => Professor, (professor) => professor.subjects, {
     eager: true,
+    onDelete: "SET NULL",
   })
   @JoinColumn({ name: "professorId" })
   professor: Promise<Professor>;

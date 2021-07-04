@@ -54,16 +54,13 @@ export class ProfessorsController {
     @Req() request: Request,
     @Query() paginationParams: PaginationParams,
   ): Promise<Pagination<ProfessorDto>> {
-    const page = paginationParams.page || 1;
-    const limit = paginationParams.limit || 10;
-
-    const route = this.utilService.getAppRoute(request.path);
-
-    const professorsPaginated = await this.professorsService.findAll({
-      page,
-      limit,
-      route,
-    });
+    const pagingParams = this.utilService.getPagingParams(
+      paginationParams,
+      request,
+    );
+    const professorsPaginated = await this.professorsService.findAll(
+      pagingParams,
+    );
 
     return {
       items: professorsPaginated.items.map((professor) =>

@@ -58,16 +58,11 @@ export class AdminsController {
       throw new ForbiddenException("Can't list admins");
     }
 
-    const page = paginationParams.page || 1;
-    const limit = paginationParams.limit || 10;
-
-    const route = this.utilService.getAppRoute(request.path);
-
-    const adminsPaginated = await this.adminsService.findAll({
-      page,
-      limit,
-      route,
-    });
+    const pagingParams = this.utilService.getPagingParams(
+      paginationParams,
+      request,
+    );
+    const adminsPaginated = await this.adminsService.findAll(pagingParams);
 
     return {
       items: adminsPaginated.items.map((student) =>

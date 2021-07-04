@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+import { PaginationParams } from "src/pagination/pagination-params.dto";
 
 @Injectable()
 export class UtilService {
@@ -20,5 +21,18 @@ export class UtilService {
 
   getPort(): number {
     return parseInt(this.configService.get("PORT"));
+  }
+
+  getPagingParams(paginationParams: PaginationParams, request: any) {
+    const page = paginationParams.page || 1;
+    const limit = paginationParams.limit || 10;
+
+    const route = this.getAppRoute(request.path);
+
+    return {
+      page,
+      limit,
+      route,
+    };
   }
 }

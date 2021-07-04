@@ -53,16 +53,11 @@ export class StudentsController {
     @Req() request: any,
     @Query() paginationParams: PaginationParams,
   ): Promise<Pagination<StudentDto>> {
-    const page = paginationParams.page || 1;
-    const limit = paginationParams.limit || 10;
-
-    const route = this.utilService.getAppRoute(request.path);
-
-    const studentsPaginated = await this.studentsService.findAll({
-      page,
-      limit,
-      route,
-    });
+    const pagingParams = this.utilService.getPagingParams(
+      paginationParams,
+      request,
+    );
+    const studentsPaginated = await this.studentsService.findAll(pagingParams);
 
     return {
       items: studentsPaginated.items.map((student) =>

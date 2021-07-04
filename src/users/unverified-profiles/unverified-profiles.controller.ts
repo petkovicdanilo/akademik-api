@@ -59,16 +59,13 @@ export class UnverifiedProfilesController {
       throw new ForbiddenException("Can't list unverified users");
     }
 
-    const page = paginationParams.page || 1;
-    const limit = paginationParams.limit || 10;
-
-    const route = this.utilService.getAppRoute(request.path);
-
-    const profilesPaginated = await this.unverifiedProfilesService.findAll({
-      page,
-      limit,
-      route,
-    });
+    const pagingParams = this.utilService.getPagingParams(
+      paginationParams,
+      request,
+    );
+    const profilesPaginated = await this.unverifiedProfilesService.findAll(
+      pagingParams,
+    );
 
     return {
       items: profilesPaginated.items.map((profile) =>

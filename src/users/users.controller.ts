@@ -53,16 +53,11 @@ export class UsersController {
       throw new ForbiddenException("Can't list all users");
     }
 
-    const page = paginationParams.page || 1;
-    const limit = paginationParams.limit || 10;
-
-    const route = this.utilService.getAppRoute(request.path);
-
-    const profilesPaginated = await this.profilesService.findAll({
-      page,
-      limit,
-      route,
-    });
+    const pagingParams = this.utilService.getPagingParams(
+      paginationParams,
+      request,
+    );
+    const profilesPaginated = await this.profilesService.findAll(pagingParams);
 
     return {
       items: profilesPaginated.items.map((profile) =>

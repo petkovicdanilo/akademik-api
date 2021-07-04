@@ -80,6 +80,10 @@ export class SchoolYearsService {
   async remove(id: string) {
     const schoolYear = await this.findOne(id);
 
+    if (schoolYear.current) {
+      throw new BadRequestException("Can't delete current school year");
+    }
+
     await this.schoolYearsRepository.remove(schoolYear);
     schoolYear.id = id;
 

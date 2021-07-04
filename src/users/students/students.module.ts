@@ -9,6 +9,7 @@ import { Profile } from "../profiles/entities/profile.entity";
 import { Department } from "src/departments/entities/department.entity";
 import { StudentsOtherController } from "./students-other.controller";
 import { SchoolYearsModule } from "src/school-years/school-years.module";
+import { CaslModule } from "src/casl/casl.module";
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { SchoolYearsModule } from "src/school-years/school-years.module";
     ProfilesModule,
     UtilModule,
     SchoolYearsModule,
+    CaslModule,
   ],
   exports: [StudentsService],
   controllers: [StudentsController, StudentsOtherController],

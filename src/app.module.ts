@@ -12,6 +12,7 @@ import { ScheduleModule } from "@nestjs/schedule";
 import { SubjectsModule } from "./subjects/subjects.module";
 import { SchoolYearsModule } from "./school-years/school-years.module";
 import { ExamsModule } from "./exams/exams.module";
+import { CaslModule } from './casl/casl.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { ExamsModule } from "./exams/exams.module";
     SubjectsModule,
     SchoolYearsModule,
     ExamsModule,
+    CaslModule,
   ],
 })
 export class AppModule {}

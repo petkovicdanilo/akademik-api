@@ -1,22 +1,50 @@
-import { Body, Controller, Get, Param, Post } from "@nestjs/common";
-import { ApiBody, ApiResponse, ApiTags } from "@nestjs/swagger";
+import {
+  Body,
+  Controller,
+  ForbiddenException,
+  Get,
+  Param,
+  Post,
+  Req,
+  UseGuards,
+} from "@nestjs/common";
+import { ApiBearerAuth, ApiBody, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { AccessTokenGuard } from "src/common/guards/access-token.guard";
+import { Action, CaslAbilityFactory } from "src/casl/casl-ability.factory";
+import { StudentsService } from "src/users/students/students.service";
 import { SubjectDto } from "./dto/subject.dto";
 import { SubjectsService } from "./subjects.service";
 
 @Controller()
 @ApiTags("subjects")
 export class SubjectsOtherController {
-  constructor(private readonly subjectsService: SubjectsService) {}
+  constructor(
+    private readonly subjectsService: SubjectsService,
+    private readonly studentsService: StudentsService,
+    private readonly caslAbilityFactory: CaslAbilityFactory,
+  ) {}
 
   @Get("students/:id/:schoolYearId/subjects")
+  @ApiBearerAuth()
+  @UseGuards(AccessTokenGuard)
   async findByStudentSchoolYearId(
     @Param("id") id: number,
     @Param("schoolYearId") schoolYearId: string,
+    @Req() request: any,
   ) {
+    const student = await this.studentsService.findOne(id);
+    const ability = this.caslAbilityFactory.createForSubject(request.user);
+
+    if (ability.cannot(Action.Read, student.profile)) {
+      throw new ForbiddenException("Can't list student's subjects");
+    }
+
     return this.subjectsService.findByStudentSchoolYearId(id, schoolYearId);
   }
 
   @Post("students/:id/:schoolYearId/subjects")
+  @ApiBearerAuth()
+  @UseGuards(AccessTokenGuard)
   @ApiBody({
     isArray: true,
     type: Number,
@@ -25,7 +53,15 @@ export class SubjectsOtherController {
     @Param("id") id: number,
     @Param("schoolYearId") schoolYearId: string,
     @Body() subjectIds: number[],
+    @Req() request: any,
   ) {
+    const student = await this.studentsService.findOne(id);
+    const ability = this.caslAbilityFactory.createForSubject(request.user);
+
+    if (ability.cannot(Action.Create, student.profile)) {
+      throw new ForbiddenException("Can't enroll student to subjects");
+    }
+
     const enrolledSubjects = await this.subjectsService.addSubjectsToStudent(
       subjectIds,
       id,
@@ -47,6 +83,7 @@ export class SubjectsOtherController {
 
     return subjects.map((subject) => this.subjectsService.mapToDto(subject));
   }
+
   @Get("professor/:id/subjects")
   async findByProfessor(@Param("id") id: number) {
     const subjects = await this.subjectsService.findByProfessor(id);

@@ -6,10 +6,10 @@ import { RegisterDto } from "./dto/register.dto";
 import { ForgotPasswordDto } from "./dto/forgot-password.dto";
 import { TokensDto } from "./dto/tokens.dto";
 import { ResetPasswordDto } from "./dto/reset-password.dto";
-import { JwtResetPasswordGuard } from "./guards/jwt-reset-password.guard";
+import { ResetPasswordGuard } from "../common/guards/reset-password.guard";
 import { UnverifiedProfileDto } from "src/users/unverified-profiles/dto/unverified-profile.dto";
 import { UnverifiedProfilesService } from "src/users/unverified-profiles/unverified-profiles.service";
-import { RefreshTokenGuard } from "./guards/refresh-token.guard";
+import { RefreshTokenGuard } from "../common/guards/refresh-token.guard";
 import { TokensService } from "src/util/tokens.service";
 
 @Controller()
@@ -69,7 +69,7 @@ export class AuthController {
   }
 
   @Post("reset-password")
-  @UseGuards(JwtResetPasswordGuard)
+  @UseGuards(ResetPasswordGuard)
   async resetPassword(
     @Request() request,
     @Body() resetPasswordDto: ResetPasswordDto,

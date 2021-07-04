@@ -8,10 +8,12 @@ import {
   Req,
   Query,
   Post,
+  UseGuards,
+  ForbiddenException,
 } from "@nestjs/common";
 import { ProfessorsService } from "./professors.service";
 import { UpdateProfessorDto } from "./dto/update-professor.dto";
-import { ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { ProfessorsPaginatedDto } from "src/pagination/professor.dto";
 import { ProfessorDto } from "./dto/professor.dto";
 import { Pagination } from "nestjs-typeorm-paginate";
@@ -19,6 +21,9 @@ import { Request } from "express";
 import { PaginationParams } from "src/pagination/pagination-params.dto";
 import { UtilService } from "src/util/util.service";
 import { ProfessorSpecificDto } from "./dto/professor-specific.dto";
+import { AccessTokenGuard } from "src/common/guards/access-token.guard";
+import { Action, CaslAbilityFactory } from "src/casl/casl-ability.factory";
+import { ProfilesService } from "../profiles/profiles.service";
 
 @Controller("users/professors")
 @ApiTags("professors")
@@ -26,6 +31,8 @@ export class ProfessorsController {
   constructor(
     private readonly professorsService: ProfessorsService,
     private readonly utilService: UtilService,
+    private readonly profilesService: ProfilesService,
+    private readonly caslAbilityFactory: CaslAbilityFactory,
   ) {}
 
   @Get()
@@ -78,6 +85,8 @@ export class ProfessorsController {
   }
 
   @Post(":id")
+  @UseGuards(AccessTokenGuard)
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     type: ProfessorDto,
@@ -85,7 +94,15 @@ export class ProfessorsController {
   async addProfessorSpecificInfo(
     @Param("id") id: number,
     @Body() professorSpecificDto: ProfessorSpecificDto,
+    @Req() request: any,
   ) {
+    const profile = await this.profilesService.findOne(id);
+    const ability = this.caslAbilityFactory.createForProfessor(request.user);
+
+    if (ability.cannot(Action.Create, profile)) {
+      throw new ForbiddenException("Can't add professor specific info");
+    }
+
     const professor = await this.professorsService.addProfessorSpecificInfo(
       id,
       professorSpecificDto,
@@ -95,6 +112,8 @@ export class ProfessorsController {
   }
 
   @Patch(":id")
+  @UseGuards(AccessTokenGuard)
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     type: ProfessorDto,
@@ -102,21 +121,41 @@ export class ProfessorsController {
   async update(
     @Param("id") id: number,
     @Body() updateProfessorDto: UpdateProfessorDto,
+    @Req() request: any,
   ): Promise<ProfessorDto> {
-    const professor = await this.professorsService.update(
+    const professor = await this.professorsService.findOne(id);
+    const ability = this.caslAbilityFactory.createForProfessor(request.user);
+
+    if (ability.cannot(Action.Update, professor.profile)) {
+      throw new ForbiddenException("Can't update professor");
+    }
+
+    const updatedProfessor = await this.professorsService.update(
       +id,
       updateProfessorDto,
     );
-    return this.professorsService.mapProfessorToProfessorDto(professor);
+    return this.professorsService.mapProfessorToProfessorDto(updatedProfessor);
   }
 
   @Delete(":id")
+  @UseGuards(AccessTokenGuard)
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     type: ProfessorDto,
   })
-  async remove(@Param("id") id: number): Promise<ProfessorDto> {
-    const professor = await this.professorsService.remove(+id);
-    return this.professorsService.mapProfessorToProfessorDto(professor);
+  async remove(
+    @Param("id") id: number,
+    @Req() request: any,
+  ): Promise<ProfessorDto> {
+    const professor = await this.professorsService.findOne(id);
+    const ability = this.caslAbilityFactory.createForProfessor(request.user);
+
+    if (ability.cannot(Action.Delete, professor.profile)) {
+      throw new ForbiddenException("Can't delete professor");
+    }
+
+    const deletedProfessor = await this.professorsService.remove(+id);
+    return this.professorsService.mapProfessorToProfessorDto(deletedProfessor);
   }
 }

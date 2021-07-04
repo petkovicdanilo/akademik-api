@@ -1,32 +1,47 @@
 import {
   Body,
   Controller,
+  ForbiddenException,
   Get,
   Param,
   Post,
   Req,
-  UnauthorizedException,
   UseGuards,
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiBody, ApiTags } from "@nestjs/swagger";
-import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
-import { ProfileType } from "src/users/profiles/types";
+import { AccessTokenGuard } from "src/common/guards/access-token.guard";
+import { Action, CaslAbilityFactory } from "src/casl/casl-ability.factory";
+import { SubjectsService } from "src/subjects/subjects.service";
+import { StudentsService } from "src/users/students/students.service";
 import { CreateExamRegistrationsDto } from "./dto/create-exam-registrations.dto";
 import { GradesDto } from "./dto/grades.dto";
 import { ExamRegistrationsService } from "./exam-registrations.service";
 
 @Controller()
+@UseGuards(AccessTokenGuard)
 @ApiTags("exam-registrations")
+@ApiBearerAuth()
 export class ExamRegistrationsController {
   constructor(
     private readonly examRegistrationsService: ExamRegistrationsService,
+    private readonly subjectsService: SubjectsService,
+    private readonly caslAbilityFactory: CaslAbilityFactory,
+    private readonly studentsService: StudentsService,
   ) {}
 
   @Get("exam-periods/:id/:subjectId/exam-registrations")
   async findByExamPeriodSubject(
     @Param("id") examPeriodId: number,
     @Param("subjectId") subjectId: number,
+    @Req() request: any,
   ) {
+    const subject = await this.subjectsService.findOne(subjectId);
+    const ability = this.caslAbilityFactory.createForGrade(request.user);
+
+    if (ability.cannot(Action.Create, subject)) {
+      throw new ForbiddenException("Can't list exam registrations");
+    }
+
     const examRegistrations = await this.examRegistrationsService.findByExamPeriodSubject(
       examPeriodId,
       subjectId,
@@ -38,18 +53,20 @@ export class ExamRegistrationsController {
   }
 
   @Post("exam-periods/:id/exam-registrations")
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   async registrateExams(
     @Param("id") examPeriodId: number,
     @Body() createExamRegistrations: CreateExamRegistrationsDto,
     @Req() request: any,
   ) {
-    if (
-      createExamRegistrations.studentId != request.user.id &&
-      request.user.type != ProfileType.Admin
-    ) {
-      throw new UnauthorizedException("Unauthorized");
+    const student = await this.studentsService.findOne(
+      createExamRegistrations.studentId,
+    );
+    const ability = this.caslAbilityFactory.createForExamRegistration(
+      request.user,
+    );
+
+    if (ability.cannot(Action.Create, student)) {
+      throw new ForbiddenException("Can't registrate for exams");
     }
 
     const examRegistrations = await this.examRegistrationsService.registrateExams(
@@ -67,7 +84,17 @@ export class ExamRegistrationsController {
   async findByStudentSchoolYear(
     @Param("id") studentId: number,
     @Param("schoolYearId") schoolYearId: string,
+    @Req() request: any,
   ) {
+    const student = await this.studentsService.findOne(studentId);
+    const ability = this.caslAbilityFactory.createForExamRegistration(
+      request.user,
+    );
+
+    if (ability.cannot(Action.Create, student)) {
+      throw new ForbiddenException("Can't list exam registrations");
+    }
+
     const examRegistrations = await this.examRegistrationsService.findByStudentSchoolYear(
       studentId,
       schoolYearId,
@@ -87,7 +114,15 @@ export class ExamRegistrationsController {
     @Param("id") examPeriodId: number,
     @Param("subjectId") subjectId: number,
     @Body() gradesDto: GradesDto[],
+    @Req() request: any,
   ) {
+    const subject = await this.subjectsService.findOne(subjectId);
+    const ability = this.caslAbilityFactory.createForGrade(request.user);
+
+    if (ability.cannot(Action.Create, subject)) {
+      throw new ForbiddenException("Can't grade");
+    }
+
     const examRegistrations = await this.examRegistrationsService.grade(
       examPeriodId,
       subjectId,

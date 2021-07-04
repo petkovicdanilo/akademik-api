@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { CaslModule } from "src/casl/casl.module";
 import { SchoolYearsModule } from "src/school-years/school-years.module";
 import { SubjectsModule } from "src/subjects/subjects.module";
 import { UsersModule } from "src/users/users.module";
@@ -24,6 +25,7 @@ import { ExamRegistrationsService } from "./exam-registrations.service";
     UsersModule,
     SchoolYearsModule,
     SubjectsModule,
+    CaslModule,
   ],
 })
 export class ExamsModule {}

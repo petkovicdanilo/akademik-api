@@ -6,19 +6,37 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
+  Req,
+  ForbiddenException,
 } from "@nestjs/common";
 import { SubjectsService } from "./subjects.service";
 import { CreateSubjectDto } from "./dto/create-subject.dto";
 import { UpdateSubjectDto } from "./dto/update-subject.dto";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import { AccessTokenGuard } from "src/common/guards/access-token.guard";
+import { Action, CaslAbilityFactory } from "src/casl/casl-ability.factory";
 
 @Controller("subjects")
 @ApiTags("subjects")
 export class SubjectsController {
-  constructor(private readonly subjectsService: SubjectsService) {}
+  constructor(
+    private readonly subjectsService: SubjectsService,
+    private readonly caslAbilityFactory: CaslAbilityFactory,
+  ) {}
 
   @Post()
-  async create(@Body() createSubjectDto: CreateSubjectDto) {
+  @UseGuards(AccessTokenGuard)
+  @ApiBearerAuth()
+  async create(
+    @Body() createSubjectDto: CreateSubjectDto,
+    @Req() request: any,
+  ) {
+    const ability = this.caslAbilityFactory.createForSubject(request.user);
+    if (ability.cannot(Action.Create, "all")) {
+      throw new ForbiddenException("Can't create subject");
+    }
+
     const subject = await this.subjectsService.create(createSubjectDto);
 
     return this.subjectsService.mapToDto(subject);
@@ -32,17 +50,32 @@ export class SubjectsController {
   }
 
   @Patch(":id")
+  @UseGuards(AccessTokenGuard)
+  @ApiBearerAuth()
   async update(
     @Param("id") id: number,
     @Body() updateSubjectDto: UpdateSubjectDto,
+    @Req() request: any,
   ) {
+    const ability = this.caslAbilityFactory.createForSubject(request.user);
+    if (ability.cannot(Action.Update, "all")) {
+      throw new ForbiddenException("Can't update subject");
+    }
+
     const subject = await this.subjectsService.update(+id, updateSubjectDto);
 
     return this.subjectsService.mapToDto(subject);
   }
 
   @Delete(":id")
-  async remove(@Param("id") id: number) {
+  @UseGuards(AccessTokenGuard)
+  @ApiBearerAuth()
+  async remove(@Param("id") id: number, @Req() request: any) {
+    const ability = this.caslAbilityFactory.createForSubject(request.user);
+    if (ability.cannot(Action.Delete, "all")) {
+      throw new ForbiddenException("Can't delete subject");
+    }
+
     const subject = await this.subjectsService.remove(+id);
 
     return this.subjectsService.mapToDto(subject);

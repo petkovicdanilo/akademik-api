@@ -9,6 +9,7 @@ import { UsersModule } from "src/users/users.module";
 import { DepartmentsModule } from "src/departments/departments.module";
 import { SubjectsOtherController } from "./subjects-other.controller";
 import { SchoolYearsModule } from "src/school-years/school-years.module";
+import { CaslModule } from "src/casl/casl.module";
 
 @Module({
   controllers: [SubjectsController, SubjectsOtherController],
@@ -17,6 +18,7 @@ import { SchoolYearsModule } from "src/school-years/school-years.module";
     UsersModule,
     DepartmentsModule,
     SchoolYearsModule,
+    CaslModule,
   ],
   providers: [SubjectsService],
   exports: [SubjectsService],

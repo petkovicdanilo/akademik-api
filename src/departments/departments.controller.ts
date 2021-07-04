@@ -7,18 +7,25 @@ import {
   Param,
   Delete,
   UseGuards,
+  Req,
+  ForbiddenException,
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { AdminGuard } from "src/auth/guards/admin.guard";
+import { AccessTokenGuard } from "src/common/guards/access-token.guard";
+import { Action, CaslAbilityFactory } from "src/casl/casl-ability.factory";
 import { DepartmentsService } from "./departments.service";
 import { CreateDepartmentDto } from "./dto/create-department.dto";
 import { DepartmentDto } from "./dto/department.dto";
 import { UpdateDepartmentDto } from "./dto/update-department.dto";
+import { Department } from "./entities/department.entity";
 
 @Controller("departments")
 @ApiTags("departments")
 export class DepartmentsController {
-  constructor(private readonly departmentsService: DepartmentsService) {}
+  constructor(
+    private readonly departmentsService: DepartmentsService,
+    private readonly caslAbilityFactory: CaslAbilityFactory,
+  ) {}
 
   @Get()
   @ApiResponse({
@@ -46,13 +53,21 @@ export class DepartmentsController {
   }
 
   @Post()
-  @UseGuards(AdminGuard)
+  @UseGuards(AccessTokenGuard)
   @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     type: DepartmentDto,
   })
-  async create(@Body() createDepartmentDto: CreateDepartmentDto) {
+  async create(
+    @Body() createDepartmentDto: CreateDepartmentDto,
+    @Req() request: any,
+  ) {
+    const ability = this.caslAbilityFactory.createForDepartment(request.user);
+    if (!ability.can(Action.Create, Department)) {
+      throw new ForbiddenException("User can't create department");
+    }
+
     const department = await this.departmentsService.create(
       createDepartmentDto,
     );
@@ -61,7 +76,7 @@ export class DepartmentsController {
   }
 
   @Patch(":id")
-  @UseGuards(AdminGuard)
+  @UseGuards(AccessTokenGuard)
   @ApiBearerAuth()
   @ApiResponse({
     status: 200,
@@ -70,7 +85,13 @@ export class DepartmentsController {
   async update(
     @Param("id") id: number,
     @Body() updateDepartmentDto: UpdateDepartmentDto,
+    @Req() request: any,
   ) {
+    const ability = this.caslAbilityFactory.createForDepartment(request.user);
+    if (!ability.can(Action.Update, Department)) {
+      throw new ForbiddenException("User can't update department");
+    }
+
     const department = await this.departmentsService.update(
       +id,
       updateDepartmentDto,
@@ -80,13 +101,17 @@ export class DepartmentsController {
   }
 
   @Delete(":id")
-  @UseGuards(AdminGuard)
+  @UseGuards(AccessTokenGuard)
   @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     type: DepartmentDto,
   })
-  async remove(@Param("id") id: number) {
+  async remove(@Param("id") id: number, @Req() request: any) {
+    const ability = this.caslAbilityFactory.createForDepartment(request.user);
+    if (!ability.can(Action.Delete, Department)) {
+      throw new ForbiddenException("User can't delete department");
+    }
     const department = await this.departmentsService.remove(+id);
 
     return this.departmentsService.mapDepartmentToDepartmentDto(department);

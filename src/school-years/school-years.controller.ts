@@ -6,19 +6,37 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
+  Req,
+  ForbiddenException,
 } from "@nestjs/common";
 import { SchoolYearsService } from "./school-years.service";
 import { CreateSchoolYearDto } from "./dto/create-school-year.dto";
 import { UpdateSchoolYearDto } from "./dto/update-school-year.dto";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import { AccessTokenGuard } from "src/common/guards/access-token.guard";
+import { Action, CaslAbilityFactory } from "src/casl/casl-ability.factory";
 
 @Controller("school-years")
 @ApiTags("school-years")
 export class SchoolYearsController {
-  constructor(private readonly schoolYearsService: SchoolYearsService) {}
+  constructor(
+    private readonly schoolYearsService: SchoolYearsService,
+    private readonly caslAbilityFactory: CaslAbilityFactory,
+  ) {}
 
   @Post()
-  async create(@Body() createSchoolYearDto: CreateSchoolYearDto) {
+  @UseGuards(AccessTokenGuard)
+  @ApiBearerAuth()
+  async create(
+    @Body() createSchoolYearDto: CreateSchoolYearDto,
+    @Req() request: any,
+  ) {
+    const ability = this.caslAbilityFactory.createForSchoolYear(request.user);
+    if (ability.cannot(Action.Create, "all")) {
+      throw new ForbiddenException("Can't create school year");
+    }
+
     const schoolYear = await this.schoolYearsService.create(
       createSchoolYearDto,
     );
@@ -36,7 +54,14 @@ export class SchoolYearsController {
   }
 
   @Post(":id/current")
-  async setCurrent(@Param("id") id: string) {
+  @UseGuards(AccessTokenGuard)
+  @ApiBearerAuth()
+  async setCurrent(@Param("id") id: string, @Req() request: any) {
+    const ability = this.caslAbilityFactory.createForSchoolYear(request.user);
+    if (ability.cannot(Action.Update, "all")) {
+      throw new ForbiddenException("Can't set current school year");
+    }
+
     const schoolYear = await this.schoolYearsService.setCurrent(id);
 
     return this.schoolYearsService.mapToDto(schoolYear);
@@ -57,10 +82,18 @@ export class SchoolYearsController {
   }
 
   @Patch(":id")
+  @UseGuards(AccessTokenGuard)
+  @ApiBearerAuth()
   async update(
     @Param("id") id: string,
     @Body() updateSchoolYearDto: UpdateSchoolYearDto,
+    @Req() request: any,
   ) {
+    const ability = this.caslAbilityFactory.createForSchoolYear(request.user);
+    if (ability.cannot(Action.Update, "all")) {
+      throw new ForbiddenException("Can't update school year");
+    }
+
     const schoolYear = await this.schoolYearsService.update(
       id,
       updateSchoolYearDto,
@@ -70,7 +103,14 @@ export class SchoolYearsController {
   }
 
   @Delete(":id")
-  async remove(@Param("id") id: string) {
+  @UseGuards(AccessTokenGuard)
+  @ApiBearerAuth()
+  async remove(@Param("id") id: string, @Req() request: any) {
+    const ability = this.caslAbilityFactory.createForSchoolYear(request.user);
+    if (ability.cannot(Action.Delete, "all")) {
+      throw new ForbiddenException("Can't delete school year");
+    }
+
     const schoolYear = await this.schoolYearsService.remove(id);
 
     return this.schoolYearsService.mapToDto(schoolYear);

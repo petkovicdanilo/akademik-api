@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common";
+import { CaslModule } from "src/casl/casl.module";
 import { UtilModule } from "src/util/util.module";
 import { AdminsModule } from "./admins/admins.module";
 import { ProfessorsModule } from "./professors/professors.module";
@@ -15,6 +16,7 @@ import { UsersController } from "./users.controller";
     ProfilesModule,
     UnverifiedProfilesModule,
     UtilModule,
+    CaslModule,
   ],
   exports: [
     AdminsModule,

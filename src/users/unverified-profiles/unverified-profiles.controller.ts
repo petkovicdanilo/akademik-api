@@ -7,11 +7,12 @@ import {
   Query,
   Req,
   UseGuards,
+  ForbiddenException,
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { Request } from "express";
 import { Pagination } from "nestjs-typeorm-paginate";
-import { AdminGuard } from "src/auth/guards/admin.guard";
+import { AccessTokenGuard } from "src/common/guards/access-token.guard";
+import { Action, CaslAbilityFactory } from "src/casl/casl-ability.factory";
 import { PaginationParams } from "src/pagination/pagination-params.dto";
 import { UnverifiedProfilesPaginatedDto } from "src/pagination/unverified-profile.dto";
 import { UtilService } from "src/util/util.service";
@@ -22,13 +23,14 @@ import { UnverifiedProfilesService } from "./unverified-profiles.service";
 
 @Controller("users/unverified")
 @ApiTags("users")
-@UseGuards(AdminGuard)
+@UseGuards(AccessTokenGuard)
 @ApiBearerAuth()
 export class UnverifiedProfilesController {
   constructor(
     private readonly profilesService: ProfilesService,
     private readonly unverifiedProfilesService: UnverifiedProfilesService,
     private readonly utilService: UtilService,
+    private readonly caslAbilityFactory: CaslAbilityFactory,
   ) {}
 
   @Get()
@@ -47,9 +49,16 @@ export class UnverifiedProfilesController {
     type: UnverifiedProfilesPaginatedDto,
   })
   async findAll(
-    @Req() request: Request,
+    @Req() request: any,
     @Query() paginationParams: PaginationParams,
   ): Promise<Pagination<UnverifiedProfileDto>> {
+    const ability = this.caslAbilityFactory.createForUnverifiedUser(
+      request.user,
+    );
+    if (ability.cannot(Action.Read, "all")) {
+      throw new ForbiddenException("Can't list unverified users");
+    }
+
     const page = paginationParams.page || 1;
     const limit = paginationParams.limit || 10;
 
@@ -75,7 +84,14 @@ export class UnverifiedProfilesController {
     status: 200,
     type: UnverifiedProfileDto,
   })
-  async findOne(@Param("id") id: number) {
+  async findOne(@Param("id") id: number, @Req() request: any) {
+    const ability = this.caslAbilityFactory.createForUnverifiedUser(
+      request.user,
+    );
+    if (ability.cannot(Action.Read, "all")) {
+      throw new ForbiddenException("Can't get unverified user");
+    }
+
     const profile = await this.unverifiedProfilesService.findOne(+id);
 
     return this.unverifiedProfilesService.mapToDto(profile);
@@ -86,7 +102,14 @@ export class UnverifiedProfilesController {
     status: 200,
     type: ProfileDto,
   })
-  async verify(@Param("id") id: number) {
+  async verify(@Param("id") id: number, @Req() request: any) {
+    const ability = this.caslAbilityFactory.createForUnverifiedUser(
+      request.user,
+    );
+    if (ability.cannot(Action.Update, "all")) {
+      throw new ForbiddenException("Can't verify user");
+    }
+
     const profile = await this.unverifiedProfilesService.verify(id);
 
     return this.profilesService.mapProfileToProfileDto(profile);
@@ -97,7 +120,14 @@ export class UnverifiedProfilesController {
     status: 200,
     type: UnverifiedProfileDto,
   })
-  async remove(@Param("id") id: number) {
+  async remove(@Param("id") id: number, @Req() request: any) {
+    const ability = this.caslAbilityFactory.createForUnverifiedUser(
+      request.user,
+    );
+    if (ability.cannot(Action.Delete, "all")) {
+      throw new ForbiddenException("Can't verify user");
+    }
+
     const profile = await this.unverifiedProfilesService.remove(+id);
 
     return this.unverifiedProfilesService.mapToDto(profile);

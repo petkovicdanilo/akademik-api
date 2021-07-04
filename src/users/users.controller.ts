@@ -1,18 +1,17 @@
 import {
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   Param,
   Query,
   Req,
-  Request as NestJsRequest,
   UseGuards,
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { Request } from "express";
 import { Pagination } from "nestjs-typeorm-paginate";
-import { AdminGuard } from "src/auth/guards/admin.guard";
-import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
+import { AccessTokenGuard } from "src/common/guards/access-token.guard";
+import { Action, CaslAbilityFactory } from "src/casl/casl-ability.factory";
 import { PaginationParams } from "src/pagination/pagination-params.dto";
 import { ProfilesPaginatedDto } from "src/pagination/profile.dto";
 import { UtilService } from "src/util/util.service";
@@ -21,15 +20,16 @@ import { ProfilesService } from "./profiles/profiles.service";
 
 @Controller("users")
 @ApiTags("users")
+@UseGuards(AccessTokenGuard)
 @ApiBearerAuth()
 export class UsersController {
   constructor(
     private readonly profilesService: ProfilesService,
     private readonly utilService: UtilService,
+    private readonly caslAbilityFactory: CaslAbilityFactory,
   ) {}
 
   @Get()
-  @UseGuards(AdminGuard)
   @ApiQuery({
     name: "page",
     type: Number,
@@ -45,9 +45,14 @@ export class UsersController {
     type: ProfilesPaginatedDto,
   })
   async findAll(
-    @Req() request: Request,
+    @Req() request: any,
     @Query() paginationParams: PaginationParams,
   ): Promise<Pagination<ProfileDto>> {
+    const ability = this.caslAbilityFactory.createForUser(request.user);
+    if (ability.cannot(Action.Read, "all")) {
+      throw new ForbiddenException("Can't list all users");
+    }
+
     const page = paginationParams.page || 1;
     const limit = paginationParams.limit || 10;
 
@@ -69,21 +74,25 @@ export class UsersController {
   }
 
   @Delete(":id")
-  @UseGuards(AdminGuard)
   @ApiResponse({
     status: 200,
     type: ProfileDto,
   })
-  async remove(@Param("id") id: number) {
-    const profile = await this.profilesService.remove(+id);
+  async remove(@Param("id") id: number, @Req() request: any) {
+    const ability = this.caslAbilityFactory.createForUser(request.user);
+    const profile = await this.profilesService.findOne(id);
 
-    return this.profilesService.mapProfileToProfileDto(profile);
+    if (ability.cannot(Action.Delete, profile)) {
+      throw new ForbiddenException("User can't delete profile");
+    }
+
+    const removedProfile = await this.profilesService.remove(+id);
+    return this.profilesService.mapProfileToProfileDto(removedProfile);
   }
 
   @Get("me")
-  @UseGuards(JwtAuthGuard)
-  async me(@NestJsRequest() req: any) {
-    const profile = await this.profilesService.findOne(req.user.id);
+  async me(@Req() request: any) {
+    const profile = await this.profilesService.findOne(request.user.id);
 
     return this.profilesService.mapProfileToProfileDto(profile);
   }

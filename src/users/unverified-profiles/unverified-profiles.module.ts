@@ -7,6 +7,7 @@ import { UtilModule } from "src/util/util.module";
 import { Profile } from "../profiles/entities/profile.entity";
 import { ProfilesModule } from "../profiles/profiles.module";
 import { MailModule } from "src/mail/mail.module";
+import { CaslModule } from "src/casl/casl.module";
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { MailModule } from "src/mail/mail.module";
     UtilModule,
     ProfilesModule,
     MailModule,
+    CaslModule,
   ],
   controllers: [UnverifiedProfilesController],
   providers: [UnverifiedProfilesService],

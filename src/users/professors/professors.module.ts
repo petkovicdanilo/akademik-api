@@ -8,12 +8,14 @@ import { ProfilesModule } from "../profiles/profiles.module";
 import { Profile } from "../profiles/entities/profile.entity";
 import { Department } from "src/departments/entities/department.entity";
 import { ProfessorsOtherController } from "./professors-other.controller";
+import { CaslModule } from "src/casl/casl.module";
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Professor, Profile, Department]),
     UtilModule,
     ProfilesModule,
+    CaslModule,
   ],
   exports: [ProfessorsService],
   controllers: [ProfessorsController, ProfessorsOtherController],

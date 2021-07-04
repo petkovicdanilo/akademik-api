@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   Param,
   Patch,
@@ -11,9 +12,9 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { Request } from "express";
 import { Pagination } from "nestjs-typeorm-paginate";
-import { AdminGuard } from "src/auth/guards/admin.guard";
+import { AccessTokenGuard } from "src/common/guards/access-token.guard";
+import { Action, CaslAbilityFactory } from "src/casl/casl-ability.factory";
 import { AdminsPaginatedDto } from "src/pagination/admin.dto";
 import { PaginationParams } from "src/pagination/pagination-params.dto";
 import { UtilService } from "src/util/util.service";
@@ -24,12 +25,13 @@ import { UpdateAdminDto } from "./dto/update-admin.dto";
 
 @Controller("users/admins")
 @ApiTags("admins")
-@UseGuards(AdminGuard)
+@UseGuards(AccessTokenGuard)
 @ApiBearerAuth()
 export class AdminsController {
   constructor(
     private readonly adminsService: AdminsService,
     private readonly utilService: UtilService,
+    private readonly caslAbilityFactory: CaslAbilityFactory,
   ) {}
 
   @Get()
@@ -48,9 +50,14 @@ export class AdminsController {
     type: AdminsPaginatedDto,
   })
   async findAll(
-    @Req() request: Request,
+    @Req() request: any,
     @Query() paginationParams: PaginationParams,
   ): Promise<Pagination<AdminDto>> {
+    const ability = this.caslAbilityFactory.createForAdmin(request.user);
+    if (ability.cannot(Action.Read, "all")) {
+      throw new ForbiddenException("Can't list admins");
+    }
+
     const page = paginationParams.page || 1;
     const limit = paginationParams.limit || 10;
 
@@ -76,13 +83,26 @@ export class AdminsController {
     status: 200,
     type: AdminDto,
   })
-  async findOne(@Param("id") id: number): Promise<AdminDto> {
+  async findOne(
+    @Param("id") id: number,
+    @Req() request: any,
+  ): Promise<AdminDto> {
+    const ability = this.caslAbilityFactory.createForAdmin(request.user);
+    if (ability.cannot(Action.Read, "all")) {
+      throw new ForbiddenException("Can't get admin");
+    }
+
     const admin = await this.adminsService.findOne(+id);
     return this.adminsService.mapAdminToAdminDto(admin);
   }
 
   @Post()
-  async create(@Body() createAdminDto: CreateUserDto) {
+  async create(@Body() createAdminDto: CreateUserDto, @Req() request: any) {
+    const ability = this.caslAbilityFactory.createForAdmin(request.user);
+    if (ability.cannot(Action.Create, "all")) {
+      throw new ForbiddenException("Can't create admin");
+    }
+
     const admin = await this.adminsService.create(createAdminDto);
     return this.adminsService.mapAdminToAdminDto(admin);
   }
@@ -95,7 +115,13 @@ export class AdminsController {
   async update(
     @Param("id") id: number,
     @Body() updateAdminDto: UpdateAdminDto,
+    @Req() request: any,
   ): Promise<AdminDto> {
+    const ability = this.caslAbilityFactory.createForAdmin(request.user);
+    if (ability.cannot(Action.Update, "all")) {
+      throw new ForbiddenException("Can't update admin");
+    }
+
     const admin = await this.adminsService.update(+id, updateAdminDto);
     return this.adminsService.mapAdminToAdminDto(admin);
   }
@@ -105,7 +131,15 @@ export class AdminsController {
     status: 200,
     type: AdminDto,
   })
-  async remove(@Param("id") id: number): Promise<AdminDto> {
+  async remove(
+    @Param("id") id: number,
+    @Req() request: any,
+  ): Promise<AdminDto> {
+    const ability = this.caslAbilityFactory.createForAdmin(request.user);
+    if (ability.cannot(Action.Delete, "all")) {
+      throw new ForbiddenException("Can't delete admin");
+    }
+
     const admin = await this.adminsService.remove(+id);
     return this.adminsService.mapAdminToAdminDto(admin);
   }

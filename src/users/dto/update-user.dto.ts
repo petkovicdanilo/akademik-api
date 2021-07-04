@@ -4,24 +4,29 @@ import {
   IsDateString,
   IsEmail,
   IsNotEmpty,
+  IsOptional,
 } from "class-validator";
 
 export abstract class UpdateUserDto {
   @ApiProperty({ required: false })
   @IsAlphanumeric()
-  firstName: string;
+  @IsOptional()
+  firstName?: string;
 
   @ApiProperty({ required: false })
   @IsAlphanumeric()
-  lastName: string;
+  @IsOptional()
+  lastName?: string;
 
   @ApiProperty({ required: false })
   @IsEmail()
-  email: string;
+  @IsOptional()
+  email?: string;
 
   @ApiProperty({ required: false })
   @IsNotEmpty()
-  password: string;
+  @IsOptional()
+  password?: string;
 
   @ApiProperty({
     required: false,
@@ -29,5 +34,6 @@ export abstract class UpdateUserDto {
     format: "date",
   })
   @IsDateString()
-  dateOfBirth: Date;
+  @IsOptional()
+  dateOfBirth?: Date;
 }

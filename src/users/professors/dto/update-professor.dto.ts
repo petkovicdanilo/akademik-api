@@ -1,11 +1,15 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEnum, IsNotEmpty } from "class-validator";
+import { IsEnum, IsNumber, IsOptional } from "class-validator";
 import { UpdateUserDto } from "src/users/dto/update-user.dto";
 import { ProfessorTitle } from "../types";
 
 export class UpdateProfessorDto extends UpdateUserDto {
-  @IsNotEmpty()
-  departmentId: number;
+  @ApiProperty({
+    required: false,
+  })
+  @IsOptional()
+  @IsNumber()
+  departmentId?: number;
 
   @ApiProperty({
     enum: [
@@ -15,7 +19,9 @@ export class UpdateProfessorDto extends UpdateUserDto {
       "FullProfessor",
     ],
     type: "string",
+    required: false,
   })
   @IsEnum(ProfessorTitle)
-  title: ProfessorTitle;
+  @IsOptional()
+  title?: ProfessorTitle;
 }

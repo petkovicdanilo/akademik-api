@@ -1,7 +1,9 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { IsEnum, IsNotEmpty } from "class-validator";
 import { ProfessorTitle } from "../types";
 
 export class ProfessorSpecificDto {
+  @IsNotEmpty()
   departmentId: number;
 
   @ApiProperty({
@@ -13,5 +15,6 @@ export class ProfessorSpecificDto {
     ],
     type: "string",
   })
+  @IsEnum(ProfessorTitle)
   title: ProfessorTitle;
 }

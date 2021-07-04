@@ -64,11 +64,4 @@ export class UpdateSubjectDto {
   //     required: false,
   //   })
   //   assistantId?: number;
-
-  @IsNumber()
-  @IsOptional()
-  @ApiProperty({
-    required: false,
-  })
-  departmentId?: number;
 }

@@ -79,14 +79,6 @@ export class SubjectsService {
     subject.semester = updateSubjectDto.semester ?? subject.semester;
     subject.year = updateSubjectDto.year ?? subject.year;
 
-    if (updateSubjectDto.departmentId) {
-      const department = await this.departmentsService.findOne(
-        updateSubjectDto.departmentId,
-      );
-
-      subject.departmentId = department.id;
-    }
-
     if (updateSubjectDto.professorId) {
       const professor = await this.professorsService.findOne(
         updateSubjectDto.professorId,

@@ -46,7 +46,6 @@ export class EnrolledSubjectsSeederService {
         );
 
         pickedSubjects.forEach((subject) => {
-          const grade = faker.datatype.number({ min: 1, max: 10 });
           enrolledSubjects.push({
             student,
             subject,
@@ -55,7 +54,6 @@ export class EnrolledSubjectsSeederService {
                 (schoolYear) => schoolYear.id >= student.startingSchoolYear.id,
               ),
             ),
-            grade: grade > 5 ? grade : null,
           });
         });
       });

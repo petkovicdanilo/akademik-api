@@ -21,7 +21,10 @@ export class ExamRegistrationsService {
     private readonly schoolYearsService: SchoolYearsService,
   ) {}
 
-  findByExamPeriodSubject(examPeriodId: number, subjectId: number) {
+  findByExamPeriodSubject(
+    examPeriodId: number,
+    subjectId: number,
+  ): Promise<ExamRegistration[]> {
     return this.examRegistrationsRepository.find({
       where: {
         examPeriodId,
@@ -34,7 +37,7 @@ export class ExamRegistrationsService {
     studentId: number,
     examPeriodId: number,
     subjectIds: number[],
-  ) {
+  ): Promise<ExamRegistration[]> {
     const student = await this.studentsService.findOne(studentId);
     const examPeriod = await this.examPeriodsService.findOne(examPeriodId);
     const subjects = await this.subjectsService.find(subjectIds);
@@ -85,7 +88,10 @@ export class ExamRegistrationsService {
     return this.examRegistrationsRepository.save(examRegistrationsToInsert);
   }
 
-  async findByStudentSchoolYear(studentId: number, schoolYearId: string) {
+  async findByStudentSchoolYear(
+    studentId: number,
+    schoolYearId: string,
+  ): Promise<ExamRegistration[]> {
     const student = await this.studentsService.findOne(studentId);
     const schoolYear = await this.schoolYearsService.findOne(schoolYearId);
 

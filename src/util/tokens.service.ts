@@ -5,7 +5,7 @@ import { ConfigService } from "@nestjs/config";
 export class TokensService {
   constructor(private readonly configService: ConfigService) {}
 
-  parseToken(header: string) {
+  parseToken(header: string): string {
     return header.split("Bearer ")[1];
   }
 

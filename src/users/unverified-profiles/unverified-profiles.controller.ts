@@ -81,7 +81,10 @@ export class UnverifiedProfilesController {
     status: 200,
     type: UnverifiedProfileDto,
   })
-  async findOne(@Param("id") id: number, @Req() request: any) {
+  async findOne(
+    @Param("id") id: number,
+    @Req() request: any,
+  ): Promise<UnverifiedProfileDto> {
     const ability = this.caslAbilityFactory.createForUnverifiedUser(
       request.user,
     );
@@ -99,7 +102,10 @@ export class UnverifiedProfilesController {
     status: 200,
     type: ProfileDto,
   })
-  async verify(@Param("id") id: number, @Req() request: any) {
+  async verify(
+    @Param("id") id: number,
+    @Req() request: any,
+  ): Promise<ProfileDto> {
     const ability = this.caslAbilityFactory.createForUnverifiedUser(
       request.user,
     );
@@ -117,7 +123,10 @@ export class UnverifiedProfilesController {
     status: 200,
     type: UnverifiedProfileDto,
   })
-  async remove(@Param("id") id: number, @Req() request: any) {
+  async remove(
+    @Param("id") id: number,
+    @Req() request: any,
+  ): Promise<UnverifiedProfileDto> {
     const ability = this.caslAbilityFactory.createForUnverifiedUser(
       request.user,
     );

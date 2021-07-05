@@ -92,7 +92,7 @@ export class ProfessorsController {
     @Param("id") id: number,
     @Body() professorSpecificDto: ProfessorSpecificDto,
     @Req() request: any,
-  ) {
+  ): Promise<ProfessorDto> {
     const profile = await this.profilesService.findOne(id);
     const ability = this.caslAbilityFactory.createForProfessor(request.user);
 

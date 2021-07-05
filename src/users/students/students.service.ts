@@ -53,7 +53,7 @@ export class StudentsService {
     id: number,
     studentSpecificDto: StudentSpecificDto,
     startingSchoolYearId: string = null,
-  ) {
+  ): Promise<Student> {
     const profile = await this.profilesService.findOne(id);
 
     if (profile.hasAdditionalInfo) {

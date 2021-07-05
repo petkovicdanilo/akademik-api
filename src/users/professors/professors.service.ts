@@ -50,7 +50,7 @@ export class ProfessorsService {
   async addProfessorSpecificInfo(
     id: number,
     professorSpecificDto: ProfessorSpecificDto,
-  ) {
+  ): Promise<Professor> {
     const profile = await this.profilesService.findOne(id);
 
     if (profile.hasAdditionalInfo) {

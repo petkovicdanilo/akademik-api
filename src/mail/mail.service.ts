@@ -11,7 +11,7 @@ export class MailService {
     private readonly utilService: UtilService,
   ) {}
 
-  async sendResetPasswordEmail(profile: Profile, token: string) {
+  async sendResetPasswordEmail(profile: Profile, token: string): Promise<void> {
     const url = encodeURI(
       this.utilService.getFrontendResetPasswordUrl() +
         `?token=${token}&name=${profile.firstName} ${profile.lastName}`,
@@ -29,7 +29,7 @@ export class MailService {
     });
   }
 
-  async sendVerifiedEmail(profile: Profile) {
+  async sendVerifiedEmail(profile: Profile): Promise<void> {
     const url = this.utilService.getFrontendUrl();
 
     await this.mailerService.sendMail({

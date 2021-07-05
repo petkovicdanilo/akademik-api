@@ -33,7 +33,7 @@ export class UnverifiedProfilesService {
     );
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<UnverifiedProfile> {
     const profile = await this.unverifiedProfilesRepository.findOne(id);
 
     if (!profile) {
@@ -43,7 +43,7 @@ export class UnverifiedProfilesService {
     return profile;
   }
 
-  async create(profile: RegisterDto) {
+  async create(profile: RegisterDto): Promise<UnverifiedProfile> {
     if (profile.type == ProfileType.Admin) {
       throw new InvalidDataException("Type 'admin' not valid");
     }

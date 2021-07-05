@@ -16,6 +16,7 @@ import { CreateExamPeriodDto } from "./dto/create-exam-period.dto";
 import { UpdateExamPeriodDto } from "./dto/update-exam-period.dto";
 import { ExamPeriodsService } from "./exam-periods.service";
 import { AccessForbiddenException } from "src/common/exceptions/access-forbidden.exception";
+import { ExamPeriodDto } from "./dto/exam-period.dto";
 
 @Controller("exam-periods")
 @ApiTags("exam-periods")
@@ -31,7 +32,7 @@ export class ExamPeriodsController {
   async create(
     @Body() createExamPeriodDto: CreateExamPeriodDto,
     @Req() request: any,
-  ) {
+  ): Promise<ExamPeriodDto> {
     const ability = this.caslAbilityFactory.createForExamPeriod(request.user);
     if (ability.cannot(Action.Create, "all")) {
       throw new AccessForbiddenException("Can't create exam period");
@@ -45,7 +46,7 @@ export class ExamPeriodsController {
   }
 
   @Get(":id")
-  async findOne(@Param("id") id: number) {
+  async findOne(@Param("id") id: number): Promise<ExamPeriodDto> {
     const examPeriod = await this.examPeriodsService.findOne(+id);
 
     return this.examPeriodsService.mapToDto(examPeriod);
@@ -58,7 +59,7 @@ export class ExamPeriodsController {
     @Param("id") id: number,
     @Body() updateExamPeriodDto: UpdateExamPeriodDto,
     @Req() request: any,
-  ) {
+  ): Promise<ExamPeriodDto> {
     const ability = this.caslAbilityFactory.createForExamPeriod(request.user);
     if (ability.cannot(Action.Update, "all")) {
       throw new AccessForbiddenException("Can't update exam period");
@@ -75,7 +76,10 @@ export class ExamPeriodsController {
   @Delete(":id")
   @UseGuards(AccessTokenGuard)
   @ApiBearerAuth()
-  async remove(@Param("id") id: number, @Req() request: any) {
+  async remove(
+    @Param("id") id: number,
+    @Req() request: any,
+  ): Promise<ExamPeriodDto> {
     const ability = this.caslAbilityFactory.createForExamPeriod(request.user);
     if (ability.cannot(Action.Delete, "all")) {
       throw new AccessForbiddenException("Can't delete exam period");

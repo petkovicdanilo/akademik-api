@@ -26,14 +26,14 @@ export class AuthController {
     status: 200,
     type: TokensDto,
   })
-  async login(@Body() loginDto: LoginDto) {
+  async login(@Body() loginDto: LoginDto): Promise<TokensDto> {
     return this.authService.login(loginDto);
   }
 
   @Post("logout")
   @ApiBearerAuth()
   @UseGuards(RefreshTokenGuard)
-  async logout(@Request() req: any) {
+  async logout(@Request() req: any): Promise<void> {
     const refreshToken = this.tokensService.parseToken(
       req.headers.authorization,
     );
@@ -56,7 +56,7 @@ export class AuthController {
   @Post("refresh")
   @UseGuards(RefreshTokenGuard)
   @ApiBearerAuth()
-  refreshToken(@Request() req: any) {
+  refreshToken(@Request() req: any): Promise<TokensDto> {
     const refreshToken = this.tokensService.parseToken(
       req.headers.authorization,
     );
@@ -64,7 +64,9 @@ export class AuthController {
   }
 
   @Post("forgot-password")
-  async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+  async forgotPassword(
+    @Body() forgotPasswordDto: ForgotPasswordDto,
+  ): Promise<void> {
     return this.authService.forgotPassword(forgotPasswordDto.email);
   }
 
@@ -73,7 +75,7 @@ export class AuthController {
   async resetPassword(
     @Request() request,
     @Body() resetPasswordDto: ResetPasswordDto,
-  ) {
+  ): Promise<void> {
     return this.authService.resetPassword(resetPasswordDto, request.user);
   }
 }

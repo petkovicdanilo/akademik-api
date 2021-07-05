@@ -17,7 +17,7 @@ export class ExamPeriodsService {
     private readonly schoolYearsService: SchoolYearsService,
   ) {}
 
-  async create(createExamPeriodDto: CreateExamPeriodDto) {
+  async create(createExamPeriodDto: CreateExamPeriodDto): Promise<ExamPeriod> {
     const schoolYear = await this.schoolYearsService.findOne(
       createExamPeriodDto.schoolYearId,
     );
@@ -39,7 +39,7 @@ export class ExamPeriodsService {
     }
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<ExamPeriod> {
     const examPeriod = await this.examPeriodsRepository.findOne(id);
 
     if (!examPeriod) {
@@ -49,7 +49,10 @@ export class ExamPeriodsService {
     return examPeriod;
   }
 
-  async update(id: number, updateExamPeriodDto: UpdateExamPeriodDto) {
+  async update(
+    id: number,
+    updateExamPeriodDto: UpdateExamPeriodDto,
+  ): Promise<ExamPeriod> {
     const examPeriod = await this.findOne(id);
 
     examPeriod.name = updateExamPeriodDto.name ?? examPeriod.name;
@@ -77,7 +80,7 @@ export class ExamPeriodsService {
     }
   }
 
-  async remove(id: number) {
+  async remove(id: number): Promise<ExamPeriod> {
     const examPeriod = await this.findOne(id);
 
     this.examPeriodsRepository.remove(examPeriod);
@@ -86,7 +89,7 @@ export class ExamPeriodsService {
     return examPeriod;
   }
 
-  async findBySchoolYearId(schoolYearId: string) {
+  async findBySchoolYearId(schoolYearId: string): Promise<ExamPeriod[]> {
     const schoolYear = await this.schoolYearsService.findOne(schoolYearId);
 
     return this.examPeriodsRepository.find({

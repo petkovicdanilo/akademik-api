@@ -79,7 +79,7 @@ export class ProfilesService {
     });
   }
 
-  hashPassword(password: string, salt: string) {
+  hashPassword(password: string, salt: string): Promise<string> {
     return bcrypt.hash(password, salt);
   }
 

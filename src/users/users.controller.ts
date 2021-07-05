@@ -73,7 +73,10 @@ export class UsersController {
     status: 200,
     type: ProfileDto,
   })
-  async remove(@Param("id") id: number, @Req() request: any) {
+  async remove(
+    @Param("id") id: number,
+    @Req() request: any,
+  ): Promise<ProfileDto> {
     const ability = this.caslAbilityFactory.createForUser(request.user);
     const profile = await this.profilesService.findOne(id);
 
@@ -86,7 +89,7 @@ export class UsersController {
   }
 
   @Get("me")
-  async me(@Req() request: any) {
+  async me(@Req() request: any): Promise<ProfileDto> {
     const profile = await this.profilesService.findOne(request.user.id);
 
     return this.profilesService.mapProfileToProfileDto(profile);

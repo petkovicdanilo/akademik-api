@@ -15,7 +15,7 @@ export class SchoolYearsService {
     private readonly schoolYearsRepository: Repository<SchoolYear>,
   ) {}
 
-  async create(createSchoolYearDto: CreateSchoolYearDto) {
+  async create(createSchoolYearDto: CreateSchoolYearDto): Promise<SchoolYear> {
     const startDate = new Date(createSchoolYearDto.startDate.toString());
     const endDate = new Date(createSchoolYearDto.endDate.toString());
 
@@ -46,7 +46,7 @@ export class SchoolYearsService {
     }
   }
 
-  findAll() {
+  findAll(): Promise<SchoolYear[]> {
     return this.schoolYearsRepository.find({
       order: {
         id: "DESC",
@@ -54,7 +54,7 @@ export class SchoolYearsService {
     });
   }
 
-  async findOne(id: string) {
+  async findOne(id: string): Promise<SchoolYear> {
     const schoolYear = await this.schoolYearsRepository.findOne(id);
 
     if (!schoolYear) {
@@ -64,7 +64,10 @@ export class SchoolYearsService {
     return schoolYear;
   }
 
-  async update(id: string, updateSchoolYearDto: UpdateSchoolYearDto) {
+  async update(
+    id: string,
+    updateSchoolYearDto: UpdateSchoolYearDto,
+  ): Promise<SchoolYear> {
     const schoolYear = await this.findOne(id);
 
     schoolYear.startDate =
@@ -84,7 +87,7 @@ export class SchoolYearsService {
     return schoolYear;
   }
 
-  async remove(id: string) {
+  async remove(id: string): Promise<SchoolYear> {
     const schoolYear = await this.findOne(id);
 
     if (schoolYear.current) {

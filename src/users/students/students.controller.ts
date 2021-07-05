@@ -89,7 +89,7 @@ export class StudentsController {
     @Param("id") id: number,
     @Body() studentSpecificDto: StudentSpecificDto,
     @Req() request: any,
-  ) {
+  ): Promise<StudentDto> {
     const profile = await this.profilesService.findOne(id);
     const ability = this.caslAbilityFactory.createForStudent(request.user);
 

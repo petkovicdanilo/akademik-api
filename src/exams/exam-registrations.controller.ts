@@ -16,6 +16,7 @@ import { CreateExamRegistrationsDto } from "./dto/create-exam-registrations.dto"
 import { GradesDto } from "./dto/grades.dto";
 import { ExamRegistrationsService } from "./exam-registrations.service";
 import { AccessForbiddenException } from "src/common/exceptions/access-forbidden.exception";
+import { ExamRegistrationDto } from "./dto/exam-registration.dto";
 
 @Controller()
 @UseGuards(AccessTokenGuard)
@@ -34,7 +35,7 @@ export class ExamRegistrationsController {
     @Param("id") examPeriodId: number,
     @Param("subjectId") subjectId: number,
     @Req() request: any,
-  ) {
+  ): Promise<ExamRegistrationDto[]> {
     const subject = await this.subjectsService.findOne(subjectId);
     const ability = this.caslAbilityFactory.createForGrade(request.user);
 
@@ -57,7 +58,7 @@ export class ExamRegistrationsController {
     @Param("id") examPeriodId: number,
     @Body() createExamRegistrations: CreateExamRegistrationsDto,
     @Req() request: any,
-  ) {
+  ): Promise<ExamRegistrationDto[]> {
     const student = await this.studentsService.findOne(
       createExamRegistrations.studentId,
     );
@@ -85,7 +86,7 @@ export class ExamRegistrationsController {
     @Param("id") studentId: number,
     @Param("schoolYearId") schoolYearId: string,
     @Req() request: any,
-  ) {
+  ): Promise<ExamRegistrationDto[]> {
     const student = await this.studentsService.findOne(studentId);
     const ability = this.caslAbilityFactory.createForExamRegistration(
       request.user,
@@ -115,7 +116,7 @@ export class ExamRegistrationsController {
     @Param("subjectId") subjectId: number,
     @Body() gradesDto: GradesDto[],
     @Req() request: any,
-  ) {
+  ): Promise<ExamRegistrationDto[]> {
     const subject = await this.subjectsService.findOne(subjectId);
     const ability = this.caslAbilityFactory.createForGrade(request.user);
 

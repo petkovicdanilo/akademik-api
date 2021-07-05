@@ -14,6 +14,7 @@ import { StudentsService } from "src/users/students/students.service";
 import { SubjectDto } from "./dto/subject.dto";
 import { SubjectsService } from "./subjects.service";
 import { AccessForbiddenException } from "src/common/exceptions/access-forbidden.exception";
+import { StudentsSubjectDto } from "./dto/students-subject.dto";
 
 @Controller()
 @ApiTags("subjects")
@@ -31,7 +32,7 @@ export class SubjectsOtherController {
     @Param("id") id: number,
     @Param("schoolYearId") schoolYearId: string,
     @Req() request: any,
-  ) {
+  ): Promise<StudentsSubjectDto[]> {
     const student = await this.studentsService.findOne(id);
     const ability = this.caslAbilityFactory.createForSubject(request.user);
 
@@ -54,7 +55,7 @@ export class SubjectsOtherController {
     @Param("schoolYearId") schoolYearId: string,
     @Body() subjectIds: number[],
     @Req() request: any,
-  ) {
+  ): Promise<StudentsSubjectDto[]> {
     const student = await this.studentsService.findOne(id);
     const ability = this.caslAbilityFactory.createForSubject(request.user);
 
@@ -78,14 +79,14 @@ export class SubjectsOtherController {
     status: 200,
     type: [SubjectDto],
   })
-  async findByDepartment(@Param("id") id: number) {
+  async findByDepartment(@Param("id") id: number): Promise<SubjectDto[]> {
     const subjects = await this.subjectsService.findByDepartment(id);
 
     return subjects.map((subject) => this.subjectsService.mapToDto(subject));
   }
 
   @Get("professor/:id/subjects")
-  async findByProfessor(@Param("id") id: number) {
+  async findByProfessor(@Param("id") id: number): Promise<SubjectDto[]> {
     const subjects = await this.subjectsService.findByProfessor(id);
 
     return subjects.map((subject) => this.subjectsService.mapToDto(subject));

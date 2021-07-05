@@ -32,7 +32,7 @@ export class AuthService {
     private readonly refreshTokensRepository: Repository<RefreshToken>,
   ) {}
 
-  async login(loginDto: LoginDto) {
+  async login(loginDto: LoginDto): Promise<TokensDto> {
     const profile = await this.profilesService.findByEmail(loginDto.email);
 
     if (!profile) {
@@ -54,12 +54,12 @@ export class AuthService {
     return this.unverifiedProfilesService.create(registerDto);
   }
 
-  async refreshToken(id: number, oldRefreshToken: string) {
+  async refreshToken(id: number, oldRefreshToken: string): Promise<TokensDto> {
     const profile = await this.profilesService.findOne(id);
     return this.generateTokens(profile, oldRefreshToken);
   }
 
-  async forgotPassword(email: string) {
+  async forgotPassword(email: string): Promise<void> {
     const profile = await this.profilesService.findByEmail(email);
 
     if (!profile) {
@@ -133,7 +133,7 @@ export class AuthService {
     };
   }
 
-  async invalidateRefreshToken(refreshToken: string) {
+  async invalidateRefreshToken(refreshToken: string): Promise<void> {
     await this.refreshTokensRepository.delete(refreshToken);
   }
 

@@ -92,7 +92,10 @@ export class AdminsController {
   }
 
   @Post()
-  async create(@Body() createAdminDto: CreateUserDto, @Req() request: any) {
+  async create(
+    @Body() createAdminDto: CreateUserDto,
+    @Req() request: any,
+  ): Promise<AdminDto> {
     const ability = this.caslAbilityFactory.createForAdmin(request.user);
     if (ability.cannot(Action.Create, "all")) {
       throw new AccessForbiddenException("Can't create admin");

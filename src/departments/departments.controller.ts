@@ -46,7 +46,7 @@ export class DepartmentsController {
     status: 200,
     type: DepartmentDto,
   })
-  async findOne(@Param("id") id: number) {
+  async findOne(@Param("id") id: number): Promise<DepartmentDto> {
     const department = await this.departmentsService.findOne(+id);
 
     return this.departmentsService.mapDepartmentToDepartmentDto(department);
@@ -62,7 +62,7 @@ export class DepartmentsController {
   async create(
     @Body() createDepartmentDto: CreateDepartmentDto,
     @Req() request: any,
-  ) {
+  ): Promise<DepartmentDto> {
     const ability = this.caslAbilityFactory.createForDepartment(request.user);
     if (!ability.can(Action.Create, Department)) {
       throw new AccessForbiddenException("User can't create department");
@@ -86,7 +86,7 @@ export class DepartmentsController {
     @Param("id") id: number,
     @Body() updateDepartmentDto: UpdateDepartmentDto,
     @Req() request: any,
-  ) {
+  ): Promise<DepartmentDto> {
     const ability = this.caslAbilityFactory.createForDepartment(request.user);
     if (!ability.can(Action.Update, Department)) {
       throw new AccessForbiddenException("User can't update department");
@@ -107,7 +107,10 @@ export class DepartmentsController {
     status: 200,
     type: DepartmentDto,
   })
-  async remove(@Param("id") id: number, @Req() request: any) {
+  async remove(
+    @Param("id") id: number,
+    @Req() request: any,
+  ): Promise<DepartmentDto> {
     const ability = this.caslAbilityFactory.createForDepartment(request.user);
     if (!ability.can(Action.Delete, Department)) {
       throw new AccessForbiddenException("User can't delete department");

@@ -6,16 +6,16 @@ import { PaginationParams } from "src/pagination/pagination-params.dto";
 export class UtilService {
   constructor(private readonly configService: ConfigService) {}
 
-  getAppRoute(path: string) {
+  getAppRoute(path: string): string {
     const url = new URL(path, this.configService.get<string>("APP_URL"));
     return url.toString();
   }
 
-  getFrontendUrl() {
+  getFrontendUrl(): string {
     return this.configService.get<string>("FRONTEND_URL");
   }
 
-  getFrontendResetPasswordUrl() {
+  getFrontendResetPasswordUrl(): string {
     return new URL("/auth/reset-password", this.getFrontendUrl()).toString();
   }
 

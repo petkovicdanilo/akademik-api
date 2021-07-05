@@ -53,7 +53,7 @@ export class SubjectsService {
     }
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<Subject> {
     const subject = await this.subjectsRepository.findOne(id);
 
     if (!subject) {
@@ -63,7 +63,7 @@ export class SubjectsService {
     return subject;
   }
 
-  find(ids: number[]) {
+  find(ids: number[]): Promise<Subject[]> {
     return this.subjectsRepository
       .createQueryBuilder("subject")
       .where("subject.id IN (:...ids)", { ids })
@@ -72,7 +72,10 @@ export class SubjectsService {
       .getMany();
   }
 
-  async update(id: number, updateSubjectDto: UpdateSubjectDto) {
+  async update(
+    id: number,
+    updateSubjectDto: UpdateSubjectDto,
+  ): Promise<Subject> {
     const subject = await this.findOne(id);
 
     subject.name = updateSubjectDto.name ?? subject.name;
@@ -96,7 +99,7 @@ export class SubjectsService {
     }
   }
 
-  async remove(id: number) {
+  async remove(id: number): Promise<Subject> {
     const subject = await this.findOne(id);
 
     this.subjectsRepository.remove(subject);
@@ -129,7 +132,7 @@ export class SubjectsService {
     subjectIds: number[],
     studentId: number,
     schoolYearId: string,
-  ) {
+  ): Promise<EnrolledSubject[]> {
     const student = await this.studentsService.findOne(studentId);
 
     const schoolYear = await this.schoolYearsService.findOne(schoolYearId);
@@ -190,7 +193,7 @@ export class SubjectsService {
     schoolYearId: string,
     subjectId: number,
     grade: Grade,
-  ) {
+  ): Promise<void> {
     const enrolledSubject = await this.enrolledSubjectsRepository
       .createQueryBuilder("enrolledSubject")
       .select("enrolledSubject")
@@ -223,7 +226,7 @@ export class SubjectsService {
       .getMany();
   }
 
-  findByProfessor(professorId: number) {
+  findByProfessor(professorId: number): Promise<Subject[]> {
     return this.subjectsRepository
       .createQueryBuilder("subject")
       .where("subject.professorId = :professorId", { professorId })

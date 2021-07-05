@@ -8,7 +8,6 @@ import {
   Delete,
   UseGuards,
   Req,
-  ForbiddenException,
 } from "@nestjs/common";
 import { SubjectsService } from "./subjects.service";
 import { CreateSubjectDto } from "./dto/create-subject.dto";
@@ -16,6 +15,7 @@ import { UpdateSubjectDto } from "./dto/update-subject.dto";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { AccessTokenGuard } from "src/common/guards/access-token.guard";
 import { Action, CaslAbilityFactory } from "src/casl/casl-ability.factory";
+import { AccessForbiddenException } from "src/common/exceptions/access-forbidden.exception";
 
 @Controller("subjects")
 @ApiTags("subjects")
@@ -34,7 +34,7 @@ export class SubjectsController {
   ) {
     const ability = this.caslAbilityFactory.createForSubject(request.user);
     if (ability.cannot(Action.Create, "all")) {
-      throw new ForbiddenException("Can't create subject");
+      throw new AccessForbiddenException("Can't create subject");
     }
 
     const subject = await this.subjectsService.create(createSubjectDto);
@@ -59,7 +59,7 @@ export class SubjectsController {
   ) {
     const ability = this.caslAbilityFactory.createForSubject(request.user);
     if (ability.cannot(Action.Update, "all")) {
-      throw new ForbiddenException("Can't update subject");
+      throw new AccessForbiddenException("Can't update subject");
     }
 
     const subject = await this.subjectsService.update(+id, updateSubjectDto);
@@ -73,7 +73,7 @@ export class SubjectsController {
   async remove(@Param("id") id: number, @Req() request: any) {
     const ability = this.caslAbilityFactory.createForSubject(request.user);
     if (ability.cannot(Action.Delete, "all")) {
-      throw new ForbiddenException("Can't delete subject");
+      throw new AccessForbiddenException("Can't delete subject");
     }
 
     const subject = await this.subjectsService.remove(+id);

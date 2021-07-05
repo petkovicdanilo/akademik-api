@@ -12,9 +12,8 @@ import { UtilModule } from "src/util/util.module";
 import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
 import { RefreshToken } from "./entities/refresh-token.entity";
-import { AdminStrategy } from "./strategies/admin.strategy";
-import { JwtResetPasswordStrategy } from "./strategies/jwt-reset-password.strategy";
-import { JwtStrategy } from "./strategies/jwt.strategy";
+import { ResetPasswordStrategy } from "./strategies/reset-password.strategy";
+import { AccessTokenStrategy } from "./strategies/access-token.strategy";
 import { RefreshTokenStrategy } from "./strategies/refresh-token.strategy";
 import { TokensService } from "../util/tokens.service";
 
@@ -39,10 +38,9 @@ import { TokensService } from "../util/tokens.service";
   controllers: [AuthController],
   providers: [
     AuthService,
-    JwtStrategy,
-    JwtResetPasswordStrategy,
+    AccessTokenStrategy,
+    ResetPasswordStrategy,
     RefreshTokenStrategy,
-    AdminStrategy,
   ],
 })
 export class AuthModule {}

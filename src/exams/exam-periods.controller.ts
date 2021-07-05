@@ -8,7 +8,6 @@ import {
   Delete,
   UseGuards,
   Req,
-  ForbiddenException,
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { AccessTokenGuard } from "src/common/guards/access-token.guard";
@@ -16,6 +15,7 @@ import { Action, CaslAbilityFactory } from "src/casl/casl-ability.factory";
 import { CreateExamPeriodDto } from "./dto/create-exam-period.dto";
 import { UpdateExamPeriodDto } from "./dto/update-exam-period.dto";
 import { ExamPeriodsService } from "./exam-periods.service";
+import { AccessForbiddenException } from "src/common/exceptions/access-forbidden.exception";
 
 @Controller("exam-periods")
 @ApiTags("exam-periods")
@@ -34,7 +34,7 @@ export class ExamPeriodsController {
   ) {
     const ability = this.caslAbilityFactory.createForExamPeriod(request.user);
     if (ability.cannot(Action.Create, "all")) {
-      throw new ForbiddenException("Can't create exam period");
+      throw new AccessForbiddenException("Can't create exam period");
     }
 
     const examPeriod = await this.examPeriodsService.create(
@@ -61,7 +61,7 @@ export class ExamPeriodsController {
   ) {
     const ability = this.caslAbilityFactory.createForExamPeriod(request.user);
     if (ability.cannot(Action.Update, "all")) {
-      throw new ForbiddenException("Can't update exam period");
+      throw new AccessForbiddenException("Can't update exam period");
     }
 
     const examPeriod = await this.examPeriodsService.update(
@@ -78,7 +78,7 @@ export class ExamPeriodsController {
   async remove(@Param("id") id: number, @Req() request: any) {
     const ability = this.caslAbilityFactory.createForExamPeriod(request.user);
     if (ability.cannot(Action.Delete, "all")) {
-      throw new ForbiddenException("Can't delete exam period");
+      throw new AccessForbiddenException("Can't delete exam period");
     }
 
     const examPeriod = await this.examPeriodsService.remove(+id);

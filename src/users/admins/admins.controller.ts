@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Delete,
-  ForbiddenException,
   Get,
   Param,
   Patch,
@@ -22,6 +21,7 @@ import { CreateUserDto } from "../dto/create-user.dto";
 import { AdminsService } from "./admins.service";
 import { AdminDto } from "./dto/admin.dto";
 import { UpdateAdminDto } from "./dto/update-admin.dto";
+import { AccessForbiddenException } from "src/common/exceptions/access-forbidden.exception";
 
 @Controller("users/admins")
 @ApiTags("admins")
@@ -55,7 +55,7 @@ export class AdminsController {
   ): Promise<Pagination<AdminDto>> {
     const ability = this.caslAbilityFactory.createForAdmin(request.user);
     if (ability.cannot(Action.Read, "all")) {
-      throw new ForbiddenException("Can't list admins");
+      throw new AccessForbiddenException("Can't list admins");
     }
 
     const pagingParams = this.utilService.getPagingParams(
@@ -84,7 +84,7 @@ export class AdminsController {
   ): Promise<AdminDto> {
     const ability = this.caslAbilityFactory.createForAdmin(request.user);
     if (ability.cannot(Action.Read, "all")) {
-      throw new ForbiddenException("Can't get admin");
+      throw new AccessForbiddenException("Can't get admin");
     }
 
     const admin = await this.adminsService.findOne(+id);
@@ -95,7 +95,7 @@ export class AdminsController {
   async create(@Body() createAdminDto: CreateUserDto, @Req() request: any) {
     const ability = this.caslAbilityFactory.createForAdmin(request.user);
     if (ability.cannot(Action.Create, "all")) {
-      throw new ForbiddenException("Can't create admin");
+      throw new AccessForbiddenException("Can't create admin");
     }
 
     const admin = await this.adminsService.create(createAdminDto);
@@ -114,7 +114,7 @@ export class AdminsController {
   ): Promise<AdminDto> {
     const ability = this.caslAbilityFactory.createForAdmin(request.user);
     if (ability.cannot(Action.Update, "all")) {
-      throw new ForbiddenException("Can't update admin");
+      throw new AccessForbiddenException("Can't update admin");
     }
 
     const admin = await this.adminsService.update(+id, updateAdminDto);
@@ -132,7 +132,7 @@ export class AdminsController {
   ): Promise<AdminDto> {
     const ability = this.caslAbilityFactory.createForAdmin(request.user);
     if (ability.cannot(Action.Delete, "all")) {
-      throw new ForbiddenException("Can't delete admin");
+      throw new AccessForbiddenException("Can't delete admin");
     }
 
     const admin = await this.adminsService.remove(+id);

@@ -7,7 +7,6 @@ import {
   Query,
   Req,
   UseGuards,
-  ForbiddenException,
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Pagination } from "nestjs-typeorm-paginate";
@@ -20,6 +19,7 @@ import { ProfileDto } from "../profiles/dto/profile.dto";
 import { ProfilesService } from "../profiles/profiles.service";
 import { UnverifiedProfileDto } from "./dto/unverified-profile.dto";
 import { UnverifiedProfilesService } from "./unverified-profiles.service";
+import { AccessForbiddenException } from "src/common/exceptions/access-forbidden.exception";
 
 @Controller("users/unverified")
 @ApiTags("users")
@@ -56,7 +56,7 @@ export class UnverifiedProfilesController {
       request.user,
     );
     if (ability.cannot(Action.Read, "all")) {
-      throw new ForbiddenException("Can't list unverified users");
+      throw new AccessForbiddenException("Can't list unverified users");
     }
 
     const pagingParams = this.utilService.getPagingParams(
@@ -86,7 +86,7 @@ export class UnverifiedProfilesController {
       request.user,
     );
     if (ability.cannot(Action.Read, "all")) {
-      throw new ForbiddenException("Can't get unverified user");
+      throw new AccessForbiddenException("Can't get unverified user");
     }
 
     const profile = await this.unverifiedProfilesService.findOne(+id);
@@ -104,7 +104,7 @@ export class UnverifiedProfilesController {
       request.user,
     );
     if (ability.cannot(Action.Update, "all")) {
-      throw new ForbiddenException("Can't verify user");
+      throw new AccessForbiddenException("Can't verify user");
     }
 
     const profile = await this.unverifiedProfilesService.verify(id);
@@ -122,7 +122,7 @@ export class UnverifiedProfilesController {
       request.user,
     );
     if (ability.cannot(Action.Delete, "all")) {
-      throw new ForbiddenException("Can't verify user");
+      throw new AccessForbiddenException("Can't verify user");
     }
 
     const profile = await this.unverifiedProfilesService.remove(+id);

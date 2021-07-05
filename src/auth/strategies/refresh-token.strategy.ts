@@ -1,12 +1,13 @@
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { PassportStrategy } from "@nestjs/passport";
-import { ForbiddenException, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { InjectRepository } from "@nestjs/typeorm";
 import { RefreshToken } from "../entities/refresh-token.entity";
 import { Repository } from "typeorm";
 import { Profile } from "src/users/profiles/entities/profile.entity";
 import { TokensService } from "src/util/tokens.service";
+import { AccessForbiddenException } from "src/common/exceptions/access-forbidden.exception";
 
 @Injectable()
 export class RefreshTokenStrategy extends PassportStrategy(
@@ -60,7 +61,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
     const tokenInDb = await this.refreshTokenRepository.findOne(refreshToken);
 
     if (!tokenInDb) {
-      throw new ForbiddenException("Invalid refresh token");
+      throw new AccessForbiddenException("Invalid refresh token");
     }
 
     return { id, type };

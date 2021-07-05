@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  ForbiddenException,
   Get,
   Param,
   Post,
@@ -16,6 +15,7 @@ import { StudentsService } from "src/users/students/students.service";
 import { CreateExamRegistrationsDto } from "./dto/create-exam-registrations.dto";
 import { GradesDto } from "./dto/grades.dto";
 import { ExamRegistrationsService } from "./exam-registrations.service";
+import { AccessForbiddenException } from "src/common/exceptions/access-forbidden.exception";
 
 @Controller()
 @UseGuards(AccessTokenGuard)
@@ -39,7 +39,7 @@ export class ExamRegistrationsController {
     const ability = this.caslAbilityFactory.createForGrade(request.user);
 
     if (ability.cannot(Action.Create, subject)) {
-      throw new ForbiddenException("Can't list exam registrations");
+      throw new AccessForbiddenException("Can't list exam registrations");
     }
 
     const examRegistrations = await this.examRegistrationsService.findByExamPeriodSubject(
@@ -66,7 +66,7 @@ export class ExamRegistrationsController {
     );
 
     if (ability.cannot(Action.Create, student)) {
-      throw new ForbiddenException("Can't registrate for exams");
+      throw new AccessForbiddenException("Can't registrate for exams");
     }
 
     const examRegistrations = await this.examRegistrationsService.registrateExams(
@@ -92,7 +92,7 @@ export class ExamRegistrationsController {
     );
 
     if (ability.cannot(Action.Create, student)) {
-      throw new ForbiddenException("Can't list exam registrations");
+      throw new AccessForbiddenException("Can't list exam registrations");
     }
 
     const examRegistrations = await this.examRegistrationsService.findByStudentSchoolYear(
@@ -120,7 +120,7 @@ export class ExamRegistrationsController {
     const ability = this.caslAbilityFactory.createForGrade(request.user);
 
     if (ability.cannot(Action.Create, subject)) {
-      throw new ForbiddenException("Can't grade");
+      throw new AccessForbiddenException("Can't grade");
     }
 
     const examRegistrations = await this.examRegistrationsService.grade(

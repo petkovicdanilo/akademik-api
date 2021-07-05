@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import {
   IPaginationOptions,
@@ -17,6 +13,8 @@ import { AdminDto } from "./dto/admin.dto";
 import { Admin } from "./entities/admin.entity";
 import * as bcrypt from "bcrypt";
 import { UpdateAdminDto } from "./dto/update-admin.dto";
+import { EntityNotFoundException } from "src/common/exceptions/entity-not-found.exception";
+import { InvalidDataException } from "src/common/exceptions/invalid-data.exception";
 
 @Injectable()
 export class AdminsService {
@@ -40,7 +38,7 @@ export class AdminsService {
         },
       });
     } catch (e) {
-      throw new BadRequestException("Bad request");
+      throw new InvalidDataException("Bad request");
     }
   }
 
@@ -52,7 +50,7 @@ export class AdminsService {
     const admin = await this.adminsRepostiory.findOne(id);
 
     if (!admin) {
-      throw new NotFoundException("Admin not found");
+      throw new EntityNotFoundException(Admin);
     }
 
     return admin;
@@ -64,7 +62,7 @@ export class AdminsService {
 
       return this.findOne(id);
     } catch (e) {
-      throw new BadRequestException("Bad request");
+      throw new InvalidDataException("Bad request");
     }
   }
 

@@ -1,13 +1,14 @@
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { PassportStrategy } from "@nestjs/passport";
-import { ForbiddenException, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { ProfilesService } from "src/users/profiles/profiles.service";
 import { TokensService } from "src/util/tokens.service";
+import { AccessForbiddenException } from "src/common/exceptions/access-forbidden.exception";
 
 @Injectable()
-export class JwtResetPasswordStrategy extends PassportStrategy(
+export class ResetPasswordStrategy extends PassportStrategy(
   Strategy,
-  "jwt-reset-password",
+  "resetPassword",
 ) {
   constructor(
     private readonly profileService: ProfilesService,
@@ -28,7 +29,7 @@ export class JwtResetPasswordStrategy extends PassportStrategy(
     const token = req.body.token;
 
     if (profile.passwordResetToken != token) {
-      throw new ForbiddenException("Invalid token");
+      throw new AccessForbiddenException("Invalid token");
     }
 
     return profile;

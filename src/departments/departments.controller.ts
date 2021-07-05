@@ -8,7 +8,6 @@ import {
   Delete,
   UseGuards,
   Req,
-  ForbiddenException,
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { AccessTokenGuard } from "src/common/guards/access-token.guard";
@@ -18,6 +17,7 @@ import { CreateDepartmentDto } from "./dto/create-department.dto";
 import { DepartmentDto } from "./dto/department.dto";
 import { UpdateDepartmentDto } from "./dto/update-department.dto";
 import { Department } from "./entities/department.entity";
+import { AccessForbiddenException } from "src/common/exceptions/access-forbidden.exception";
 
 @Controller("departments")
 @ApiTags("departments")
@@ -65,7 +65,7 @@ export class DepartmentsController {
   ) {
     const ability = this.caslAbilityFactory.createForDepartment(request.user);
     if (!ability.can(Action.Create, Department)) {
-      throw new ForbiddenException("User can't create department");
+      throw new AccessForbiddenException("User can't create department");
     }
 
     const department = await this.departmentsService.create(
@@ -89,7 +89,7 @@ export class DepartmentsController {
   ) {
     const ability = this.caslAbilityFactory.createForDepartment(request.user);
     if (!ability.can(Action.Update, Department)) {
-      throw new ForbiddenException("User can't update department");
+      throw new AccessForbiddenException("User can't update department");
     }
 
     const department = await this.departmentsService.update(
@@ -110,7 +110,7 @@ export class DepartmentsController {
   async remove(@Param("id") id: number, @Req() request: any) {
     const ability = this.caslAbilityFactory.createForDepartment(request.user);
     if (!ability.can(Action.Delete, Department)) {
-      throw new ForbiddenException("User can't delete department");
+      throw new AccessForbiddenException("User can't delete department");
     }
     const department = await this.departmentsService.remove(+id);
 

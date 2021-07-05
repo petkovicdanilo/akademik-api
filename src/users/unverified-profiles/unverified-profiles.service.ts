@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import {
   IPaginationOptions,
@@ -17,6 +13,8 @@ import * as bcrypt from "bcrypt";
 import { Profile } from "../profiles/entities/profile.entity";
 import { ProfileType } from "../profiles/types";
 import { MailService } from "src/mail/mail.service";
+import { EntityNotFoundException } from "src/common/exceptions/entity-not-found.exception";
+import { InvalidDataException } from "src/common/exceptions/invalid-data.exception";
 
 @Injectable()
 export class UnverifiedProfilesService {
@@ -39,7 +37,7 @@ export class UnverifiedProfilesService {
     const profile = await this.unverifiedProfilesRepository.findOne(id);
 
     if (!profile) {
-      throw new NotFoundException("Unverified user not found");
+      throw new EntityNotFoundException(UnverifiedProfile, "Unverified user");
     }
 
     return profile;
@@ -47,7 +45,7 @@ export class UnverifiedProfilesService {
 
   async create(profile: RegisterDto) {
     if (profile.type == ProfileType.Admin) {
-      throw new BadRequestException("Type 'admin' not valid");
+      throw new InvalidDataException("Type 'admin' not valid");
     }
 
     profile.salt = await bcrypt.genSalt();
@@ -60,7 +58,7 @@ export class UnverifiedProfilesService {
     });
 
     if (existingProfile) {
-      throw new BadRequestException("Email is taken");
+      throw new InvalidDataException("Email is taken");
     }
 
     return this.unverifiedProfilesRepository.save(profile);
@@ -84,7 +82,7 @@ export class UnverifiedProfilesService {
 
       return verifiedProfile;
     } catch (e) {
-      throw new BadRequestException("Bad request");
+      throw new InvalidDataException("Bad request");
     }
   }
 

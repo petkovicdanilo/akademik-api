@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { UpdateUserDto } from "../dto/update-user.dto";
@@ -10,6 +10,7 @@ import {
   Pagination,
   paginate,
 } from "nestjs-typeorm-paginate";
+import { EntityNotFoundException } from "src/common/exceptions/entity-not-found.exception";
 
 @Injectable()
 export class ProfilesService {
@@ -26,7 +27,7 @@ export class ProfilesService {
     const profile = await this.profilesRepository.findOne(id);
 
     if (!profile) {
-      throw new NotFoundException("Profile not found");
+      throw new EntityNotFoundException(Profile, "User");
     }
 
     return profile;

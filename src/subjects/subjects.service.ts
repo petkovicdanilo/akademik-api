@@ -1,9 +1,7 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { EntityNotFoundException } from "src/common/exceptions/entity-not-found.exception";
+import { InvalidDataException } from "src/common/exceptions/invalid-data.exception";
 import { DepartmentsService } from "src/departments/departments.service";
 import { SchoolYearsService } from "src/school-years/school-years.service";
 import { ProfessorsService } from "src/users/professors/professors.service";
@@ -51,7 +49,7 @@ export class SubjectsService {
     try {
       return await this.subjectsRepository.save(subject);
     } catch (e) {
-      throw new BadRequestException("Bad request");
+      throw new InvalidDataException("Bad request");
     }
   }
 
@@ -59,7 +57,7 @@ export class SubjectsService {
     const subject = await this.subjectsRepository.findOne(id);
 
     if (!subject) {
-      throw new NotFoundException("Subject not found");
+      throw new EntityNotFoundException(Subject);
     }
 
     return subject;
@@ -94,7 +92,7 @@ export class SubjectsService {
     try {
       return await this.subjectsRepository.save(subject);
     } catch (e) {
-      throw new BadRequestException("Bad request");
+      throw new InvalidDataException("Bad request");
     }
   }
 
@@ -147,7 +145,7 @@ export class SubjectsService {
     );
 
     if (subjectsFromAnotherDepartment.length > 0) {
-      throw new BadRequestException(
+      throw new InvalidDataException(
         "Student can't enroll in subject from another department",
       );
     }
@@ -160,7 +158,7 @@ export class SubjectsService {
       .getCount();
 
     if (alreadyPassedSubjects > 0) {
-      throw new BadRequestException(
+      throw new InvalidDataException(
         "Student can't enroll in already passed subjects",
       );
     }
@@ -171,7 +169,7 @@ export class SubjectsService {
     );
 
     if (totalEctsPoints < 60) {
-      throw new BadRequestException("Minumum of 60 ects points not satisfied");
+      throw new InvalidDataException("Minumum of 60 ects points not satisfied");
     }
 
     const enrolledSubjects = subjects.map<DeepPartial<EnrolledSubject>>(
@@ -208,7 +206,7 @@ export class SubjectsService {
       .getOne();
 
     if (!enrolledSubject) {
-      throw new BadRequestException("Student is not enrolled in subject");
+      throw new InvalidDataException("Student is not enrolled in subject");
     }
 
     enrolledSubject.grade = grade;

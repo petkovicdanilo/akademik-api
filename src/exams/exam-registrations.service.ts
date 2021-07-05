@@ -1,5 +1,6 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { InvalidDataException } from "src/common/exceptions/invalid-data.exception";
 import { SchoolYearsService } from "src/school-years/school-years.service";
 import { SubjectsService } from "src/subjects/subjects.service";
 import { StudentsService } from "src/users/students/students.service";
@@ -61,17 +62,17 @@ export class ExamRegistrationsService {
     const examRegistrationsToInsert = [];
     subjects.forEach((subject) => {
       if (!enrolledSubjectsMap.has(subject.id)) {
-        throw new BadRequestException("Student not enrolled in subject");
+        throw new InvalidDataException("Student not enrolled in subject");
       }
 
       if (enrolledSubjectsMap.get(subject.id).grade) {
-        throw new BadRequestException(
+        throw new InvalidDataException(
           "Can't registrate for already passed subject",
         );
       }
 
       if (currentExamRegistrationsMap.has(subject.id)) {
-        throw new BadRequestException("Already registrated for exam");
+        throw new InvalidDataException("Already registrated for exam");
       }
 
       examRegistrationsToInsert.push({
@@ -139,11 +140,11 @@ export class ExamRegistrationsService {
         );
 
         if (!enrolledSubjects.find((enrolled) => enrolled.id == subjectId)) {
-          throw new BadRequestException("Student not enrolled in subject");
+          throw new InvalidDataException("Student not enrolled in subject");
         }
 
         if (!examRegistrationsMap.has(gradeDto.studentId)) {
-          throw new BadRequestException(
+          throw new InvalidDataException(
             "Student didn't submit exam registration",
           );
         }
@@ -151,7 +152,7 @@ export class ExamRegistrationsService {
         const examRegistration = examRegistrationsMap.get(gradeDto.studentId);
 
         if (examRegistration.grade) {
-          throw new BadRequestException("Student already has a grade");
+          throw new InvalidDataException("Student already has a grade");
         }
 
         examRegistration.grade = gradeDto.grade;

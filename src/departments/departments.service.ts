@@ -1,9 +1,7 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { EntityNotFoundException } from "src/common/exceptions/entity-not-found.exception";
+import { InvalidDataException } from "src/common/exceptions/invalid-data.exception";
 import { Repository } from "typeorm";
 import { CreateDepartmentDto } from "./dto/create-department.dto";
 import { DepartmentDto } from "./dto/department.dto";
@@ -21,7 +19,7 @@ export class DepartmentsService {
     try {
       return await this.departmentsRepository.save(createDepartmentDto);
     } catch (e) {
-      throw new BadRequestException("Bad request");
+      throw new InvalidDataException("Bad request");
     }
   }
 
@@ -37,7 +35,7 @@ export class DepartmentsService {
     const department = await this.departmentsRepository.findOne(id);
 
     if (!department) {
-      throw new NotFoundException("Department not found");
+      throw new EntityNotFoundException(Department);
     }
 
     return department;
@@ -51,7 +49,7 @@ export class DepartmentsService {
       await this.departmentsRepository.update(id, updateDepartmentDto);
       return this.findOne(id);
     } catch (e) {
-      throw new BadRequestException("Bad request");
+      throw new InvalidDataException("Bad request");
     }
   }
 

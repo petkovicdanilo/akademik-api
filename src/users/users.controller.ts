@@ -1,7 +1,6 @@
 import {
   Controller,
   Delete,
-  ForbiddenException,
   Get,
   Param,
   Query,
@@ -17,6 +16,7 @@ import { ProfilesPaginatedDto } from "src/pagination/profile.dto";
 import { UtilService } from "src/util/util.service";
 import { ProfileDto } from "./profiles/dto/profile.dto";
 import { ProfilesService } from "./profiles/profiles.service";
+import { AccessForbiddenException } from "src/common/exceptions/access-forbidden.exception";
 
 @Controller("users")
 @ApiTags("users")
@@ -50,7 +50,7 @@ export class UsersController {
   ): Promise<Pagination<ProfileDto>> {
     const ability = this.caslAbilityFactory.createForUser(request.user);
     if (ability.cannot(Action.Read, "all")) {
-      throw new ForbiddenException("Can't list all users");
+      throw new AccessForbiddenException("Can't list all users");
     }
 
     const pagingParams = this.utilService.getPagingParams(
@@ -78,7 +78,7 @@ export class UsersController {
     const profile = await this.profilesService.findOne(id);
 
     if (ability.cannot(Action.Delete, profile)) {
-      throw new ForbiddenException("User can't delete profile");
+      throw new AccessForbiddenException("User can't delete profile");
     }
 
     const removedProfile = await this.profilesService.remove(+id);

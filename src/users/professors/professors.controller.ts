@@ -9,7 +9,6 @@ import {
   Query,
   Post,
   UseGuards,
-  ForbiddenException,
 } from "@nestjs/common";
 import { ProfessorsService } from "./professors.service";
 import { UpdateProfessorDto } from "./dto/update-professor.dto";
@@ -24,6 +23,7 @@ import { ProfessorSpecificDto } from "./dto/professor-specific.dto";
 import { AccessTokenGuard } from "src/common/guards/access-token.guard";
 import { Action, CaslAbilityFactory } from "src/casl/casl-ability.factory";
 import { ProfilesService } from "../profiles/profiles.service";
+import { AccessForbiddenException } from "src/common/exceptions/access-forbidden.exception";
 
 @Controller("users/professors")
 @ApiTags("professors")
@@ -97,7 +97,7 @@ export class ProfessorsController {
     const ability = this.caslAbilityFactory.createForProfessor(request.user);
 
     if (ability.cannot(Action.Create, profile)) {
-      throw new ForbiddenException("Can't add professor specific info");
+      throw new AccessForbiddenException("Can't add professor specific info");
     }
 
     const professor = await this.professorsService.addProfessorSpecificInfo(
@@ -124,7 +124,7 @@ export class ProfessorsController {
     const ability = this.caslAbilityFactory.createForProfessor(request.user);
 
     if (ability.cannot(Action.Update, professor.profile)) {
-      throw new ForbiddenException("Can't update professor");
+      throw new AccessForbiddenException("Can't update professor");
     }
 
     const updatedProfessor = await this.professorsService.update(
@@ -149,7 +149,7 @@ export class ProfessorsController {
     const ability = this.caslAbilityFactory.createForProfessor(request.user);
 
     if (ability.cannot(Action.Delete, professor.profile)) {
-      throw new ForbiddenException("Can't delete professor");
+      throw new AccessForbiddenException("Can't delete professor");
     }
 
     const deletedProfessor = await this.professorsService.remove(+id);

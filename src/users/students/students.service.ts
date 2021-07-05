@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import {
   IPaginationOptions,
@@ -17,8 +13,10 @@ import { UpdateStudentDto } from "./dto/update-student.dto";
 import { Student } from "./entities/student.entity";
 import { StudentSpecificDto } from "./dto/student-specific.dto";
 import { Profile } from "../profiles/entities/profile.entity";
-import { Department } from "src/departments/entities/department.entity";
 import { SchoolYearsService } from "src/school-years/school-years.service";
+import { DepartmentsService } from "src/departments/departments.service";
+import { EntityNotFoundException } from "src/common/exceptions/entity-not-found.exception";
+import { InvalidDataException } from "src/common/exceptions/invalid-data.exception";
 
 @Injectable()
 export class StudentsService {
@@ -28,8 +26,7 @@ export class StudentsService {
     @InjectRepository(Profile)
     private readonly profilesRepository: Repository<Profile>,
     private readonly profilesService: ProfilesService,
-    @InjectRepository(Department)
-    private readonly departmentsRepository: Repository<Department>,
+    private readonly departmentsService: DepartmentsService,
     private readonly schoolYearsService: SchoolYearsService,
   ) {}
 
@@ -40,11 +37,11 @@ export class StudentsService {
   async findOne(id: number): Promise<Student> {
     const profile = await this.profilesRepository.findOne(id);
     if (!profile || profile.type != ProfileType.Student) {
-      throw new NotFoundException("Student not found");
+      throw new EntityNotFoundException(Student);
     }
 
     if (!profile.hasAdditionalInfo) {
-      throw new BadRequestException(
+      throw new InvalidDataException(
         "Student has not filled in additional information",
       );
     }
@@ -60,20 +57,16 @@ export class StudentsService {
     const profile = await this.profilesService.findOne(id);
 
     if (profile.hasAdditionalInfo) {
-      throw new BadRequestException(
+      throw new InvalidDataException(
         "Student specific information already added. Please use patch method for further updates",
       );
     }
 
     profile.hasAdditionalInfo = true;
 
-    const department = await this.departmentsRepository.findOne(
+    const department = await this.departmentsService.findOne(
       studentSpecificDto.departmentId,
     );
-
-    if (!department) {
-      throw new NotFoundException("Department not found");
-    }
 
     let startingSchoolYear;
     if (startingSchoolYearId == null) {
@@ -100,15 +93,11 @@ export class StudentsService {
     const student = await this.findOne(id);
 
     if (updateStudentDto.departmentId) {
-      const department = await this.departmentsRepository.findOne(
+      const department = await this.departmentsService.findOne(
         updateStudentDto.departmentId,
       );
 
-      if (!department) {
-        throw new NotFoundException("Department not found");
-      } else {
-        student.department = department;
-      }
+      student.department = department;
     }
 
     student.profile.firstName =
@@ -128,7 +117,7 @@ export class StudentsService {
     try {
       return await this.studentsRepository.save(student);
     } catch (e) {
-      throw new BadRequestException("Bad request");
+      throw new InvalidDataException("Bad request");
     }
   }
 

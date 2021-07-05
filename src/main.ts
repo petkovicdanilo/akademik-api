@@ -4,6 +4,7 @@ import { AppModule } from "./app.module";
 import * as helmet from "helmet";
 import { ValidationPipe } from "@nestjs/common";
 import { UtilService } from "./util/util.service";
+import { ExceptionInterceptor } from "./common/exception.interceptor";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -24,6 +25,7 @@ async function bootstrap() {
   app.enableCors();
 
   app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalInterceptors(new ExceptionInterceptor());
 
   const utilService = app.get(UtilService);
   const port = utilService.getPort();

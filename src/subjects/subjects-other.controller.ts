@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  ForbiddenException,
   Get,
   Param,
   Post,
@@ -14,6 +13,7 @@ import { Action, CaslAbilityFactory } from "src/casl/casl-ability.factory";
 import { StudentsService } from "src/users/students/students.service";
 import { SubjectDto } from "./dto/subject.dto";
 import { SubjectsService } from "./subjects.service";
+import { AccessForbiddenException } from "src/common/exceptions/access-forbidden.exception";
 
 @Controller()
 @ApiTags("subjects")
@@ -36,7 +36,7 @@ export class SubjectsOtherController {
     const ability = this.caslAbilityFactory.createForSubject(request.user);
 
     if (ability.cannot(Action.Read, student.profile)) {
-      throw new ForbiddenException("Can't list student's subjects");
+      throw new AccessForbiddenException("Can't list student's subjects");
     }
 
     return this.subjectsService.findByStudentSchoolYearId(id, schoolYearId);
@@ -59,7 +59,7 @@ export class SubjectsOtherController {
     const ability = this.caslAbilityFactory.createForSubject(request.user);
 
     if (ability.cannot(Action.Create, student.profile)) {
-      throw new ForbiddenException("Can't enroll student to subjects");
+      throw new AccessForbiddenException("Can't enroll student to subjects");
     }
 
     const enrolledSubjects = await this.subjectsService.addSubjectsToStudent(

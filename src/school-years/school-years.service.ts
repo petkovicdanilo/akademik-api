@@ -1,9 +1,7 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { EntityNotFoundException } from "src/common/exceptions/entity-not-found.exception";
+import { InvalidDataException } from "src/common/exceptions/invalid-data.exception";
 import { Repository } from "typeorm";
 import { CreateSchoolYearDto } from "./dto/create-school-year.dto";
 import { SchoolYearDto } from "./dto/school-year.dto";
@@ -22,7 +20,7 @@ export class SchoolYearsService {
     const endDate = new Date(createSchoolYearDto.endDate.toString());
 
     if (!this.validYears(startDate, endDate)) {
-      throw new BadRequestException("Invalid start or end time");
+      throw new InvalidDataException("Invalid start or end time");
     }
 
     const startYear = startDate.getFullYear();
@@ -31,7 +29,7 @@ export class SchoolYearsService {
 
     const existingSchoolYear = await this.schoolYearsRepository.findOne(id);
     if (existingSchoolYear) {
-      throw new BadRequestException("School year already exists");
+      throw new InvalidDataException("School year already exists");
     }
 
     const schoolYear: SchoolYear = {
@@ -44,7 +42,7 @@ export class SchoolYearsService {
     try {
       return await this.schoolYearsRepository.save(schoolYear);
     } catch (e) {
-      throw new BadRequestException("Bad request");
+      throw new InvalidDataException("Bad request");
     }
   }
 
@@ -60,7 +58,7 @@ export class SchoolYearsService {
     const schoolYear = await this.schoolYearsRepository.findOne(id);
 
     if (!schoolYear) {
-      throw new NotFoundException("School year not found");
+      throw new EntityNotFoundException(SchoolYear, "School year");
     }
 
     return schoolYear;
@@ -78,7 +76,7 @@ export class SchoolYearsService {
       !this.validYears(schoolYear.startDate, schoolYear.endDate) ||
       schoolYear.startDate.getFullYear() != this.idToFirstYear(schoolYear.id)
     ) {
-      throw new BadRequestException("Invalid start or end time");
+      throw new InvalidDataException("Invalid start or end time");
     }
 
     this.schoolYearsRepository.save(schoolYear);
@@ -90,7 +88,7 @@ export class SchoolYearsService {
     const schoolYear = await this.findOne(id);
 
     if (schoolYear.current) {
-      throw new BadRequestException("Can't delete current school year");
+      throw new InvalidDataException("Can't delete current school year");
     }
 
     await this.schoolYearsRepository.remove(schoolYear);
@@ -107,7 +105,7 @@ export class SchoolYearsService {
     });
 
     if (!current) {
-      throw new NotFoundException("Current school year not found");
+      throw new EntityNotFoundException(SchoolYear, "School year");
     }
 
     return current;

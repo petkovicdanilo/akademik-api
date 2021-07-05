@@ -9,7 +9,6 @@ import {
   Req,
   Post,
   UseGuards,
-  ForbiddenException,
 } from "@nestjs/common";
 import { StudentsService } from "./students.service";
 import { UpdateStudentDto } from "./dto/update-student.dto";
@@ -23,6 +22,7 @@ import { StudentSpecificDto } from "./dto/student-specific.dto";
 import { AccessTokenGuard } from "src/common/guards/access-token.guard";
 import { Action, CaslAbilityFactory } from "src/casl/casl-ability.factory";
 import { ProfilesService } from "../profiles/profiles.service";
+import { AccessForbiddenException } from "src/common/exceptions/access-forbidden.exception";
 
 @Controller("users/students")
 @ApiTags("students")
@@ -94,7 +94,9 @@ export class StudentsController {
     const ability = this.caslAbilityFactory.createForStudent(request.user);
 
     if (ability.cannot(Action.Create, profile)) {
-      throw new ForbiddenException("Can't add student specific information");
+      throw new AccessForbiddenException(
+        "Can't add student specific information",
+      );
     }
 
     const student = await this.studentsService.addStudentSpecificInfo(
@@ -121,7 +123,7 @@ export class StudentsController {
     const ability = this.caslAbilityFactory.createForStudent(request.user);
 
     if (ability.cannot(Action.Update, student.profile)) {
-      throw new ForbiddenException("Can't update student");
+      throw new AccessForbiddenException("Can't update student");
     }
 
     const updatedStudent = await this.studentsService.update(
@@ -146,7 +148,7 @@ export class StudentsController {
     const ability = this.caslAbilityFactory.createForStudent(request.user);
 
     if (ability.cannot(Action.Delete, student.profile)) {
-      throw new ForbiddenException("Can't delete student");
+      throw new AccessForbiddenException("Can't delete student");
     }
 
     const deletedStudent = await this.studentsService.remove(+id);

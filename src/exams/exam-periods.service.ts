@@ -1,9 +1,7 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { EntityNotFoundException } from "src/common/exceptions/entity-not-found.exception";
+import { InvalidDataException } from "src/common/exceptions/invalid-data.exception";
 import { SchoolYearsService } from "src/school-years/school-years.service";
 import { Repository } from "typeorm";
 import { CreateExamPeriodDto } from "./dto/create-exam-period.dto";
@@ -37,7 +35,7 @@ export class ExamPeriodsService {
     try {
       return await this.examPeriodsRepository.save(examPeriod);
     } catch (e) {
-      throw new BadRequestException("Bad request");
+      throw new InvalidDataException("Bad request");
     }
   }
 
@@ -45,7 +43,7 @@ export class ExamPeriodsService {
     const examPeriod = await this.examPeriodsRepository.findOne(id);
 
     if (!examPeriod) {
-      throw new NotFoundException("Exam period not found");
+      throw new EntityNotFoundException(ExamPeriod, "Exam period");
     }
 
     return examPeriod;
@@ -75,7 +73,7 @@ export class ExamPeriodsService {
     try {
       return await this.examPeriodsRepository.save(examPeriod);
     } catch (e) {
-      throw new BadRequestException("Bad request");
+      throw new InvalidDataException("Bad request");
     }
   }
 

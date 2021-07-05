@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
@@ -21,6 +17,8 @@ import { Repository } from "typeorm";
 import { TokensDto } from "./dto/tokens.dto";
 import { TokensService } from "../util/tokens.service";
 import { Cron, CronExpression } from "@nestjs/schedule";
+import { EntityNotFoundException } from "src/common/exceptions/entity-not-found.exception";
+import { InvalidDataException } from "src/common/exceptions/invalid-data.exception";
 
 @Injectable()
 export class AuthService {
@@ -38,7 +36,7 @@ export class AuthService {
     const profile = await this.profilesService.findByEmail(loginDto.email);
 
     if (!profile) {
-      throw new BadRequestException("Wrong username or password");
+      throw new InvalidDataException("Wrong username or password");
     }
 
     const hashedPassword = await this.profilesService.hashPassword(
@@ -46,7 +44,7 @@ export class AuthService {
       profile.salt,
     );
     if (profile.password != hashedPassword) {
-      throw new BadRequestException("Wrong username or password");
+      throw new InvalidDataException("Wrong username or password");
     }
 
     return this.generateTokens(profile);
@@ -65,7 +63,7 @@ export class AuthService {
     const profile = await this.profilesService.findByEmail(email);
 
     if (!profile) {
-      throw new NotFoundException("Email not found");
+      throw new EntityNotFoundException(Profile, "Email");
     }
 
     const payload = new ResetPasswordTokenPayload(profile.id, profile.type);

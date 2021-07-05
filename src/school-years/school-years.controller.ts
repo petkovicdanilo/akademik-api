@@ -8,7 +8,6 @@ import {
   Delete,
   UseGuards,
   Req,
-  ForbiddenException,
 } from "@nestjs/common";
 import { SchoolYearsService } from "./school-years.service";
 import { CreateSchoolYearDto } from "./dto/create-school-year.dto";
@@ -16,6 +15,7 @@ import { UpdateSchoolYearDto } from "./dto/update-school-year.dto";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { AccessTokenGuard } from "src/common/guards/access-token.guard";
 import { Action, CaslAbilityFactory } from "src/casl/casl-ability.factory";
+import { AccessForbiddenException } from "src/common/exceptions/access-forbidden.exception";
 
 @Controller("school-years")
 @ApiTags("school-years")
@@ -34,7 +34,7 @@ export class SchoolYearsController {
   ) {
     const ability = this.caslAbilityFactory.createForSchoolYear(request.user);
     if (ability.cannot(Action.Create, "all")) {
-      throw new ForbiddenException("Can't create school year");
+      throw new AccessForbiddenException("Can't create school year");
     }
 
     const schoolYear = await this.schoolYearsService.create(
@@ -59,7 +59,7 @@ export class SchoolYearsController {
   async setCurrent(@Param("id") id: string, @Req() request: any) {
     const ability = this.caslAbilityFactory.createForSchoolYear(request.user);
     if (ability.cannot(Action.Update, "all")) {
-      throw new ForbiddenException("Can't set current school year");
+      throw new AccessForbiddenException("Can't set current school year");
     }
 
     const schoolYear = await this.schoolYearsService.setCurrent(id);
@@ -91,7 +91,7 @@ export class SchoolYearsController {
   ) {
     const ability = this.caslAbilityFactory.createForSchoolYear(request.user);
     if (ability.cannot(Action.Update, "all")) {
-      throw new ForbiddenException("Can't update school year");
+      throw new AccessForbiddenException("Can't update school year");
     }
 
     const schoolYear = await this.schoolYearsService.update(
@@ -108,7 +108,7 @@ export class SchoolYearsController {
   async remove(@Param("id") id: string, @Req() request: any) {
     const ability = this.caslAbilityFactory.createForSchoolYear(request.user);
     if (ability.cannot(Action.Delete, "all")) {
-      throw new ForbiddenException("Can't delete school year");
+      throw new AccessForbiddenException("Can't delete school year");
     }
 
     const schoolYear = await this.schoolYearsService.remove(id);

@@ -30,8 +30,8 @@ export class SchoolYearsSeederService {
           year,
         );
 
-        const startDate = new Date(`October 1, ${year} 00:00:00`);
-        const endDate = new Date(`September 31, ${year} 00:00:00`);
+        const startDate = new Date(`${year}-10-01`);
+        const endDate = new Date(`${year + 1}-09-30`);
 
         schoolYearsToInsert.push({
           id: schoolYearId,

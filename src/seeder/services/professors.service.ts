@@ -23,7 +23,7 @@ export class ProfessorsSeederService {
       const departments = await this.departmentsRepository.find();
       const departmentIds = departments.map((department) => department.id);
 
-      for (let i = 0; i < 10; i++) {
+      for (let i = 0; i < 100; i++) {
         const studentDto = this.generateProfessorDto();
         const savedStudent = await this.unverifiedProfilesService.create(
           studentDto,

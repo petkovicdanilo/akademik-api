@@ -28,7 +28,7 @@ export class StudentsSeederService {
       const schoolYears = await this.schoolYearsRepository.find();
       const schoolYearIds = schoolYears.map((schoolYear) => schoolYear.id);
 
-      for (let i = 0; i < 30; i++) {
+      for (let i = 0; i < 500; i++) {
         const studentDto = this.generateStudentDto();
         const savedStudent = await this.unverifiedProfilesService.create(
           studentDto,

@@ -34,6 +34,8 @@ This will populate database and create users.
 It will create admin user with email `admin@akademik.com` and password `admin`.
 All other users have password `password` (their emails are random).
 
+Note: Please run seeder only on empty database.
+
 ## Running the app
 
 ```bash

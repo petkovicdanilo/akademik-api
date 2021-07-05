@@ -25,7 +25,7 @@ export class ExceptionInterceptor implements NestInterceptor {
         } else if (error instanceof AccessForbiddenException) {
           throw new ForbiddenException(error.message);
         } else {
-          throw new Error();
+          throw error;
         }
       }),
     );

@@ -137,7 +137,7 @@ export class ExamRegistrationsService {
       .andWhere("student.id IN (:...studentIds)", {
         studentIds: gradeDtos.map((gradeDto) => gradeDto.studentId),
       })
-      .andWhere("subject.id = :subjectId", { subjectId })
+      .andWhere("examRegistration.subjectId = :subjectId", { subjectId })
       .getMany();
 
     const examRegistrationsMap = new Map(

@@ -117,7 +117,7 @@ export class ExamRegistrationsController {
     @Body() gradesDto: GradesDto[],
     @Req() request: any,
   ): Promise<ExamRegistrationDto[]> {
-    const subject = await this.subjectsService.findOne(subjectId);
+    const subject = await this.subjectsService.findOne(+subjectId);
     const ability = this.caslAbilityFactory.createForGrade(request.user);
 
     if (ability.cannot(Action.Create, subject)) {
@@ -125,8 +125,8 @@ export class ExamRegistrationsController {
     }
 
     const examRegistrations = await this.examRegistrationsService.grade(
-      examPeriodId,
-      subjectId,
+      +examPeriodId,
+      +subjectId,
       gradesDto,
     );
 

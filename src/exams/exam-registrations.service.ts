@@ -99,6 +99,10 @@ export class ExamRegistrationsService {
       .createQueryBuilder("examRegistration")
       .leftJoinAndSelect("examRegistration.examPeriod", "examPeriod")
       .leftJoinAndSelect("examPeriod.schoolYear", "schoolYear")
+      .leftJoinAndSelect("examRegistration.student", "student")
+      .leftJoinAndSelect("student.profile", "profile")
+      .leftJoinAndSelect("student.department", "department")
+      .leftJoinAndSelect("student.startingSchoolYear", "startingSchoolYear")
       .where("examRegistration.studentId = :studentId", {
         studentId: student.id,
       })
@@ -121,6 +125,9 @@ export class ExamRegistrationsService {
     const examRegistrations = await this.examRegistrationsRepository
       .createQueryBuilder("examRegistration")
       .leftJoinAndSelect("examRegistration.student", "student")
+      .leftJoinAndSelect("student.profile", "profile")
+      .leftJoinAndSelect("student.department", "department")
+      .leftJoinAndSelect("student.startingSchoolYear", "startingSchoolYear")
       .leftJoinAndSelect("student.enrolledSubjects", "enrolledSubject")
       .leftJoinAndSelect("enrolledSubject.subject", "subject")
       .leftJoinAndSelect("enrolledSubject.schoolYear", "schoolYear")
@@ -178,7 +185,9 @@ export class ExamRegistrationsService {
 
   mapToDto(examRegistration: ExamRegistration): ExamRegistrationDto {
     return {
-      studentId: examRegistration.studentId,
+      student: this.studentsService.mapStudentToStudentDto(
+        examRegistration.student,
+      ),
       subjectId: examRegistration.subjectId,
       examPeriodId: examRegistration.examPeriodId,
       createdAt: examRegistration.createdAt,

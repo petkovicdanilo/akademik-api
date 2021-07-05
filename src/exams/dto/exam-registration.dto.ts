@@ -1,5 +1,7 @@
+import { StudentDto } from "src/users/students/dto/student.dto";
+
 export class ExamRegistrationDto {
-  studentId: number;
+  student: StudentDto;
   subjectId: number;
   examPeriodId: number;
   createdAt: Date;

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import {
   IPaginationOptions,
@@ -26,14 +30,18 @@ export class AdminsService {
     const salt = await bcrypt.genSalt();
     adminDto.password = await bcrypt.hash(adminDto.password, salt);
 
-    return this.adminsRepostiory.save({
-      profile: {
-        type: ProfileType.Admin,
-        salt,
-        hasAdditionalInfo: true,
-        ...adminDto,
-      },
-    });
+    try {
+      return await this.adminsRepostiory.save({
+        profile: {
+          type: ProfileType.Admin,
+          salt,
+          hasAdditionalInfo: true,
+          ...adminDto,
+        },
+      });
+    } catch (e) {
+      throw new BadRequestException("Bad request");
+    }
   }
 
   findAll(options: IPaginationOptions): Promise<Pagination<Admin>> {
@@ -51,9 +59,13 @@ export class AdminsService {
   }
 
   async update(id: number, updateAdmin: UpdateAdminDto): Promise<Admin> {
-    await this.profilesService.update(id, updateAdmin);
+    try {
+      await this.profilesService.update(id, updateAdmin);
 
-    return this.findOne(id);
+      return this.findOne(id);
+    } catch (e) {
+      throw new BadRequestException("Bad request");
+    }
   }
 
   async remove(id: number): Promise<Admin> {

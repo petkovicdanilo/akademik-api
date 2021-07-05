@@ -48,7 +48,11 @@ export class SubjectsService {
     );
     subject.professor = Promise.resolve(professor);
 
-    return this.subjectsRepository.save(subject);
+    try {
+      return await this.subjectsRepository.save(subject);
+    } catch (e) {
+      throw new BadRequestException("Bad request");
+    }
   }
 
   async findOne(id: number) {
@@ -87,7 +91,11 @@ export class SubjectsService {
       subject.professor = Promise.resolve(professor);
     }
 
-    return this.subjectsRepository.save(subject);
+    try {
+      return await this.subjectsRepository.save(subject);
+    } catch (e) {
+      throw new BadRequestException("Bad request");
+    }
   }
 
   async remove(id: number) {

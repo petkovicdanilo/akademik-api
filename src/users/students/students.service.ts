@@ -125,7 +125,11 @@ export class StudentsService {
         )
       : student.profile.password;
 
-    return await this.studentsRepository.save(student);
+    try {
+      return await this.studentsRepository.save(student);
+    } catch (e) {
+      throw new BadRequestException("Bad request");
+    }
   }
 
   async remove(id: number): Promise<Student> {

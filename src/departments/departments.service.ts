@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { CreateDepartmentDto } from "./dto/create-department.dto";
@@ -13,8 +17,12 @@ export class DepartmentsService {
     private readonly departmentsRepository: Repository<Department>,
   ) {}
 
-  create(createDepartmentDto: CreateDepartmentDto): Promise<Department> {
-    return this.departmentsRepository.save(createDepartmentDto);
+  async create(createDepartmentDto: CreateDepartmentDto): Promise<Department> {
+    try {
+      return await this.departmentsRepository.save(createDepartmentDto);
+    } catch (e) {
+      throw new BadRequestException("Bad request");
+    }
   }
 
   findAll(): Promise<Department[]> {
@@ -39,9 +47,12 @@ export class DepartmentsService {
     id: number,
     updateDepartmentDto: UpdateDepartmentDto,
   ): Promise<Department> {
-    await this.departmentsRepository.update(id, updateDepartmentDto);
-
-    return this.findOne(id);
+    try {
+      await this.departmentsRepository.update(id, updateDepartmentDto);
+      return this.findOne(id);
+    } catch (e) {
+      throw new BadRequestException("Bad request");
+    }
   }
 
   async remove(id: number): Promise<Department> {

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { SchoolYearsService } from "src/school-years/school-years.service";
 import { Repository } from "typeorm";
@@ -30,7 +34,11 @@ export class ExamPeriodsService {
     examPeriod.registrationEndDate = createExamPeriodDto.registrationEndDate;
     examPeriod.schoolYear = schoolYear;
 
-    return this.examPeriodsRepository.save(examPeriod);
+    try {
+      return await this.examPeriodsRepository.save(examPeriod);
+    } catch (e) {
+      throw new BadRequestException("Bad request");
+    }
   }
 
   async findOne(id: number) {
@@ -64,7 +72,11 @@ export class ExamPeriodsService {
       examPeriod.schoolYear = schoolYear;
     }
 
-    return this.examPeriodsRepository.save(examPeriod);
+    try {
+      return await this.examPeriodsRepository.save(examPeriod);
+    } catch (e) {
+      throw new BadRequestException("Bad request");
+    }
   }
 
   async remove(id: number) {

@@ -3,6 +3,7 @@ import { Professor } from "src/users/professors/entities/professor.entity";
 import {
   Column,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   OneToMany,
@@ -12,6 +13,7 @@ import { Semester, SubjectYear } from "../types";
 import { EnrolledSubject } from "./enrolled-subject.entity";
 
 @Entity()
+@Index(["name", "departmentId"], { unique: true })
 export class Subject {
   @PrimaryGeneratedColumn()
   id: number;

@@ -17,7 +17,7 @@ export class SchoolYearsService {
     private readonly schoolYearsRepository: Repository<SchoolYear>,
   ) {}
 
-  create(createSchoolYearDto: CreateSchoolYearDto) {
+  async create(createSchoolYearDto: CreateSchoolYearDto) {
     const startDate = new Date(createSchoolYearDto.startDate.toString());
     const endDate = new Date(createSchoolYearDto.endDate.toString());
 
@@ -29,6 +29,11 @@ export class SchoolYearsService {
 
     const id = this.schoolYearIdFromStartYear(startYear);
 
+    const existingSchoolYear = await this.schoolYearsRepository.findOne(id);
+    if (existingSchoolYear) {
+      throw new BadRequestException("School year already exists");
+    }
+
     const schoolYear: SchoolYear = {
       id,
       startDate: createSchoolYearDto.startDate,
@@ -36,7 +41,11 @@ export class SchoolYearsService {
       current: false,
     };
 
-    return this.schoolYearsRepository.save(schoolYear);
+    try {
+      return await this.schoolYearsRepository.save(schoolYear);
+    } catch (e) {
+      throw new BadRequestException("Bad request");
+    }
   }
 
   findAll() {

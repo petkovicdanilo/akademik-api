@@ -53,13 +53,13 @@ export class UnverifiedProfilesService {
     profile.salt = await bcrypt.genSalt();
     profile.password = await bcrypt.hash(profile.password, profile.salt);
 
-    const existingProfile = await this.profilesRepository.find({
+    const existingProfile = await this.profilesRepository.findOne({
       where: {
         email: profile.email,
       },
     });
 
-    if (existingProfile[0]) {
+    if (existingProfile) {
       throw new BadRequestException("Email is taken");
     }
 
@@ -69,19 +69,23 @@ export class UnverifiedProfilesService {
   async verify(id: number, sendEmail = true): Promise<Profile> {
     const profile = await this.findOne(id);
 
-    const verifiedProfile = await this.profilesRepository.save({
-      hasAdditionalInfo: false,
-      ...profile,
-      id: null, // don't copy id
-    });
+    try {
+      const verifiedProfile = await this.profilesRepository.save({
+        hasAdditionalInfo: false,
+        ...profile,
+        id: null, // don't copy id
+      });
 
-    await this.unverifiedProfilesRepository.remove(profile);
+      await this.unverifiedProfilesRepository.remove(profile);
 
-    if (sendEmail) {
-      await this.mailService.sendVerifiedEmail(verifiedProfile);
+      if (sendEmail) {
+        await this.mailService.sendVerifiedEmail(verifiedProfile);
+      }
+
+      return verifiedProfile;
+    } catch (e) {
+      throw new BadRequestException("Bad request");
     }
-
-    return verifiedProfile;
   }
 
   async remove(id: number, sendEmail = true): Promise<UnverifiedProfile> {

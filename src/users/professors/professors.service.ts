@@ -114,7 +114,11 @@ export class ProfessorsService {
         )
       : professor.profile.password;
 
-    return await this.professorsRepository.save(professor);
+    try {
+      return await this.professorsRepository.save(professor);
+    } catch (e) {
+      throw new BadRequestException("Bad request");
+    }
   }
 
   async remove(id: number): Promise<Professor> {

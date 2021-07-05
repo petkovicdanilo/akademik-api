@@ -6,6 +6,7 @@ import { Repository } from "typeorm";
 import * as faker from "faker";
 import { EnrolledSubject } from "src/subjects/entities/enrolled-subject.entity";
 import { SchoolYear } from "src/school-years/entities/school-year.entity";
+import { Department } from "src/departments/entities/department.entity";
 
 @Injectable()
 export class EnrolledSubjectsSeederService {
@@ -18,6 +19,8 @@ export class EnrolledSubjectsSeederService {
     private readonly enrolledSubjectsRepository: Repository<EnrolledSubject>,
     @InjectRepository(SchoolYear)
     private readonly schoolYearsRepository: Repository<SchoolYear>,
+    @InjectRepository(Department)
+    private readonly departmentsRepository: Repository<Department>,
   ) {}
 
   async seed() {
@@ -25,15 +28,14 @@ export class EnrolledSubjectsSeederService {
       const students = await this.studentsRepository.find();
       const subjects = await this.subjectsRepository.find();
       const schoolYears = await this.schoolYearsRepository.find();
+      const departments = await this.departmentsRepository.find();
 
       const departmentIdToSubjects = new Map<number, Set<Subject>>();
+      departments.forEach((department) => {
+        departmentIdToSubjects.set(department.id, new Set<Subject>());
+      });
 
       subjects.forEach((subject) => {
-        const departmentId = subject.departmentId;
-        if (!departmentIdToSubjects.has(departmentId)) {
-          departmentIdToSubjects.set(departmentId, new Set<Subject>());
-        }
-
         departmentIdToSubjects.get(subject.departmentId).add(subject);
       });
 
@@ -45,15 +47,21 @@ export class EnrolledSubjectsSeederService {
           ),
         );
 
-        pickedSubjects.forEach((subject) => {
+        pickedSubjects.forEach((pickedSubject) => {
+          if (!pickedSubject) {
+            return;
+          }
+
+          const schoolYear = faker.random.arrayElement(
+            schoolYears.filter(
+              (schoolYear) => schoolYear.id >= student.startingSchoolYear.id,
+            ),
+          );
+
           enrolledSubjects.push({
             student,
-            subject,
-            schoolYear: faker.random.arrayElement(
-              schoolYears.filter(
-                (schoolYear) => schoolYear.id >= student.startingSchoolYear.id,
-              ),
-            ),
+            subjectId: pickedSubject.id,
+            schoolYearId: schoolYear.id,
           });
         });
       });

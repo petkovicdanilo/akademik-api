@@ -23,12 +23,17 @@ export class SubjectsSeederService {
       const professors = await this.professorsRepository.find();
       const departments = await this.departmentsRepository.find();
 
-      const subjects: CreateSubjectDto[] = [];
-      for (let i = 0; i < 100; i++) {
-        subjects.push(this.generateSubject(professors, departments));
+      const subjects: Map<string, CreateSubjectDto> = new Map();
+      for (let i = 0; i < 200; i++) {
+        const subject = this.generateSubject(professors, departments);
+        const key = [subject.name, subject.departmentId].join(",");
+
+        if (!subjects.has(key)) {
+          subjects.set(key, subject);
+        }
       }
 
-      await this.subjectsRepository.save(subjects);
+      await this.subjectsRepository.save(Array.from(subjects.values()));
     } catch (e) {
       console.log(e);
     }

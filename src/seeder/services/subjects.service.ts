@@ -24,7 +24,7 @@ export class SubjectsSeederService {
       const departments = await this.departmentsRepository.find();
 
       const subjects: Map<string, CreateSubjectDto> = new Map();
-      while (subjects.size < 200) {
+      while (subjects.size < 300) {
         const subject = this.generateSubject(professors, departments);
         const key = [subject.name, subject.departmentId].join(",");
 

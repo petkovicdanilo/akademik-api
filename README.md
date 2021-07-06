@@ -30,8 +30,13 @@ To populate database with dummy data for testing purposes run:
 $ npm run db:seed
 ```
 
-This will populate database and create users.
-It will create admin user with email `admin@akademik.com` and password `admin`.
+This will populate database and create random users.
+
+These users will be generated every time:
+- admin with email `admin@akademik.com` and password `admin`
+- student with email `student@akademik.com` and password `password`
+- professor with email `professor@akademik.com` and password `password`
+
 All other users have password `password` (their emails are random).
 
 Note: Please run seeder only on empty database.

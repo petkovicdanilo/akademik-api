@@ -23,6 +23,8 @@ export class ProfessorsSeederService {
       const departments = await this.departmentsRepository.find();
       const departmentIds = departments.map((department) => department.id);
 
+      await this.createFirstProfessor(departmentIds[0]);
+
       for (let i = 0; i < 100; i++) {
         const studentDto = this.generateProfessorDto();
         const savedStudent = await this.unverifiedProfilesService.create(
@@ -37,10 +39,7 @@ export class ProfessorsSeederService {
 
           if (Math.random() * 100 > 10) {
             const departmentId = faker.random.arrayElement(departmentIds);
-            const titleStr = faker.random.arrayElement(
-              Object.values(ProfessorTitle),
-            );
-            const title = ProfessorTitle[titleStr];
+            const title = this.randomProfessorTitle();
 
             await this.professorsService.addProfessorSpecificInfo(profile.id, {
               departmentId,
@@ -52,6 +51,33 @@ export class ProfessorsSeederService {
     } catch (e) {
       console.log(e);
     }
+  }
+
+  private randomProfessorTitle() {
+    const titleStr = faker.random.arrayElement(Object.values(ProfessorTitle));
+    const title = ProfessorTitle[titleStr];
+    return title;
+  }
+
+  private async createFirstProfessor(departmentId: number) {
+    const professor = this.generateProfessorDto();
+    professor.email = "professor@akademik.com";
+    professor.firstName = "Professor";
+    professor.lastName = "Professor";
+
+    const unverifiedProfile = await this.unverifiedProfilesService.create(
+      professor,
+    );
+
+    const profile = await this.unverifiedProfilesService.verify(
+      unverifiedProfile.id,
+      false,
+    );
+
+    await this.professorsService.addProfessorSpecificInfo(profile.id, {
+      departmentId: departmentId,
+      title: this.randomProfessorTitle(),
+    });
   }
 
   private generateProfessorDto(): RegisterDto {

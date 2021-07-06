@@ -28,6 +28,8 @@ export class StudentsSeederService {
       const schoolYears = await this.schoolYearsRepository.find();
       const schoolYearIds = schoolYears.map((schoolYear) => schoolYear.id);
 
+      await this.createFirstStudent(departmentIds[0], schoolYearIds[0]);
+
       for (let i = 0; i < 500; i++) {
         const studentDto = this.generateStudentDto();
         const savedStudent = await this.unverifiedProfilesService.create(
@@ -57,6 +59,30 @@ export class StudentsSeederService {
     } catch (e) {
       console.log(e);
     }
+  }
+
+  private async createFirstStudent(departmentId: number, schoolYearId: string) {
+    const student = this.generateStudentDto();
+    student.email = "student@akademik.com";
+    student.firstName = "Student";
+    student.lastName = "Student";
+
+    const unverifiedProfile = await this.unverifiedProfilesService.create(
+      student,
+    );
+
+    const profile = await this.unverifiedProfilesService.verify(
+      unverifiedProfile.id,
+      false,
+    );
+
+    await this.studentsService.addStudentSpecificInfo(
+      profile.id,
+      {
+        departmentId: departmentId,
+      },
+      schoolYearId,
+    );
   }
 
   private generateStudentDto(): RegisterDto {

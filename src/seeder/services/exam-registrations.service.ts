@@ -37,7 +37,7 @@ export class ExamRegistrationsSeederService {
 
       enrolledSubjects.forEach((enrolledSubject) => {
         // no exam registrations for this subject
-        if (faker.datatype.number({ min: 1, max: 10 }) < 2) {
+        if (faker.datatype.number({ min: 1, max: 10 }) < 4) {
           return;
         }
 

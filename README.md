@@ -56,3 +56,8 @@ $ npm run start:debug
 # production mode
 $ npm run start:prod
 ```
+
+## Swagger
+
+When application is running swagger documentation
+will be available at `/api` route.

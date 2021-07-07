@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Param,
+  ParseArrayPipe,
   Post,
   Req,
   UseGuards,
@@ -114,7 +115,7 @@ export class ExamRegistrationsController {
   async grade(
     @Param("id") examPeriodId: number,
     @Param("subjectId") subjectId: number,
-    @Body() gradesDto: GradesDto[],
+    @Body(new ParseArrayPipe({ items: GradesDto })) gradesDto: GradesDto[],
     @Req() request: any,
   ): Promise<ExamRegistrationDto[]> {
     const subject = await this.subjectsService.findOne(+subjectId);

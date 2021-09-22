@@ -15,6 +15,8 @@ import { ProfileType } from "../profiles/types";
 import { MailService } from "src/mail/mail.service";
 import { EntityNotFoundException } from "src/common/exceptions/entity-not-found.exception";
 import { InvalidDataException } from "src/common/exceptions/invalid-data.exception";
+import { WebSightUser } from "src/web-sight/WebSightUser";
+import { WebSightService } from "src/web-sight/web-sight.service";
 
 @Injectable()
 export class UnverifiedProfilesService {
@@ -24,6 +26,7 @@ export class UnverifiedProfilesService {
     @InjectRepository(Profile)
     private readonly profilesRepository: Repository<Profile>,
     private readonly mailService: MailService,
+    private readonly webSightService: WebSightService,
   ) {}
 
   findAll(options: IPaginationOptions): Promise<Pagination<UnverifiedProfile>> {
@@ -74,6 +77,16 @@ export class UnverifiedProfilesService {
         id: null, // don't copy id
       });
 
+      // call external api to create user and connect by id
+      const webSightUser: WebSightUser = await this.webSightService.createWebSightUser(
+        verifiedProfile,
+      );
+
+      await this.profilesRepository.save({
+        ...verifiedProfile,
+        webSightApiId: webSightUser.id,
+      });
+
       await this.unverifiedProfilesRepository.remove(profile);
 
       if (sendEmail) {
@@ -82,6 +95,7 @@ export class UnverifiedProfilesService {
 
       return verifiedProfile;
     } catch (e) {
+      console.log(e);
       throw new InvalidDataException("Bad request");
     }
   }

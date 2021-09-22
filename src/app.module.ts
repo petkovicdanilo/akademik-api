@@ -13,6 +13,8 @@ import { SubjectsModule } from "./subjects/subjects.module";
 import { SchoolYearsModule } from "./school-years/school-years.module";
 import { ExamsModule } from "./exams/exams.module";
 import { CaslModule } from "./casl/casl.module";
+import { LessonsModule } from "./lessons/lessons.module";
+import { WebSightModule } from "./web-sight/web-sight.module";
 
 @Module({
   imports: [
@@ -33,6 +35,8 @@ import { CaslModule } from "./casl/casl.module";
     SchoolYearsModule,
     ExamsModule,
     CaslModule,
+    LessonsModule,
+    WebSightModule,
   ],
 })
 export class AppModule {}

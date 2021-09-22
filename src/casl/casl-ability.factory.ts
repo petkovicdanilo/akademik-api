@@ -8,6 +8,7 @@ import {
 import { Injectable } from "@nestjs/common";
 import { CurrentUser } from "src/common/types";
 import { Department } from "src/departments/entities/department.entity";
+import { Lesson } from "src/lessons/entities/lesson.entity";
 import { Subject } from "src/subjects/entities/subject.entity";
 import { Profile } from "src/users/profiles/entities/profile.entity";
 import { ProfileType } from "src/users/profiles/types";
@@ -59,6 +60,9 @@ type ExamRegistrationSubjects = InferSubjects<typeof Student> | "all";
 export type ExamRegistrationAbility = Ability<
   [Action, ExamRegistrationSubjects]
 >;
+
+type LessonSubjects = InferSubjects<typeof Lesson> | "all";
+export type LessonAbility = Ability<[Action, LessonSubjects]>;
 
 @Injectable()
 export class CaslAbilityFactory {
@@ -234,6 +238,25 @@ export class CaslAbilityFactory {
     return build({
       detectSubjectType: (item) =>
         item.constructor as ExtractSubjectType<ExamRegistrationSubjects>,
+    });
+  }
+
+  createForLesson(user: CurrentUser) {
+    const { can, build } = new AbilityBuilder<
+      Ability<[Action, LessonSubjects]>
+    >(Ability as AbilityClass<LessonAbility>);
+
+    if (user.type == ProfileType.Admin) {
+      can(Action.Manage, "all");
+    }
+
+    if (user.type == ProfileType.Professor) {
+      can(Action.Manage, Lesson, { professorId: user.id });
+    }
+
+    return build({
+      detectSubjectType: (item) =>
+        item.constructor as ExtractSubjectType<LessonSubjects>,
     });
   }
 }

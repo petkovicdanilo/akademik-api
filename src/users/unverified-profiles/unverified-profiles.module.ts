@@ -8,6 +8,7 @@ import { Profile } from "../profiles/entities/profile.entity";
 import { ProfilesModule } from "../profiles/profiles.module";
 import { MailModule } from "src/mail/mail.module";
 import { CaslModule } from "src/casl/casl.module";
+import { WebSightModule } from "src/web-sight/web-sight.module";
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { CaslModule } from "src/casl/casl.module";
     ProfilesModule,
     MailModule,
     CaslModule,
+    WebSightModule,
   ],
   controllers: [UnverifiedProfilesController],
   providers: [UnverifiedProfilesService],

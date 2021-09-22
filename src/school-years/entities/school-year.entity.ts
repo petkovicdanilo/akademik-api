@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryColumn } from "typeorm";
+import { Lesson } from "src/lessons/entities/lesson.entity";
+import { Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
 
 @Entity()
 export class SchoolYear {
@@ -17,4 +18,9 @@ export class SchoolYear {
 
   @Column()
   current: boolean;
+
+  @OneToMany(() => Lesson, (lesson) => lesson.schoolYear, {
+    cascade: true,
+  })
+  lessons?: Lesson[];
 }

@@ -13,6 +13,7 @@ import { WebSightRole } from "src/web-sight/WebSightRole";
 import { v4 } from "uuid";
 import { LessonDto } from "./dto/lesson.dto";
 import { EntityNotFoundException } from "src/common/exceptions/entity-not-found.exception";
+import { Profile } from "src/users/profiles/entities/profile.entity";
 
 @Injectable()
 export class LessonsService {
@@ -80,8 +81,20 @@ export class LessonsService {
     });
   }
 
-  async startConference(userId: number, roomId: string): Promise<string> {
-    return this.webSightService.startRoomConference(userId, roomId);
+  async startConference(
+    userId: number,
+    roomId: string,
+    professorName: string,
+    lesson: Lesson,
+    profiles: Profile[],
+  ): Promise<void> {
+    await this.webSightService.startRoomConference(
+      userId,
+      roomId,
+      professorName,
+      lesson,
+      profiles,
+    );
   }
 
   async generateWebSightToken(

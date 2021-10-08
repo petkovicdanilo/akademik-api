@@ -33,7 +33,7 @@ export class Lesson {
 
   @ManyToOne(() => Subject, { onDelete: "CASCADE" })
   @JoinColumn({ name: "subjectId" })
-  subject: Subject;
+  subject: Promise<Subject>;
 
   @Column()
   schoolYearId: string;

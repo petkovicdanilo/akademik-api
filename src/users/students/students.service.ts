@@ -146,6 +146,22 @@ export class StudentsService {
     return paginate<Student>(queryBuilder, options);
   }
 
+  getSubjectStudents(
+    subjectId: number,
+    schoolYearId: string,
+  ): Promise<Student[]> {
+    const queryBuilder = this.studentsRepository
+      .createQueryBuilder("student")
+      .leftJoin("student.enrolledSubjects", "enrolled")
+      .leftJoinAndSelect("student.profile", "profile")
+      .leftJoinAndSelect("student.department", "department")
+      .leftJoinAndSelect("student.startingSchoolYear", "startingSchoolYear")
+      .where("enrolled.subjectId = :subjectId", { subjectId })
+      .andWhere("enrolled.schoolYear = :schoolYearId", { schoolYearId });
+
+    return queryBuilder.getMany();
+  }
+
   mapStudentToStudentDto(student: Student): StudentDto {
     return {
       id: student.profile.id,

@@ -16,6 +16,7 @@ import { LessonDto } from "./dto/lesson.dto";
 import { AccessForbiddenException } from "src/common/exceptions/access-forbidden.exception";
 import { SubjectsService } from "src/subjects/subjects.service";
 import { ProfilesService } from "src/users/profiles/profiles.service";
+import { StudentsService } from "src/users/students/students.service";
 
 @Controller("lessons")
 @ApiTags("lessons")
@@ -25,6 +26,7 @@ export class LessonsController {
     private readonly caslAbilityFactory: CaslAbilityFactory,
     private readonly subjectsService: SubjectsService,
     private readonly profilesService: ProfilesService,
+    private readonly studentsService: StudentsService,
   ) {}
 
   @Post()
@@ -78,14 +80,24 @@ export class LessonsController {
   async startConference(
     @Body() { lessonId }: { lessonId: number },
     @Req() request: Request & { user: { id: number } },
-  ): Promise<string> {
+  ): Promise<void> {
     const lesson = await this.lessonsService.findOne(lessonId);
 
     const user = await this.profilesService.findOne(request.user.id);
 
-    return this.lessonsService.startConference(
+    const students = await this.studentsService.getSubjectStudents(
+      lesson.subjectId,
+      lesson.schoolYearId,
+    );
+
+    const profiles = students.map((student) => student.profile);
+
+    await this.lessonsService.startConference(
       user.webSightApiId,
       lesson.webSightRoomId,
+      `${user.firstName} ${user.lastName}`,
+      lesson,
+      profiles,
     );
   }
 

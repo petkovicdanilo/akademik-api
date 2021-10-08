@@ -7,6 +7,7 @@ import { SubjectsModule } from "src/subjects/subjects.module";
 import { WebSightModule } from "src/web-sight/web-sight.module";
 import { CaslModule } from "src/casl/casl.module";
 import { ProfilesModule } from "src/users/profiles/profiles.module";
+import { StudentsModule } from "src/users/students/students.module";
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { ProfilesModule } from "src/users/profiles/profiles.module";
     WebSightModule,
     ProfilesModule,
     CaslModule,
+    StudentsModule,
   ],
   controllers: [LessonsController],
   providers: [LessonsService],

@@ -108,6 +108,11 @@ export class LessonsController {
     @Param("lessonId") lessonId: number,
     @Req() request: any,
   ): Promise<string> {
-    return this.lessonsService.generateWebSightToken(request.user.id, lessonId);
+    const user = await this.profilesService.findOne(request.user.id);
+
+    return this.lessonsService.generateWebSightToken(
+      user.webSightApiId,
+      lessonId,
+    );
   }
 }

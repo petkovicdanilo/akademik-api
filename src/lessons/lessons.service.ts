@@ -12,6 +12,7 @@ import { WebSightUserRoom } from "src/web-sight/WebSightUserRoom";
 import { WebSightRole } from "src/web-sight/WebSightRole";
 import { v4 } from "uuid";
 import { LessonDto } from "./dto/lesson.dto";
+import { EntityNotFoundException } from "src/common/exceptions/entity-not-found.exception";
 
 @Injectable()
 export class LessonsService {
@@ -58,6 +59,16 @@ export class LessonsService {
     return finalLesson;
   }
 
+  async findOne(id: number): Promise<Lesson> {
+    const lesson = await this.lessonsRepository.findOne(id);
+
+    if (!lesson) {
+      throw new EntityNotFoundException(Lesson);
+    }
+
+    return lesson;
+  }
+
   async findBySubject(subjectId: number): Promise<Lesson[]> {
     return this.lessonsRepository.find({
       where: {
@@ -69,8 +80,17 @@ export class LessonsService {
     });
   }
 
-  async getRoomToken(userId: number, lesson: Lesson): Promise<string> {
-    return await this.webSightService.getWebSightRoomToken(
+  async startConference(userId: number, roomId: string): Promise<string> {
+    return this.webSightService.startRoomConference(userId, roomId);
+  }
+
+  async generateWebSightToken(
+    userId: number,
+    lessonId: number,
+  ): Promise<string> {
+    const lesson = await this.findOne(lessonId);
+
+    return this.webSightService.getWebSightRoomToken(
       userId,
       lesson.webSightRoomId,
     );
@@ -80,6 +100,7 @@ export class LessonsService {
     return {
       id: lesson.id,
       name: lesson.name,
+      webSightRoom: lesson.webSightRoomId,
       subjectId: lesson.subjectId,
       professorId: lesson.professorId,
       schoolYearId: lesson.schoolYearId,

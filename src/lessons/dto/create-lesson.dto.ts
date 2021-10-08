@@ -1,12 +1,15 @@
-import { IsAlphanumeric, IsNumber } from "class-validator";
+import { IsNumber, IsString } from "class-validator";
 
 export class CreateLessonDto {
+  @IsString()
+  name: string;
+
   @IsNumber()
   professorId: number;
 
   @IsNumber()
   subjectId: number;
 
-  @IsAlphanumeric()
-  name: string;
+  @IsString()
+  schoolYearId: string;
 }

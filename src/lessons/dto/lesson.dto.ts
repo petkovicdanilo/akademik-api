@@ -1,19 +1,19 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Timestamp } from "typeorm";
 
 export class LessonDto {
-  id: string;
+  id: number;
   name: string;
+  webSightRoom: string;
   @ApiProperty({
     type: () => String,
     format: "date-time",
   })
-  timeRoomOpened: Timestamp;
+  timeRoomOpened: Date;
   @ApiProperty({
     type: () => String,
     format: "date-time",
   })
-  timeRoomClosed: Timestamp;
+  timeRoomClosed: Date;
   professorId: number;
   subjectId: number;
   schoolYearId: string;

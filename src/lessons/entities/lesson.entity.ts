@@ -6,13 +6,12 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-  Timestamp,
 } from "typeorm";
 
 @Entity()
 export class Lesson {
   @PrimaryGeneratedColumn()
-  id: string;
+  id: number;
 
   @Column({ type: "text", nullable: true })
   webSightRoomId?: string;
@@ -20,11 +19,11 @@ export class Lesson {
   @Column({ type: "text", nullable: false })
   name: string;
 
-  @Column({ type: "timestamp", nullable: true })
-  timeRoomOpened?: Timestamp;
+  @Column({ type: "timestamptz", nullable: true })
+  timeRoomOpened?: Date;
 
-  @Column({ type: "timestamp", nullable: true })
-  timeRoomClosed?: Timestamp;
+  @Column({ type: "timestamptz", nullable: true })
+  timeRoomClosed?: Date;
 
   @Column({ type: "int", nullable: false })
   professorId: number;

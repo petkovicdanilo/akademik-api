@@ -8,6 +8,9 @@ import { ConfigModule } from "@nestjs/config";
     ConfigModule.forRoot(),
     HttpModule.register({
       baseURL: process.env.WEB_SIGHT_API_URL + "/api",
+      headers: {
+        api_authorization: process.env.WEB_SIGHT_API_KEY,
+      },
     }),
   ],
   providers: [WebSightService],

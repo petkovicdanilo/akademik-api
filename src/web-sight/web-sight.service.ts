@@ -24,7 +24,6 @@ export class WebSightService {
     const response = await this.httpService
       .post<WebSightRoom>("/rooms", room)
       .toPromise();
-
     return response.data;
   }
 
@@ -33,6 +32,15 @@ export class WebSightService {
   ): Promise<WebSightUserRoom> {
     const response = await this.httpService
       .post<WebSightUserRoom>("/user-rooms", userRoom)
+      .toPromise();
+
+    return response.data;
+  }
+
+  // THIS WILL SET ROOM TIME_OPENED TO TIME OF REQUEST MADE
+  async startRoomConference(userId: number, roomId: string): Promise<string> {
+    const response = await this.httpService
+      .post<string>("/rooms/start-conference", { userId, roomId })
       .toPromise();
 
     return response.data;

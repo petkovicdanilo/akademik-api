@@ -60,6 +60,9 @@ export type ExamRegistrationAbility = Ability<
   [Action, ExamRegistrationSubjects]
 >;
 
+type LessonSubjects = InferSubjects<typeof Subject> | "all";
+export type LessonAbility = Ability<[Action, LessonSubjects]>;
+
 @Injectable()
 export class CaslAbilityFactory {
   createForUser(user: CurrentUser) {
@@ -234,6 +237,25 @@ export class CaslAbilityFactory {
     return build({
       detectSubjectType: (item) =>
         item.constructor as ExtractSubjectType<ExamRegistrationSubjects>,
+    });
+  }
+
+  createForLesson(user: CurrentUser) {
+    const { can, build } = new AbilityBuilder<
+      Ability<[Action, LessonSubjects]>
+    >(Ability as AbilityClass<LessonAbility>);
+
+    if (user.type == ProfileType.Admin) {
+      can(Action.Manage, "all");
+    }
+
+    if (user.type == ProfileType.Professor) {
+      can(Action.Manage, Subject, { professorId: user.id });
+    }
+
+    return build({
+      detectSubjectType: (item) =>
+        item.constructor as ExtractSubjectType<LessonSubjects>,
     });
   }
 }

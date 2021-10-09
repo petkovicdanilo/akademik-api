@@ -1,5 +1,6 @@
 import { MailerService } from "@nestjs-modules/mailer";
 import { Injectable } from "@nestjs/common";
+import { Lesson } from "src/lessons/entities/lesson.entity";
 import { Profile } from "src/users/profiles/entities/profile.entity";
 import { UnverifiedProfile } from "src/users/unverified-profiles/entities/unverified-profile.entity";
 import { UtilService } from "src/util/util.service";
@@ -52,6 +53,32 @@ export class MailService {
       template: "./user-rejected",
       context: {
         profile,
+        url,
+      },
+    });
+  }
+
+  async sendConferenceStartedEmail(
+    professorName: string,
+    lesson: Lesson,
+    profiles: Profile[],
+  ): Promise<void> {
+    const url =
+      this.utilService.getFrontendUrl() +
+      `/home/subjects/${lesson.subjectId}/lessons/${lesson.id}`;
+
+    const profilesToReceive = profiles.map((profile) =>
+      this.emailFromProfile(profile),
+    );
+
+    await this.mailerService.sendMail({
+      to: profilesToReceive,
+      subject: `${professorName} has started a new lesson`,
+      template: "./conference-started",
+      context: {
+        professorName,
+        subjectName: (await lesson.subject).name,
+        lessonName: lesson.name,
         url,
       },
     });

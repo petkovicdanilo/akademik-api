@@ -9,6 +9,9 @@ export class Profile extends AbstractUser {
   })
   passwordResetToken?: string;
 
+  @Column({ type: "int", nullable: true })
+  webSightApiId?: number;
+
   @Column({
     default: true,
   })

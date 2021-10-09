@@ -1,4 +1,5 @@
 import { Department } from "src/departments/entities/department.entity";
+import { Lesson } from "src/lessons/entities/lesson.entity";
 import { Professor } from "src/users/professors/entities/professor.entity";
 import {
   Column,
@@ -61,4 +62,9 @@ export class Subject {
     },
   )
   enrolledStudents: Promise<EnrolledSubject[]>;
+
+  @OneToMany(() => Lesson, (lesson) => lesson.subject, {
+    cascade: true,
+  })
+  lessons: Lesson[];
 }

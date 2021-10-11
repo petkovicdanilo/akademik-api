@@ -14,6 +14,7 @@ import { v4 } from "uuid";
 import { LessonDto } from "./dto/lesson.dto";
 import { EntityNotFoundException } from "src/common/exceptions/entity-not-found.exception";
 import { Profile } from "src/users/profiles/entities/profile.entity";
+import { ProfilesService } from "src/users/profiles/profiles.service";
 
 @Injectable()
 export class LessonsService {
@@ -22,6 +23,7 @@ export class LessonsService {
     private readonly lessonsRepository: Repository<Lesson>,
     private readonly subjectsService: SubjectsService,
     private readonly webSightService: WebSightService,
+    private readonly profilesService: ProfilesService,
   ) {}
 
   async create(lesson: CreateLessonDto): Promise<Lesson> {
@@ -47,8 +49,10 @@ export class LessonsService {
 
     newLesson.webSightRoomId = newRoom.id;
 
+    const user = await this.profilesService.findOne(lesson.professorId);
+
     const userRoom: WebSightUserRoom = {
-      userId: lesson.professorId,
+      userId: user.webSightApiId,
       roomId: newRoom.id,
       role: WebSightRole.HOST,
     };

@@ -17,6 +17,7 @@ import { StudentsModule } from "src/users/students/students.module";
     ProfilesModule,
     CaslModule,
     StudentsModule,
+    ProfilesModule,
   ],
   controllers: [LessonsController],
   providers: [LessonsService],

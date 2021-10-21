@@ -26,7 +26,7 @@ export class LessonsService {
     private readonly profilesService: ProfilesService,
   ) {}
 
-  async create(lesson: CreateLessonDto): Promise<Lesson> {
+  async create(lesson: CreateLessonDto, profiles: Profile[]): Promise<Lesson> {
     const subjects = await this.subjectsService.findByProfessor(
       lesson.professorId,
     );
@@ -58,6 +58,14 @@ export class LessonsService {
     };
 
     await this.webSightService.createWebSightUserRoom(userRoom);
+
+    for (let i = 0; i < profiles.length; ++i) {
+      await this.webSightService.createWebSightUserRoom({
+        userId: profiles[i].webSightApiId,
+        roomId: newRoom.id,
+        role: WebSightRole.GUEST,
+      });
+    }
 
     const finalLesson = await this.lessonsRepository.save(newLesson);
 

@@ -65,7 +65,7 @@ export class MailService {
   ): Promise<void> {
     const url =
       this.utilService.getFrontendUrl() +
-      `/home/subjects/${lesson.subjectId}/lessons/${lesson.id}`;
+      `/home/subjects/${lesson.subjectId}/lessons/${lesson.id}?action=JOIN_LESSON`;
 
     const profilesToReceive = profiles.map((profile) =>
       this.emailFromProfile(profile),

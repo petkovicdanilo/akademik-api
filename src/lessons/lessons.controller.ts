@@ -47,7 +47,14 @@ export class LessonsController {
       );
     }
 
-    const lesson = await this.lessonsService.create(createLessonDto);
+    const students = await this.studentsService.getSubjectStudents(
+      createLessonDto.subjectId,
+      createLessonDto.schoolYearId,
+    );
+
+    const profiles = students.map((student) => student.profile);
+
+    const lesson = await this.lessonsService.create(createLessonDto, profiles);
 
     return this.lessonsService.mapToDto(lesson);
   }

@@ -100,6 +100,11 @@ export class LessonsService {
     lesson: Lesson,
     profiles: Profile[],
   ): Promise<void> {
+    await this.lessonsRepository.save({
+      ...lesson,
+      timeRoomOpened: new Date(),
+    });
+
     await this.webSightService.startRoomConference(
       userId,
       roomId,
@@ -107,6 +112,13 @@ export class LessonsService {
       lesson,
       profiles,
     );
+  }
+
+  async endConference(lesson: Lesson): Promise<void> {
+    await this.lessonsRepository.save({
+      ...lesson,
+      timeRoomClosed: new Date(),
+    });
   }
 
   async generateWebSightToken(

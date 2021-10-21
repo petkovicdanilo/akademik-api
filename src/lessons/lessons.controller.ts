@@ -108,6 +108,17 @@ export class LessonsController {
     );
   }
 
+  @Post("/end-conference")
+  @UseGuards(AccessTokenGuard)
+  @ApiBearerAuth()
+  async endConference(
+    @Body() { lessonId }: { lessonId: number },
+  ): Promise<void> {
+    const lesson = await this.lessonsService.findOne(lessonId);
+
+    await this.lessonsService.endConference(lesson);
+  }
+
   @Post("/:lessonId/generate-web-sight-token")
   @UseGuards(AccessTokenGuard)
   @ApiBearerAuth()
